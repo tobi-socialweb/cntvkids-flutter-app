@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video.dart';
-import 'package:cntvkids_app/widgets/videoContainer.dart';
+import 'package:cntvkids_app/widgets/video_container.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
