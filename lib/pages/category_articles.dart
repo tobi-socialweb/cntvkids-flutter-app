@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/article.dart';
-import 'package:cntvkids_app/pages/single_Article.dart';
+import 'package:cntvkids_app/pages/single_article.dart';
 import 'package:cntvkids_app/widgets/articleBox.dart';
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
