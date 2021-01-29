@@ -92,7 +92,7 @@ class _FeaturedState extends State<Featured> {
   Future<List<dynamic>> fetchFeatured(int page) async {
     if (!this.mounted) return featured;
 
-    final int featuredPerPage = 4;
+    final int featuredPerPage = 3;
 
     try {
       String requestUrl =
@@ -152,6 +152,8 @@ class _FeaturedState extends State<Featured> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return FutureBuilder<List<dynamic>>(
       future: _futureFeatured,
       builder: (context, snapshot) {
@@ -159,39 +161,43 @@ class _FeaturedState extends State<Featured> {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) return Container();
 
-          return Column(
+          return Row(
             children: <Widget>[
               Expanded(
-                child: SizedBox(
-                  height: 100.0,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 0.7 * size.height),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data.length,
+                    itemCount: snapshot.data.length + 1,
                     shrinkWrap: true,
                     controller: _controller,
                     itemBuilder: (context, index) {
-                      /// Get the item and assign a [heroId].
-                      Video item = snapshot.data[index];
-                      final heroId = item.id.toString() +
-                          Random().nextInt(10000).toString();
+                      /// [itemCount] includes an extra item for the loading element.
+                      if (index != snapshot.data.length) {
+                        /// Get the item and assign a [heroId].
+                        Video item = snapshot.data[index];
+                        final heroId = item.id.toString() +
+                            Random().nextInt(10000).toString();
 
-                      return InkWell(
-                        //onTap: ,
-                        child: VideoCard(video: item, heroId: heroId),
-                      );
+                        return InkWell(
+                          //onTap: ,
+                          child: VideoCard(video: item, heroId: heroId),
+                        );
+                      } else {
+                        return _continueLoadingPages
+                            ? Container(
+                                alignment: Alignment.center,
+                                height: 30,
+                                child: Loading(
+                                    indicator: BallBeatIndicator(),
+                                    size: 60.0,
+                                    color: Theme.of(context).accentColor))
+                            : Container();
+                      }
                     },
                   ),
                 ),
               ),
-              _continueLoadingPages
-                  ? Container(
-                      alignment: Alignment.center,
-                      height: 30,
-                      child: Loading(
-                          indicator: BallBeatIndicator(),
-                          size: 60.0,
-                          color: Theme.of(context).accentColor))
-                  : Container()
             ],
           );
         } else if (snapshot.hasError) {
