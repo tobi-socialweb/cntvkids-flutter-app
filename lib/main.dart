@@ -51,8 +51,8 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
             primaryColorLight: Colors.white,
             primaryColorDark: Colors.black,
-            primaryColor: Color(0xFF385C7B),
-            accentColor: Color(0xFFE74C3C),
+            primaryColor: Colors.red,
+            accentColor: Colors.purple,
             canvasColor: Color(0xFFE3E3E3),
             textTheme: TextTheme(
               headline1: TextStyle(
@@ -81,43 +81,6 @@ class MyApp extends StatelessWidget {
             ),
             backgroundColor: Colors.white,
             scaffoldBackgroundColor: Colors.white),
-        darkTheme: ThemeData(
-          primaryColorLight: Colors.black,
-          primaryColorDark: Colors.white,
-          primaryColor: Color(0xFF385C7B),
-          accentColor: Color(0xFFE74C3C),
-          brightness: Brightness.dark,
-          canvasColor: Color(0xFF333333),
-          textTheme: TextTheme(
-            headline1: TextStyle(
-              fontSize: 17,
-              color: Colors.white,
-              height: 1.2,
-              fontWeight: FontWeight.w500,
-              fontFamily: "Soleil",
-            ),
-            headline2: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                fontFamily: 'Poppins'),
-            caption: TextStyle(color: Colors.white70, fontSize: 10),
-            bodyText1: TextStyle(
-              fontSize: 16,
-              height: 1.5,
-              color: Colors.white70,
-            ),
-            bodyText2: TextStyle(
-              fontSize: 14,
-              height: 1.2,
-              color: Colors.white70,
-            ),
-          ),
-          backgroundColor: Color(0xFF121212),
-          scaffoldBackgroundColor: Colors.black,
-          cardColor: Color(0xFF121212),
-        ),
-        themeMode: appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
         home: HomePage(),
       );
     });
@@ -310,7 +273,7 @@ class _HomePageState extends State<HomePage> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextButton(onPressed: () {}, child: Text("LOGO")),
                 TextButton(onPressed: () {}, child: Text("Destacados")),
@@ -328,6 +291,9 @@ class _HomePageState extends State<HomePage> {
         Container(
           width: size.width,
           height: 0.20 * size.height,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.orange, width: 2.0),
+          ),
         )
       ],
     ));
