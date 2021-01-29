@@ -48,6 +48,12 @@ class _FeaturedState extends State<Featured> {
 
   ///
   void _checkForForceUpdate(int id) async {
+    /// TODO: Use this function to force list update (and fix it).
+    ///
+    /// When the screen is big enough to show the loading element,
+    /// it will never register that this needs to load the videos
+    /// of the next page. Try find how to call this when that happens
+    /// (on phones it may happen with a [featuredPerPage] with value 2).
     if (!this.mounted) return;
 
     try {
@@ -181,7 +187,7 @@ class _FeaturedState extends State<Featured> {
 
                         return InkWell(
                           //onTap: ,
-                          child: VideoCard(video: item, heroId: heroId),
+                          child: VideoContainer(video: item, heroId: heroId),
                         );
                       } else {
                         return _continueLoadingPages
