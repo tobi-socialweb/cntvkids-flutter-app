@@ -23,6 +23,8 @@ import 'common/helpers.dart';
 import 'models/article.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
@@ -111,7 +113,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _checkDarkTheme();
     _startOneSignal();
     if (ENABLE_DYNAMIC_LINK) _startDynamicLinkService();
     if (ENABLE_ADS) _startAdMob();
@@ -157,19 +158,6 @@ class _HomePageState extends State<HomePage> {
         }
       }
     }
-  }
-
-  _checkDarkTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'darktheme';
-    final platformTheme = MediaQuery.of(context).platformBrightness;
-    final platformThemeCode = platformTheme == Brightness.dark ? 1 : 0;
-    final value = prefs.getInt(key) ?? platformThemeCode;
-    await changeToDarkTheme(context, value == 1);
-    await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   _startOneSignal() async {
@@ -275,12 +263,36 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextButton(onPressed: () {}, child: Text("LOGO")),
-                TextButton(onPressed: () {}, child: Text("Destacados")),
-                TextButton(onPressed: () {}, child: Text("Series")),
-                TextButton(onPressed: () {}, child: Text("Listas")),
-                TextButton(onPressed: () {}, child: Text("Juegos")),
-                TextButton(onPressed: () {}, child: Text("Buscar")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(0);
+                    },
+                    child: Text("LOGO")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(0);
+                    },
+                    child: Text("Destacados")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(1);
+                    },
+                    child: Text("Series")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(2);
+                    },
+                    child: Text("Listas")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(3);
+                    },
+                    child: Text("Juegos")),
+                TextButton(
+                    onPressed: () {
+                      _onNavButtonTapped(4);
+                    },
+                    child: Text("Buscar")),
               ],
             )),
         Expanded(
@@ -297,6 +309,12 @@ class _HomePageState extends State<HomePage> {
         )
       ],
     ));
+  }
+
+  void _onNavButtonTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   /*@override
