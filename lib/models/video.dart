@@ -28,7 +28,7 @@ class Video {
 
     List<int> categories = [];
 
-    /// TODO: check if values can be null or empty.
+    /// TODO: Check if values can be null or empty.
     id = json["id"];
     title = (json["title"] != null) ? json["title"]["rendered"] : "";
     thumbnailUrl = json["fimg_url"];
