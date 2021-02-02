@@ -139,8 +139,8 @@ class _FeaturedState extends State<Featured> {
 
           /// Otherwise.
         } else {
-          print(e.message);
-          print(e.request);
+          print("[ERROR] " + e.message);
+          print("[     ] " + e.request.toString());
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         if (e.message.contains('SocketException')) {
@@ -171,7 +171,7 @@ class _FeaturedState extends State<Featured> {
             children: <Widget>[
               Expanded(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 0.7 * size.height),
+                  constraints: BoxConstraints(maxHeight: 0.6 * size.height),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data.length + 1,
@@ -185,10 +185,7 @@ class _FeaturedState extends State<Featured> {
                         final heroId = item.id.toString() +
                             Random().nextInt(10000).toString();
 
-                        return InkWell(
-                          //onTap: ,
-                          child: VideoContainer(video: item, heroId: heroId),
-                        );
+                        return VideoContainer(video: item, heroId: heroId);
                       } else {
                         return _continueLoadingPages
                             ? Container(
