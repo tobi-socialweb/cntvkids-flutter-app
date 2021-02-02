@@ -16,8 +16,6 @@ class VideoContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
     final double iconHeight = 25.0;
     final double strokeWidth = 4.0;
 
@@ -52,44 +50,48 @@ class VideoContainer extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25.0),
-                        child: InkWell(
-                          onTap: () {
-                            player.videoPlayerController.play();
-                          },
-                          child: LimitedBox(
-                            maxHeight: snapshot.data.height * 1.0,
-                            child: Stack(
-                              children: [
-                                player,
-                                CachedNetworkImage(
-                                  imageUrl: video.thumbnailUrl,
-                                  filterQuality: FilterQuality.high,
+                        child: LimitedBox(
+                          maxHeight: snapshot.data.height * 1.0,
+                          child: Stack(
+                            children: [
+                              player,
+                              CachedNetworkImage(
+                                imageUrl: video.thumbnailUrl,
+                                filterQuality: FilterQuality.high,
+                              ),
+                              Positioned(
+                                  right: 0.1 * snapshot.data.width,
+                                  top: 0.9 * snapshot.data.height -
+                                      iconHeight * 2 -
+                                      strokeWidth,
+                                  child: Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: [
+                                      CustomPaint(
+                                        painter: PlayIconCustomPainter(
+                                            context: context,
+                                            sideSize: iconHeight,
+                                            x: -iconHeight * 1.85,
+                                            y: 0.0,
+                                            strokeWidth: strokeWidth),
+                                      ),
+                                      new Icon(
+                                        Icons.play_arrow_rounded,
+                                        size: iconHeight * 1.75,
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                    ],
+                                  )),
+                              Positioned.fill(
+                                  child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    print("played");
+                                  },
                                 ),
-                                Positioned(
-                                    right: 0.1 * snapshot.data.width,
-                                    top: 0.9 * snapshot.data.height -
-                                        iconHeight * 2 -
-                                        strokeWidth,
-                                    child: Stack(
-                                      alignment: Alignment.centerRight,
-                                      children: [
-                                        CustomPaint(
-                                          painter: PlayIconCustomPainter(
-                                              context: context,
-                                              sideSize: iconHeight,
-                                              x: -iconHeight * 1.85,
-                                              y: 0.0,
-                                              strokeWidth: strokeWidth),
-                                        ),
-                                        new Icon(
-                                          Icons.play_arrow_rounded,
-                                          size: iconHeight * 1.75,
-                                          color: Theme.of(context).accentColor,
-                                        ),
-                                      ],
-                                    )),
-                              ],
-                            ),
+                              ))
+                            ],
                           ),
                         ),
                       ),
