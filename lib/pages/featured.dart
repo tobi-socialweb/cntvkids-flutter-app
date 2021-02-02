@@ -178,6 +178,7 @@ class _FeaturedState extends State<Featured> {
                     shrinkWrap: true,
                     controller: _controller,
                     itemBuilder: (context, index) {
+                      /// TODO: Fix bad scrolling when moving backwards.
                       /// [itemCount] includes an extra item for the loading element.
                       if (index != snapshot.data.length) {
                         /// Get the item and assign a [heroId].
