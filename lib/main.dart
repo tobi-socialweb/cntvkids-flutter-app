@@ -98,7 +98,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   /// Firebase Cloud Messeging setup.
   int _selectedIndex = 0;
-  bool _isLoading = true;
   Article _notificationArticle;
   Article _deepLinkArticle;
 
@@ -348,10 +347,4 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }*/
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 }
