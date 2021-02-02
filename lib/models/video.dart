@@ -3,10 +3,18 @@ class Video {
   final String title;
   final String thumbnailUrl;
   final String videoUrl;
+  final String series;
+  final String extra;
   final List<int> categories;
 
   Video(
-      {this.id, this.title, this.thumbnailUrl, this.videoUrl, this.categories});
+      {this.id,
+      this.title,
+      this.thumbnailUrl,
+      this.videoUrl,
+      this.series,
+      this.extra,
+      this.categories});
 
   /// Get [Video] from JSON object.
   factory Video.fromJson(Map<String, dynamic> json) {
@@ -15,24 +23,35 @@ class Video {
     String title = "";
     String thumbnailUrl = "";
     String videoUrl = "";
+    String series = "";
+    String extra = "";
+
     List<int> categories = [];
 
     /// TODO: check if values can be null or empty.
     id = json["id"];
-    title = json["title"]["rendered"];
+    title = (json["title"] != null) ? json["title"]["rendered"] : "";
     thumbnailUrl = json["fimg_url"];
     videoUrl = json["wpcf-vimeo-player-dl"];
+    series = json["serie_info"]["title"];
+
+    String season = json["wpcf-season"].toString();
+    String chapter = json["wpcf-chapter"].toString();
+    extra = "T${season}E$chapter";
 
     for (int i = 0; i < json["categories"].length; i++) {
       categories.add(json["categories"][i]);
     }
 
     return Video(
-        id: id,
-        title: title,
-        thumbnailUrl: thumbnailUrl,
-        videoUrl: videoUrl,
-        categories: categories);
+      id: id,
+      title: title,
+      thumbnailUrl: thumbnailUrl,
+      videoUrl: videoUrl,
+      series: series,
+      extra: extra,
+      categories: categories,
+    );
   }
 
   factory Video.fromDatabaseJson(Map<String, dynamic> data) => Video(
@@ -40,6 +59,8 @@ class Video {
       title: data["title"],
       thumbnailUrl: data["thumbnailUrl"],
       videoUrl: data["videoUrl"],
+      series: data["series"],
+      extra: data["extra"],
       categories: data["categories"]);
 
   Map<String, dynamic> toDatabaseJson() => {
@@ -47,6 +68,8 @@ class Video {
         "title": this.title,
         "thumbnailUrl": this.thumbnailUrl,
         "videoUrl": this.videoUrl,
+        "series": this.series,
+        "extra": this.extra,
         "categories": this.categories
       };
 }
