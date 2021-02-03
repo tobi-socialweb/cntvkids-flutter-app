@@ -5,30 +5,101 @@ import 'package:cntvkids_app/models/video.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 
-class VideoContainer extends StatelessWidget {
+class VideoContainer extends StatefulWidget {
   final Video video;
-  final String heroId;
 
-  VideoContainer({this.video, this.heroId});
+  VideoContainer({this.video});
+
+  @override
+  _VideoContainerState createState() => _VideoContainerState();
+}
+
+class _VideoContainerState extends State<VideoContainer> {
+  BetterPlayerController _betterPlayerController;
+  Image thumbnail;
+  Completer completer = new Completer();
+  BetterPlayerDataSource betterPlayerDataSource;
+
+  bool _isFullScreen = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _isFullScreen = false;
+
+    thumbnail = Image.network(widget.video.thumbnailUrl);
+    thumbnail.image.resolve(new ImageConfiguration()).addListener(
+        ImageStreamListener(
+            (ImageInfo info, bool _) => {completer.complete(info.image)}));
+
+    betterPlayerDataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network, widget.video.videoUrl);
+
+    /// TODO: Fix BetterPlayer's bad [controlsHideTime] process.
+    ///
+    /// Giving it a longer time, makes the transition slow, and not the time
+    /// that the controls are visible. Hack into the package or customize?
+    _betterPlayerController = BetterPlayerController(
+        BetterPlayerConfiguration(
+          autoPlay: false,
+          aspectRatio: 16 / 9,
+          fullScreenByDefault: true,
+          allowedScreenSleep: false,
+          deviceOrientationsOnFullScreen: [
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight
+          ],
+          deviceOrientationsAfterFullScreen: [
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight
+          ],
+          systemOverlaysAfterFullScreen: [SystemUiOverlay.bottom],
+          autoDetectFullscreenDeviceOrientation: true,
+          autoDispose: true,
+          controlsConfiguration: BetterPlayerControlsConfiguration(
+            enableSkips: false,
+            controlsHideTime: const Duration(milliseconds: 1000),
+            enableSubtitles: false,
+            enablePlaybackSpeed: false,
+            enableQualities: false,
+            enableOverflowMenu: false,
+          ),
+        ),
+        betterPlayerDataSource: betterPlayerDataSource);
+
+    _betterPlayerController.addEventsListener((event) {
+      /// TODO: Figure how to call event [hideFullscreen] when using the 'back'
+      /// button (system UI).
+      ///
+      /// One can use the WillPopScope, but it needs to be parent of the
+      /// fullscreen widget. It doesn't work when used before it it fullscreen.
+
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.openFullscreen:
+          print("DEBUG: Opened full screen");
+          _isFullScreen = true;
+          break;
+        case BetterPlayerEventType.hideFullscreen:
+          print("DEBUG: Closed full screen");
+          _isFullScreen = false;
+          _betterPlayerController.pause();
+          _betterPlayerController.seekTo(Duration(milliseconds: 0));
+          break;
+        default:
+      }
+
+      print(
+          "DEBUG: [video: ${widget.video.title}] BetterPlayerEvent: ${event.betterPlayerEventType}");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final double iconHeight = 25.0;
     final double strokeWidth = 4.0;
-
-    Image thumbnail = Image.network(video.thumbnailUrl);
-    Completer completer = new Completer();
-
-    thumbnail.image.resolve(new ImageConfiguration()).addListener(
-        ImageStreamListener(
-            (ImageInfo info, bool _) => {completer.complete(info.image)}));
-
-    ChewieVideoPlayer player = ChewieVideoPlayer(
-      videoPlayerController: VideoPlayerController.network(video.videoUrl),
-    );
 
     return Card(
         shadowColor: Colors.transparent,
@@ -51,12 +122,22 @@ class VideoContainer extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25.0),
                         child: LimitedBox(
-                          maxHeight: snapshot.data.height * 1.0,
+                          maxHeight: snapshot.data.height.toDouble(),
                           child: Stack(
                             children: [
-                              player,
+                              WillPopScope(
+                                  child: AspectRatio(
+                                    aspectRatio: 16 / 9,
+                                    child: BetterPlayer(
+                                      controller: _betterPlayerController,
+                                    ),
+                                  ),
+                                  onWillPop: () {
+                                    print("Popped screen");
+                                    return Future<bool>.value(true);
+                                  }),
                               CachedNetworkImage(
-                                imageUrl: video.thumbnailUrl,
+                                imageUrl: widget.video.thumbnailUrl,
                                 filterQuality: FilterQuality.high,
                               ),
                               Positioned(
@@ -87,15 +168,19 @@ class VideoContainer extends StatelessWidget {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
-                                    print("played");
+                                    _betterPlayerController.play();
+
+                                    if (!_isFullScreen) {
+                                      _betterPlayerController.enterFullScreen();
+                                    }
                                   },
                                 ),
-                              ))
+                              )),
                             ],
                           ),
                         ),
                       ),
-                      Text(video.title),
+                      Text(widget.video.title),
                     ],
                   ),
                 );
@@ -103,84 +188,6 @@ class VideoContainer extends StatelessWidget {
                 return new Container();
               }
             }));
-  }
-}
-
-class ChewieVideoPlayer extends StatefulWidget {
-  final VideoPlayerController videoPlayerController;
-  final bool looping;
-  final Image image;
-
-  ChewieVideoPlayer({
-    @required this.videoPlayerController,
-    this.looping,
-    this.image,
-    Key key,
-  }) : super(key: key);
-
-  @override
-  _ChewieVideoPlayerState createState() => _ChewieVideoPlayerState();
-}
-
-class _ChewieVideoPlayerState extends State<ChewieVideoPlayer> {
-  ChewieController _chewieController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _chewieController = ChewieController(
-      videoPlayerController: widget.videoPlayerController,
-      aspectRatio: 16 / 9,
-      autoInitialize: true,
-      looping: widget.looping,
-      deviceOrientationsOnEnterFullScreen: [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
-      ],
-      deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
-      ],
-      fullScreenByDefault: true,
-      showControlsOnInitialize: false,
-      overlay: widget.image,
-      systemOverlaysAfterFullScreen: [SystemUiOverlay.bottom],
-      systemOverlaysOnEnterFullScreen: [SystemUiOverlay.bottom],
-      errorBuilder: (context, errorMessage) {
-        return Container(
-          padding: EdgeInsets.all(10.0),
-          child: Center(
-            child: Text(errorMessage),
-          ),
-        );
-      },
-    );
-
-    _chewieController.addListener(() {
-      if (_chewieController.isPlaying) {
-        _chewieController.enterFullScreen();
-      }
-
-      if (!_chewieController.isFullScreen) {
-        _chewieController.pause();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Chewie(
-      controller: _chewieController,
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    widget.videoPlayerController.dispose();
-    _chewieController.dispose();
   }
 }
 

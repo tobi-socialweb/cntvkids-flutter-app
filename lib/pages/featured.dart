@@ -186,7 +186,7 @@ class _FeaturedState extends State<Featured> {
                         final heroId = item.id.toString() +
                             Random().nextInt(10000).toString();
 
-                        return VideoContainer(video: item, heroId: heroId);
+                        return VideoContainer(video: item);
                       } else {
                         return _continueLoadingPages
                             ? Container(
