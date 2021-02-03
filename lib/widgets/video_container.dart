@@ -35,6 +35,10 @@ class _VideoContainerState extends State<VideoContainer> {
         ImageStreamListener(
             (ImageInfo info, bool _) => {completer.complete(info.image)}));
 
+    _getBetterPlayerController();
+  }
+
+  void _getBetterPlayerController() {
     betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.video.videoUrl);
 
@@ -66,34 +70,43 @@ class _VideoContainerState extends State<VideoContainer> {
             enablePlaybackSpeed: false,
             enableQualities: false,
             enableOverflowMenu: false,
+            enableFullscreen: false,
           ),
         ),
         betterPlayerDataSource: betterPlayerDataSource);
 
-    _betterPlayerController.addEventsListener((event) {
-      /// TODO: Figure how to call event [hideFullscreen] when using the 'back'
-      /// button (system UI).
-      ///
-      /// One can use the WillPopScope, but it needs to be parent of the
-      /// fullscreen widget. It doesn't work when used before it's fullscreen.
+    _betterPlayerController.addEventsListener(_betterPlayerEventListener);
+  }
 
-      switch (event.betterPlayerEventType) {
-        case BetterPlayerEventType.openFullscreen:
-          print("DEBUG: Opened full screen");
+  void _betterPlayerEventListener(BetterPlayerEvent event) async {
+    switch (event.betterPlayerEventType) {
+      case BetterPlayerEventType.openFullscreen:
+        if (_isFullScreen) {
+          print("DEBUG: Opened full screen AGAIN");
+
+          /// TODO: Fix when user taps fast too many times on the video.
+          return;
+        }
+
+        print("DEBUG: Opened full screen");
+        return;
+        setState(() {
           _isFullScreen = true;
-          break;
-        case BetterPlayerEventType.hideFullscreen:
-          print("DEBUG: Closed full screen");
+          SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+        });
+        break;
+      case BetterPlayerEventType.hideFullscreen:
+        print("DEBUG: Closed full screen");
+        setState(() {
           _isFullScreen = false;
+          _betterPlayerController.seekTo(Duration(seconds: 0));
           _betterPlayerController.pause();
-          _betterPlayerController.seekTo(Duration(milliseconds: 0));
-          break;
-        default:
-      }
+          _getBetterPlayerController();
+        });
 
-      print(
-          "DEBUG: [video: ${widget.video.title}] BetterPlayerEvent: ${event.betterPlayerEventType}");
-    });
+        break;
+      default:
+    }
   }
 
   @override
@@ -125,17 +138,6 @@ class _VideoContainerState extends State<VideoContainer> {
                           maxHeight: snapshot.data.height.toDouble(),
                           child: Stack(
                             children: [
-                              WillPopScope(
-                                  child: AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: BetterPlayer(
-                                      controller: _betterPlayerController,
-                                    ),
-                                  ),
-                                  onWillPop: () {
-                                    print("DEBUG: Popped screen");
-                                    return Future<bool>.value(true);
-                                  }),
                               CachedNetworkImage(
                                 imageUrl: widget.video.thumbnailUrl,
                                 filterQuality: FilterQuality.high,
@@ -168,6 +170,27 @@ class _VideoContainerState extends State<VideoContainer> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      _isFullScreen = true;
+                                      return WillPopScope(
+                                          child: AspectRatio(
+                                            aspectRatio: 16 / 9,
+                                            child: BetterPlayer(
+                                              controller:
+                                                  _betterPlayerController,
+                                            ),
+                                          ),
+                                          onWillPop: () {
+                                            print("DEBUG: Popped screen");
+                                            _betterPlayerEventListener(
+                                                new BetterPlayerEvent(
+                                                    BetterPlayerEventType
+                                                        .hideFullscreen));
+                                            return Future<bool>.value(true);
+                                          });
+                                    }));
+
                                     _betterPlayerController.play();
 
                                     if (!_isFullScreen) {
