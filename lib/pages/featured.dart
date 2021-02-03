@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
@@ -31,6 +30,7 @@ class _FeaturedState extends State<Featured> {
 
   int currentPage = 1;
   bool _continueLoadingPages;
+  int featuredPerPage = 2;
 
   @override
   void initState() {
@@ -46,19 +46,11 @@ class _FeaturedState extends State<Featured> {
     _continueLoadingPages = true;
   }
 
-  ///
   void _checkForForceUpdate(int id) async {
-    /// TODO: Use this function to force list update (and fix it).
-    ///
-    /// When the screen is big enough to show the loading element,
-    /// it will never register that this needs to load the videos
-    /// of the next page. Try find how to call this when that happens
-    /// (on phones it may happen with a [featuredPerPage] with value 2).
     if (!this.mounted) return;
-
     try {
       String requestUrl =
-          "$WORDPRESS_URL/$VIDEOS_URL?page=1&per_page=1&_fields=id";
+          "$VIDEOS_URL&categories[]=$FEATURED_ID&page=1&per_page=1";
       var response = await http.get(
         requestUrl,
       );
@@ -97,8 +89,6 @@ class _FeaturedState extends State<Featured> {
   /// Featured videos have category 10536 in their [categories].
   Future<List<dynamic>> fetchFeatured(int page) async {
     if (!this.mounted) return featured;
-
-    final int featuredPerPage = 5;
 
     try {
       String requestUrl =
@@ -179,25 +169,28 @@ class _FeaturedState extends State<Featured> {
                     controller: _controller,
                     itemBuilder: (context, index) {
                       /// TODO: Fix bad scrolling when moving backwards.
-                      /// [itemCount] includes an extra item for the loading element.
-                      if (index != snapshot.data.length) {
-                        /// Get the item and assign a [heroId].
-                        Video item = snapshot.data[index];
-                        final heroId = item.id.toString() +
-                            Random().nextInt(10000).toString();
+                      /// [itemCount] includes an extra item for the loading
+                      /// element.
 
-                        return VideoContainer(video: item);
-                      } else {
-                        return _continueLoadingPages
-                            ? Container(
-                                alignment: Alignment.center,
-                                height: 30,
-                                child: Loading(
-                                    indicator: BallBeatIndicator(),
-                                    size: 60.0,
-                                    color: Theme.of(context).accentColor))
-                            : Container();
+                      if (index != snapshot.data.length) {
+                        return VideoContainer(video: snapshot.data[index]);
+                      } else if (_continueLoadingPages) {
+                        /// If scroll controller cant get dimensions, it means
+                        /// that the loading element is visible and should load
+                        /// more pages.
+                        if (!_controller.position.haveDimensions) {
+                          _futureFeatured = fetchFeatured(++currentPage);
+                        }
+                        return Container(
+                            alignment: Alignment.center,
+                            height: 30,
+                            child: Loading(
+                                indicator: BallBeatIndicator(),
+                                size: 60.0,
+                                color: Theme.of(context).accentColor));
                       }
+
+                      return Container();
                     },
                   ),
                 ),
