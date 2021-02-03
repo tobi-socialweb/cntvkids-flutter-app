@@ -1,11 +1,11 @@
 # CNTVKids Flutter App
 
 ## TODOs
-- [ ] Check if values can be null or empty. `lib/models/video.dart > Video.fromJason()`
-- [ ] Use this function to force list update (and fix it). `lib/pages/featured.dart > _FeaturedState._checkForForceUpdate()`
-- [ ] Fix bad scrolling when moving backwards. `lib/pages/featured.dart > _FeaturedState.build()`
-- [ ] Fix BetterPlayer's bad [controlsHideTime] process. `lib/widgets/video_container > _VideoContainerState.initState()`
-- [ ] Figure how to call event [hideFullscreen] when using the 'back' button (system UI). `lib/widgets/video_container > _VideoContainerState.initState()`
+- [ ] Check if values can be null or empty. [`lib/models/video.dart > Video.fromJason()`](lib/models/video.dart#L31)
+- [ ] Use this function to force list update (and fix it). [`lib/pages/featured.dart > _FeaturedState._checkForForceUpdate()`](lib/pages/featured.dart#L51)
+- [ ] Fix bad scrolling when moving backwards. [`lib/pages/featured.dart > _FeaturedState.build()`](lib/pages/featured.dart#L181)
+- [ ] Fix BetterPlayer's bad [controlsHideTime] process. [`lib/widgets/video_container > _VideoContainerState.initState()`](lib/widgets/video_container.dart#L41)
+- [ ] Figure how to call event [hideFullscreen] when using the 'back' button (system UI). [`lib/widgets/video_container > _VideoContainerState.initState()`](lib/widgets/video_container.dart#L74)
 
 ## Files
 (red files came with the "flutter for wordpress" example project, green ones are new ones)
