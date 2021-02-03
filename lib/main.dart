@@ -247,6 +247,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
+    /// TODO: Use navigator and app bar for routing.
     return Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
