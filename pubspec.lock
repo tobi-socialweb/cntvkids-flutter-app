@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.3"
+  better_player:
+    dependency: "direct main"
+    description:
+      name: better_player
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.49"
   boolean_selector:
     dependency: transitive
     description:
@@ -93,7 +100,7 @@ packages:
     source: hosted
     version: "1.0.4"
   chewie:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: chewie
       url: "https://pub.dartlang.org"
@@ -251,6 +258,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  flutter_hls_parser:
+    dependency: transitive
+    description:
+      name: flutter_hls_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_html:
     dependency: "direct main"
     description:
@@ -764,7 +778,7 @@ packages:
     source: hosted
     version: "2.1.0-nullsafety.5"
   video_player:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: video_player
       url: "https://pub.dartlang.org"
@@ -784,6 +798,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4+1"
+  visibility_detector:
+    dependency: transitive
+    description:
+      name: visibility_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   wakelock:
     dependency: transitive
     description:
