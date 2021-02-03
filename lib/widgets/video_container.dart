@@ -75,7 +75,7 @@ class _VideoContainerState extends State<VideoContainer> {
       /// button (system UI).
       ///
       /// One can use the WillPopScope, but it needs to be parent of the
-      /// fullscreen widget. It doesn't work when used before it it fullscreen.
+      /// fullscreen widget. It doesn't work when used before it's fullscreen.
 
       switch (event.betterPlayerEventType) {
         case BetterPlayerEventType.openFullscreen:
@@ -133,7 +133,7 @@ class _VideoContainerState extends State<VideoContainer> {
                                     ),
                                   ),
                                   onWillPop: () {
-                                    print("Popped screen");
+                                    print("DEBUG: Popped screen");
                                     return Future<bool>.value(true);
                                   }),
                               CachedNetworkImage(
