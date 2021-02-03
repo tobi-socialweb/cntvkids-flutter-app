@@ -17,7 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
 
-//debug
+///debug
 import 'dart:developer' as dev;
 
 class Articles extends StatefulWidget {

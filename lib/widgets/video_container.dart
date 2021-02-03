@@ -36,10 +36,10 @@ class _VideoContainerState extends State<VideoContainer> {
     betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.video.videoUrl);
 
-    // TODO: Fix BetterPlayer's bad [controlsHideTime] process.
-    //
-    // Giving it a longer time, makes the transition slow, and not the time
-    // that the controls are visible. Hack into the package or customize?
+    /// TODO: Fix BetterPlayer's bad [controlsHideTime] process.
+    ///
+    /// Giving it a longer time, makes the transition slow, and not the time
+    /// that the controls are visible. Hack into the package or customize?
     _betterPlayerController = BetterPlayerController(
         BetterPlayerConfiguration(
           autoPlay: true,
