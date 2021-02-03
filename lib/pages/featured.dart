@@ -98,7 +98,7 @@ class _FeaturedState extends State<Featured> {
   Future<List<dynamic>> fetchFeatured(int page) async {
     if (!this.mounted) return featured;
 
-    final int featuredPerPage = 3;
+    final int featuredPerPage = 5;
 
     try {
       String requestUrl =
