@@ -25,6 +25,7 @@ import 'models/article.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  /// Set mobile orientations as landscape only.
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
@@ -42,6 +43,7 @@ void main() async {
   );
 }
 
+/// Main app widget class.
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -96,11 +98,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  /// Firebase Cloud Messeging setup.
+  /// Currently selected index for navigation bar.
   int _selectedIndex = 0;
+
+  /// Firebase Cloud Messeging setup.
   Article _notificationArticle;
   Article _deepLinkArticle;
 
+  /// All options from the navigation bar.
   final List<Widget> _widgetOptions = [
     Featured(),
     Articles(),
@@ -245,6 +250,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
 
     /// TODO: Use navigator and app bar for routing.
@@ -305,41 +311,10 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
+  /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
-
-  /*@override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Scaffold(
-          body: Center(
-            child: _widgetOptions.elementAt(_selectedIndex),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-              backgroundColor: Theme.of(context).backgroundColor,
-              selectedLabelStyle:
-                  TextStyle(fontWeight: FontWeight.w500, fontFamily: "Soleil"),
-              unselectedLabelStyle: TextStyle(fontFamily: "Soleil"),
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.flare), label: PAGE2_CATEGORY_NAME),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.search), label: 'Search'),
-                BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'More'),
-              ],
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
-              type: BottomNavigationBarType.fixed),
-        ),
-        _isLoading
-            ? Scaffold(backgroundColor: Theme.of(context).primaryColor)
-            : Center()
-      ],
-    );
-  }*/
 }

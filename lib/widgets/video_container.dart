@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:better_player/better_player.dart';
 
+/// Video card widget.
 class VideoContainer extends StatefulWidget {
   final Video video;
 
@@ -17,15 +18,19 @@ class VideoContainer extends StatefulWidget {
 }
 
 class _VideoContainerState extends State<VideoContainer> {
-  BetterPlayerController _betterPlayerController;
+  /// Video thumbnail and completer for the future builder.
   Image thumbnail;
   Completer completer = new Completer();
+
+  /// Video player controller and data source.
+  BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource betterPlayerDataSource;
 
   @override
   void initState() {
     super.initState();
 
+    /// Get thumbnail and add listener for completion.
     thumbnail = Image.network(widget.video.thumbnailUrl);
     thumbnail.image.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener(
@@ -33,6 +38,7 @@ class _VideoContainerState extends State<VideoContainer> {
   }
 
   void _getBetterPlayerController() {
+    /// Set video source.
     betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.video.videoUrl);
 
@@ -142,6 +148,7 @@ class _VideoContainerState extends State<VideoContainer> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
+                                    /// When tapped, open video.
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       _getBetterPlayerController();
@@ -155,7 +162,8 @@ class _VideoContainerState extends State<VideoContainer> {
                                             ),
                                           ),
                                           onWillPop: () {
-                                            print("DEBUG: Popped screen");
+                                            /// When using the 'back' button
+                                            /// close the video.
                                             _onBetterPlayerEvent(isOpen: false);
                                             return Future<bool>.value(true);
                                           });
@@ -178,6 +186,7 @@ class _VideoContainerState extends State<VideoContainer> {
   }
 }
 
+/// Temporal play icon being painted.
 class PlayIconCustomPainter extends CustomPainter {
   final BuildContext context;
   final double sideSize;

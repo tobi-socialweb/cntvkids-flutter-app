@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
 
+/// Shows video widgets that have 'featured' category.
 class Featured extends StatefulWidget {
   @override
   _FeaturedState createState() => _FeaturedState();
@@ -29,7 +30,7 @@ class _FeaturedState extends State<Featured> {
   ScrollController _controller;
 
   int currentPage = 1;
-  bool _continueLoadingPages;
+  bool _continueLoadingPages = true;
   int featuredPerPage = 2;
 
   @override
@@ -46,6 +47,7 @@ class _FeaturedState extends State<Featured> {
     _continueLoadingPages = true;
   }
 
+  /// Forces update if the first video does not correspond to the correct one.
   void _checkForForceUpdate(int id) async {
     if (!this.mounted) return;
     try {
@@ -72,6 +74,10 @@ class _FeaturedState extends State<Featured> {
     }
   }
 
+  /// Listener for scroll changes.
+  ///
+  /// Loads the next page (per page) for featured videos if the scroll is
+  /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
 
@@ -90,6 +96,7 @@ class _FeaturedState extends State<Featured> {
   Future<List<dynamic>> fetchFeatured(int page) async {
     if (!this.mounted) return featured;
 
+    /// Try get the requested data and wait.
     try {
       String requestUrl =
           "$VIDEOS_URL&categories[]=$FEATURED_ID&page=$page&per_page=$featuredPerPage";
@@ -102,7 +109,7 @@ class _FeaturedState extends State<Featured> {
 
       /// If request has succeeded.
       if (response.statusCode == 200) {
-        /// Add new videos to [featured].
+        /// Add new videos to [featured] by updating this widget's state.
         setState(() {
           featured.addAll(
               response.data.map((value) => Video.fromJson(value)).toList());
@@ -148,6 +155,7 @@ class _FeaturedState extends State<Featured> {
 
   @override
   Widget build(BuildContext context) {
+    /// Get size of the current context widget.
     Size size = MediaQuery.of(context).size;
 
     return FutureBuilder<List<dynamic>>(
@@ -168,9 +176,10 @@ class _FeaturedState extends State<Featured> {
                     shrinkWrap: true,
                     controller: _controller,
                     itemBuilder: (context, index) {
-                      /// TODO: Fix bad scrolling when moving backwards.
                       /// [itemCount] includes an extra item for the loading
                       /// element.
+
+                      /// TODO: Fix bad scrolling when moving backwards.
 
                       if (index != snapshot.data.length) {
                         return VideoContainer(video: snapshot.data[index]);
@@ -181,6 +190,8 @@ class _FeaturedState extends State<Featured> {
                         if (!_controller.position.haveDimensions) {
                           _futureFeatured = fetchFeatured(++currentPage);
                         }
+
+                        /// Show the loading widget at the end.
                         return Container(
                             alignment: Alignment.center,
                             height: 30,
@@ -190,6 +201,7 @@ class _FeaturedState extends State<Featured> {
                                 color: Theme.of(context).accentColor));
                       }
 
+                      /// Otherwise show nothing at the end.
                       return Container();
                     },
                   ),
