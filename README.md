@@ -7,6 +7,7 @@
 - [ ] Fix BetterPlayer's bad [controlsHideTime] process. [`lib/widgets/video_container.dart > _VideoContainerState.initState()`](lib/widgets/video_container.dart#L45)
 - [ ] Use navigator and app bar for routing. [`lib/main.dart > _HomePageState.build()`](lib/main.dart#L250)
 
+*Done*
 - [x] ~~Figure how to call event [hideFullscreen] when using the 'back' button (system UI). [`lib/widgets/video_container.dart > _VideoContainerState.initState()`](#)~~
 - [x] ~~Fix when user taps fast too many times on the video. [`lib/widgets/video_container.dart > _VideoContainerState._betterPlayerEventListener()`](#)~~
 
