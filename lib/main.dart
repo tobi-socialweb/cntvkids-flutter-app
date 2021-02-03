@@ -30,8 +30,8 @@ void main() async {
     DeviceOrientation.landscapeRight,
   ]);
 
-  /// Currently, this setting will get lost after UI changes (when writing on
-  /// a text box, for example). Needs the use of restoreSystemUIOverlays.
+  // Currently, this setting will get lost after UI changes (when writing on
+  // a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
   runApp(
@@ -96,7 +96,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  /// Firebase Cloud Messeging setup.
+  // Firebase Cloud Messeging setup.
   int _selectedIndex = 0;
   Article _notificationArticle;
   Article _deepLinkArticle;
@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    /// TODO: Use navigator and app bar for routing.
+    // TODO: Use navigator and app bar for routing.
     return Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,

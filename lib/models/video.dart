@@ -18,7 +18,7 @@ class Video {
 
   /// Get [Video] from JSON object.
   factory Video.fromJson(Map<String, dynamic> json) {
-    /// Default values
+    // Default values
     int id = -1;
     String title = "";
     String thumbnailUrl = "";
@@ -28,7 +28,7 @@ class Video {
 
     List<int> categories = [];
 
-    /// TODO: Check if values can be null or empty.
+    // TODO: Check if values can be null or empty.
     id = json["id"];
     title = (json["title"] != null) ? json["title"]["rendered"] : "";
     thumbnailUrl = json["fimg_url"];
