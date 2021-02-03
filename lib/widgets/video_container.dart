@@ -22,20 +22,14 @@ class _VideoContainerState extends State<VideoContainer> {
   Completer completer = new Completer();
   BetterPlayerDataSource betterPlayerDataSource;
 
-  bool _isFullScreen = false;
-
   @override
   void initState() {
     super.initState();
-
-    _isFullScreen = false;
 
     thumbnail = Image.network(widget.video.thumbnailUrl);
     thumbnail.image.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener(
             (ImageInfo info, bool _) => {completer.complete(info.image)}));
-
-    _getBetterPlayerController();
   }
 
   void _getBetterPlayerController() {
@@ -48,9 +42,9 @@ class _VideoContainerState extends State<VideoContainer> {
     /// that the controls are visible. Hack into the package or customize?
     _betterPlayerController = BetterPlayerController(
         BetterPlayerConfiguration(
-          autoPlay: false,
+          autoPlay: true,
           aspectRatio: 16 / 9,
-          fullScreenByDefault: true,
+          fullScreenByDefault: false,
           allowedScreenSleep: false,
           deviceOrientationsOnFullScreen: [
             DeviceOrientation.landscapeLeft,
@@ -74,38 +68,18 @@ class _VideoContainerState extends State<VideoContainer> {
           ),
         ),
         betterPlayerDataSource: betterPlayerDataSource);
-
-    _betterPlayerController.addEventsListener(_betterPlayerEventListener);
   }
 
-  void _betterPlayerEventListener(BetterPlayerEvent event) async {
-    switch (event.betterPlayerEventType) {
-      case BetterPlayerEventType.openFullscreen:
-        if (_isFullScreen) {
-          print("DEBUG: Opened full screen AGAIN");
+  /// Mock-up function that will be called manually to emulate the plugin
+  /// notifying that the video player was opened or closed.
+  void _onBetterPlayerEvent({bool isOpen = true}) async {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
-          /// TODO: Fix when user taps fast too many times on the video.
-          return;
-        }
-
-        print("DEBUG: Opened full screen");
-        return;
-        setState(() {
-          _isFullScreen = true;
-          SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-        });
-        break;
-      case BetterPlayerEventType.hideFullscreen:
-        print("DEBUG: Closed full screen");
-        setState(() {
-          _isFullScreen = false;
-          _betterPlayerController.seekTo(Duration(seconds: 0));
-          _betterPlayerController.pause();
-          _getBetterPlayerController();
-        });
-
-        break;
-      default:
+    if (!isOpen) {
+      setState(() {
+        _betterPlayerController.seekTo(Duration(seconds: 0));
+        _betterPlayerController.pause();
+      });
     }
   }
 
@@ -117,8 +91,6 @@ class _VideoContainerState extends State<VideoContainer> {
     return Card(
         shadowColor: Colors.transparent,
         borderOnForeground: false,
-        shape: RoundedRectangleBorder(
-            side: BorderSide(color: Colors.cyan, width: 2.0)),
         margin: EdgeInsets.fromLTRB(35, 0, 35, 0),
         child: FutureBuilder(
             future: completer.future,
@@ -172,7 +144,8 @@ class _VideoContainerState extends State<VideoContainer> {
                                   onTap: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
-                                      _isFullScreen = true;
+                                      _getBetterPlayerController();
+                                      _onBetterPlayerEvent(isOpen: true);
                                       return WillPopScope(
                                           child: AspectRatio(
                                             aspectRatio: 16 / 9,
@@ -183,19 +156,10 @@ class _VideoContainerState extends State<VideoContainer> {
                                           ),
                                           onWillPop: () {
                                             print("DEBUG: Popped screen");
-                                            _betterPlayerEventListener(
-                                                new BetterPlayerEvent(
-                                                    BetterPlayerEventType
-                                                        .hideFullscreen));
+                                            _onBetterPlayerEvent(isOpen: false);
                                             return Future<bool>.value(true);
                                           });
                                     }));
-
-                                    _betterPlayerController.play();
-
-                                    if (!_isFullScreen) {
-                                      _betterPlayerController.enterFullScreen();
-                                    }
                                   },
                                 ),
                               )),
