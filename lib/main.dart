@@ -256,9 +256,6 @@ class _HomePageState extends State<HomePage> {
         Container(
             width: size.width,
             height: 0.20 * size.height,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.orange, width: 2.0),
-            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,9 +300,6 @@ class _HomePageState extends State<HomePage> {
         Container(
           width: size.width,
           height: 0.20 * size.height,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.orange, width: 2.0),
-          ),
         )
       ],
     ));
