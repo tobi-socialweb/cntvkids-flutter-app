@@ -7,7 +7,7 @@ const String WORDPRESS_URL = "https://cntvinfantil.cl";
 const String VIDEOS_URL = "$WORDPRESS_URL/wp-json/wp/v2/videos?_embed";
 const String GAMES_URL = "$WORDPRESS_URL/wp-json/wp/v2/juegos?_embed";
 const String SERIES_URL = "$WORDPRESS_URL/wp-json/wp/v2/series?_embed";
-const String LISTS_URL = "$WORDPRESS_URL/wp-json/wp/v2/listas?_embedtas";
+const String LISTS_URL = "$WORDPRESS_URL/wp-json/wp/v2/listas?_embed";
 
 /// Error messages to display.
 enum ErrorTypes { NO_CONNECTION, NO_LAUNCH, UNREACHABLE, UNKNOWN }
