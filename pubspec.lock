@@ -583,6 +583,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  r_dart_library:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "0.2.1"
+      resolved-ref: "392a91ab9eadf3b83dc230ef19a7ea1fdc964917"
+      url: "https://github.com/YK-Unit/r_dart_library.git"
+    source: git
+    version: "0.2.1"
   rxdart:
     dependency: transitive
     description:
