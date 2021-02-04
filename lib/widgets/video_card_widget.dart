@@ -1,30 +1,26 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cntvkids_app/models/video.dart';
+import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/widgets/video_display_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:better_player/better_player.dart';
 
-/// Video card widget.
-class VideoContainer extends StatefulWidget {
+/// Card widget used to display a clickable video.
+class VideoCard extends StatefulWidget {
   final Video video;
+  final String heroId;
 
-  VideoContainer({this.video});
+  VideoCard({this.video, this.heroId});
 
   @override
-  _VideoContainerState createState() => _VideoContainerState();
+  _VideoCardState createState() => _VideoCardState();
 }
 
-class _VideoContainerState extends State<VideoContainer> {
+class _VideoCardState extends State<VideoCard> {
   /// Video thumbnail and completer for the future builder.
   Image thumbnail;
   Completer completer = new Completer();
-
-  /// Video player controller and data source.
-  BetterPlayerController _betterPlayerController;
-  BetterPlayerDataSource betterPlayerDataSource;
 
   @override
   void initState() {
@@ -35,58 +31,6 @@ class _VideoContainerState extends State<VideoContainer> {
     thumbnail.image.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener(
             (ImageInfo info, bool _) => {completer.complete(info.image)}));
-  }
-
-  void _getBetterPlayerController() {
-    /// Set video source.
-    betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.video.videoUrl);
-
-    /// TODO: Fix BetterPlayer's bad [controlsHideTime] process.
-    ///
-    /// Giving it a longer time, makes the transition slow, and not the time
-    /// that the controls are visible. Hack into the package or customize?
-    _betterPlayerController = BetterPlayerController(
-        BetterPlayerConfiguration(
-          autoPlay: true,
-          aspectRatio: 16 / 9,
-          fullScreenByDefault: false,
-          allowedScreenSleep: false,
-          deviceOrientationsOnFullScreen: [
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight
-          ],
-          deviceOrientationsAfterFullScreen: [
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight
-          ],
-          systemOverlaysAfterFullScreen: [SystemUiOverlay.bottom],
-          autoDetectFullscreenDeviceOrientation: true,
-          autoDispose: true,
-          controlsConfiguration: BetterPlayerControlsConfiguration(
-            enableSkips: false,
-            controlsHideTime: const Duration(milliseconds: 1000),
-            enableSubtitles: false,
-            enablePlaybackSpeed: false,
-            enableQualities: false,
-            enableOverflowMenu: false,
-            enableFullscreen: false,
-          ),
-        ),
-        betterPlayerDataSource: betterPlayerDataSource);
-  }
-
-  /// Mock-up function that will be called manually to emulate the plugin
-  /// notifying that the video player was opened or closed.
-  void _onBetterPlayerEvent({bool isOpen = true}) async {
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-
-    if (!isOpen) {
-      setState(() {
-        _betterPlayerController.seekTo(Duration(seconds: 0));
-        _betterPlayerController.pause();
-      });
-    }
   }
 
   @override
@@ -116,10 +60,13 @@ class _VideoContainerState extends State<VideoContainer> {
                           maxHeight: snapshot.data.height.toDouble(),
                           child: Stack(
                             children: [
+                              /// Video card thumbnail.
                               CachedNetworkImage(
                                 imageUrl: widget.video.thumbnailUrl,
                                 filterQuality: FilterQuality.high,
                               ),
+
+                              /// Play icon on top of the thumbnail.
                               Positioned(
                                   right: 0.1 * snapshot.data.width,
                                   top: 0.9 * snapshot.data.height -
@@ -143,6 +90,8 @@ class _VideoContainerState extends State<VideoContainer> {
                                       ),
                                     ],
                                   )),
+
+                              /// Full screen video "on demand".
                               Positioned.fill(
                                   child: Material(
                                 color: Colors.transparent,
@@ -151,22 +100,9 @@ class _VideoContainerState extends State<VideoContainer> {
                                     /// When tapped, open video.
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
-                                      _getBetterPlayerController();
-                                      _onBetterPlayerEvent(isOpen: true);
-                                      return WillPopScope(
-                                          child: AspectRatio(
-                                            aspectRatio: 16 / 9,
-                                            child: BetterPlayer(
-                                              controller:
-                                                  _betterPlayerController,
-                                            ),
-                                          ),
-                                          onWillPop: () {
-                                            /// When using the 'back' button
-                                            /// close the video.
-                                            _onBetterPlayerEvent(isOpen: false);
-                                            return Future<bool>.value(true);
-                                          });
+                                      return VideoDisplay(
+                                          video: widget.video,
+                                          heroId: widget.heroId);
                                     }));
                                   },
                                 ),
