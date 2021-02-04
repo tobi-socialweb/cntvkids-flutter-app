@@ -6,12 +6,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/pages/articles.dart';
-import 'package:cntvkids_app/pages/local_articles.dart';
-import 'package:cntvkids_app/pages/search.dart';
-import 'package:cntvkids_app/pages/settings.dart';
-import 'package:cntvkids_app/pages/single_article.dart';
-import 'package:cntvkids_app/pages/featured.dart';
+import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'common/helpers.dart';
-import 'models/article.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,67 +95,20 @@ class _HomePageState extends State<HomePage> {
   /// Currently selected index for navigation bar.
   int _selectedIndex = 0;
 
-  /// Firebase Cloud Messeging setup.
-  Article _notificationArticle;
-  Article _deepLinkArticle;
-
   /// All options from the navigation bar.
   final List<Widget> _widgetOptions = [
     Featured(),
-    Articles(),
-    LocalArticles(),
-    Settings(),
-    Search(),
   ];
 
   @override
   void initState() {
     super.initState();
     _startOneSignal();
-    if (ENABLE_DYNAMIC_LINK) _startDynamicLinkService();
     if (ENABLE_ADS) _startAdMob();
   }
 
   _startAdMob() {
     Admob.initialize(ADMOB_ID);
-  }
-
-  _startDynamicLinkService() async {
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    _handleDeepLink(data);
-
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      _handleDeepLink(dynamicLink);
-    }, onError: (OnLinkErrorException e) async {
-      print('Link Failed: ${e.message}');
-    });
-  }
-
-  void _handleDeepLink(PendingDynamicLinkData data) async {
-    final Uri deepLink = data?.link;
-    if (deepLink != null) {
-      print('_handleDeepLink | deeplink: $deepLink');
-
-      var isPost = deepLink.pathSegments.contains('post');
-
-      if (isPost) {
-        var postId = deepLink.queryParameters['post_id'];
-
-        if (postId != null) {
-          await _fetchDeepLinkArticle(postId);
-          if (_deepLinkArticle != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SingleArticle(_deepLinkArticle, postId),
-              ),
-            );
-          }
-        }
-      }
-    }
   }
 
   _startOneSignal() async {
@@ -180,72 +127,6 @@ class _HomePageState extends State<HomePage> {
     onesignal.setInFocusDisplayType(OSNotificationDisplayType.notification);
 
     await enableNotification(context, value == 1);
-
-    onesignal.setNotificationOpenedHandler(
-        (OSNotificationOpenedResult result) async {
-      String url = result.notification.payload.additionalData['url'].toString();
-      if (result.action.actionId == "openbrowser") {
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          throw ERROR_MESSAGE["NO_LAUNCH"] + url;
-        }
-        return;
-      } else if (result.action.actionId == "share") {
-        Share.share('$url');
-        return;
-      }
-
-      String postId =
-          result.notification.payload.additionalData['postId'].toString();
-      await _fetchNotificationArticle(postId);
-      if (_notificationArticle != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SingleArticle(_notificationArticle, postId),
-          ),
-        );
-      }
-    });
-  }
-
-  Future<Article> _fetchNotificationArticle(String id) async {
-    try {
-      http.Response response =
-          await http.get("$WORDPRESS_URL/wp-json/wp/v2/posts/$id");
-      if (this.mounted) {
-        if (response.statusCode == 200) {
-          Map<String, dynamic> articleRes = json.decode(response.body);
-          setState(() {
-            _notificationArticle = Article.fromJson(articleRes);
-          });
-          return _notificationArticle;
-        }
-      }
-    } on SocketException {
-      throw ERROR_MESSAGE["NO_CONNECTION"];
-    }
-    return _notificationArticle;
-  }
-
-  Future<Article> _fetchDeepLinkArticle(String id) async {
-    try {
-      http.Response response =
-          await http.get("$WORDPRESS_URL/wp-json/wp/v2/posts/$id");
-      if (this.mounted) {
-        if (response.statusCode == 200) {
-          Map<String, dynamic> articleRes = json.decode(response.body);
-          setState(() {
-            _deepLinkArticle = Article.fromJson(articleRes);
-          });
-          return _deepLinkArticle;
-        }
-      }
-    } on SocketException {
-      throw ERROR_MESSAGE["NO_CONNECTION"];
-    }
-    return _deepLinkArticle;
   }
 
   @override
@@ -314,6 +195,8 @@ class _HomePageState extends State<HomePage> {
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
     setState(() {
+      /// TODO: Remove following line once there are more pages to load.
+      index = 0;
       _selectedIndex = index;
     });
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
@@ -182,7 +183,10 @@ class _FeaturedState extends State<Featured> {
                       /// TODO: Fix bad scrolling when moving backwards.
 
                       if (index != snapshot.data.length) {
-                        return VideoContainer(video: snapshot.data[index]);
+                        return VideoCard(
+                            video: snapshot.data[index],
+                            heroId: snapshot.data[index].id.toString() +
+                                new Random().nextInt(10000).toString());
                       } else if (_continueLoadingPages) {
                         /// If scroll controller cant get dimensions, it means
                         /// that the loading element is visible and should load
