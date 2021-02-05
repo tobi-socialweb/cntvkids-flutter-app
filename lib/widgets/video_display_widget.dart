@@ -23,7 +23,7 @@ class VideoDisplay extends StatefulWidget {
   final Video video;
   final String heroId;
 
-  VideoDisplay({this.video, this.heroId});
+  VideoDisplay({@required this.video, @required this.heroId});
 
   @override
   _VideoDisplayState createState() => _VideoDisplayState();
