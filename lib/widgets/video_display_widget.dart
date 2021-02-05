@@ -5,6 +5,19 @@ import 'package:flutter/services.dart';
 
 import 'custom_controls_widget.dart';
 
+/// Used to keep a reference of this context, for a later navigator pop.
+class InheritedVideoDisplay extends InheritedWidget {
+  final BuildContext context;
+
+  InheritedVideoDisplay({this.context, Widget child}) : super(child: child);
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
+
+  static InheritedVideoDisplay of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<InheritedVideoDisplay>();
+}
+
 /// Shows video fullscreen
 class VideoDisplay extends StatefulWidget {
   final Video video;
@@ -20,13 +33,10 @@ class _VideoDisplayState extends State<VideoDisplay> {
   /// Video player controller and data source.
   BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource betterPlayerDataSource;
-  bool _playingVideo = true;
 
   @override
   void initState() {
     super.initState();
-
-    _playingVideo = true;
 
     /// Set video source.
     betterPlayerDataSource = BetterPlayerDataSource(
@@ -65,33 +75,25 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_playingVideo) {
-      this.dispose();
-      Navigator.pop(context);
-    }
+    return InheritedVideoDisplay(
+      context: context,
+      child: FutureBuilder(builder: (context, snapshot) {
+        return WillPopScope(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: BetterPlayer(
+                controller: _betterPlayerController,
+              ),
+            ),
 
-    return WillPopScope(
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: BetterPlayer(
-            controller: _betterPlayerController,
-          ),
-        ),
-
-        /// When using the 'back' button, close the video.
-        onWillPop: () {
-          _betterPlayerController.pause();
-          setState(() {
-            _playingVideo = false;
-          });
-          return Future<bool>.value(true);
-        });
-  }
-
-  @override
-  void dispose() {
-    //_betterPlayerController.videoPlayerController.dispose();
-    _betterPlayerController.dispose();
-    super.dispose();
+            /// When using the 'back' button, close the video.
+            onWillPop: () {
+              setState(() {
+                _betterPlayerController.dispose();
+              });
+              return Future<bool>.value(true);
+            });
+      }),
+    );
   }
 }

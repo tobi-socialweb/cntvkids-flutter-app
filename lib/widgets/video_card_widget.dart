@@ -101,8 +101,9 @@ class _VideoCardState extends State<VideoCard> {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return VideoDisplay(
-                                          video: widget.video,
-                                          heroId: widget.heroId);
+                                        video: widget.video,
+                                        heroId: widget.heroId,
+                                      );
                                     }));
                                   },
                                 ),

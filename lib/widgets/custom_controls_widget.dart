@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:cntvkids_app/widgets/video_display_widget.dart';
 
 class CustomPlayerControls extends StatefulWidget {
   final BetterPlayerController controller;
@@ -23,6 +24,7 @@ class _CustomPlayerControlsState extends State<CustomPlayerControls> {
       },
     ), onWillPop: () {
       print("DEBUG: popped");
+      Navigator.pop(InheritedVideoDisplay.of(context).context);
       return Future<bool>.value(false);
     }));
   }
