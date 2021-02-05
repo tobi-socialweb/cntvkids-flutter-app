@@ -30,9 +30,9 @@ class _FeaturedState extends State<Featured> {
 
   ScrollController _controller;
 
-  int currentPage = 1;
-  bool _continueLoadingPages = true;
-  int featuredPerPage = 2;
+  int currentPage;
+  bool _continueLoadingPages;
+  final int featuredPerPage = 2;
 
   @override
   void initState() {
@@ -182,11 +182,15 @@ class _FeaturedState extends State<Featured> {
 
                       /// TODO: Fix bad scrolling when moving backwards.
 
+                      /// If currently viewing video items.
                       if (index != snapshot.data.length) {
                         return VideoCard(
-                            video: snapshot.data[index],
-                            heroId: snapshot.data[index].id.toString() +
-                                new Random().nextInt(10000).toString());
+                          video: snapshot.data[index],
+                          heroId: snapshot.data[index].id.toString() +
+                              new Random().nextInt(10000).toString(),
+                        );
+
+                        /// Otherwise, it's the loading widget.
                       } else if (_continueLoadingPages) {
                         /// If scroll controller cant get dimensions, it means
                         /// that the loading element is visible and should load
