@@ -12,8 +12,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class VideoCard extends StatefulWidget {
   final Video video;
   final String heroId;
+  final double sizeFactor;
 
-  VideoCard({this.video, this.heroId});
+  VideoCard(
+      {@required this.video, @required this.heroId, this.sizeFactor = 1.0});
 
   @override
   _VideoCardState createState() => _VideoCardState();
@@ -41,7 +43,7 @@ class _VideoCardState extends State<VideoCard> {
 
     /// How far to move the icon diagonally from the bottom right.
     final double diagonalDstFactor = 0.3;
-    final double iconSize = 0.175 * size.height;
+    final double iconSize = 0.175 * size.height * widget.sizeFactor;
 
     return Card(
         shadowColor: Colors.transparent,
@@ -53,7 +55,7 @@ class _VideoCardState extends State<VideoCard> {
               if (snapshot.hasData) {
                 return new ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: size.width * 0.425,
+                    maxWidth: size.width * 0.425 * widget.sizeFactor,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +64,8 @@ class _VideoCardState extends State<VideoCard> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(25.0),
                         child: LimitedBox(
-                          maxHeight: snapshot.data.height.toDouble(),
+                          maxHeight: snapshot.data.height.toDouble() *
+                              widget.sizeFactor,
                           child: Stack(
                             children: [
                               /// Video card thumbnail.
@@ -73,12 +76,14 @@ class _VideoCardState extends State<VideoCard> {
 
                               /// Play icon on top of the thumbnail.
                               Positioned(
-                                  right:
-                                      snapshot.data.height * diagonalDstFactor -
-                                          iconSize / 2,
-                                  bottom:
-                                      snapshot.data.height * diagonalDstFactor -
-                                          iconSize / 2,
+                                  right: snapshot.data.height *
+                                          widget.sizeFactor *
+                                          diagonalDstFactor -
+                                      iconSize / 2,
+                                  bottom: snapshot.data.height *
+                                          widget.sizeFactor *
+                                          diagonalDstFactor -
+                                      iconSize / 2,
                                   child: Stack(
                                     alignment: Alignment.centerRight,
                                     children: [
@@ -113,7 +118,9 @@ class _VideoCardState extends State<VideoCard> {
                           ),
                         ),
                       ),
-                      Text(widget.video.title),
+                      Text(
+                        widget.video.title,
+                      ),
                     ],
                   ),
                 );

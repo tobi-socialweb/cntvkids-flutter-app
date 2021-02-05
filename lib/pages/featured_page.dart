@@ -20,6 +20,10 @@ import 'package:loading/loading.dart';
 
 /// Shows video widgets that have 'featured' category.
 class Featured extends StatefulWidget {
+  final bool isMinimized;
+
+  Featured({this.isMinimized = false});
+
   @override
   _FeaturedState createState() => _FeaturedState();
 }
@@ -159,6 +163,10 @@ class _FeaturedState extends State<Featured> {
     /// Get size of the current context widget.
     Size size = MediaQuery.of(context).size;
 
+    if (widget.isMinimized) {
+      size = new Size(size.width, 0.7 * size.height);
+    }
+
     return FutureBuilder<List<dynamic>>(
       future: _futureFeatured,
       builder: (context, snapshot) {
@@ -188,6 +196,7 @@ class _FeaturedState extends State<Featured> {
                           video: snapshot.data[index],
                           heroId: snapshot.data[index].id.toString() +
                               new Random().nextInt(10000).toString(),
+                          sizeFactor: widget.isMinimized ? 0.5 : 1.0,
                         );
 
                         /// Otherwise, it's the loading widget.
