@@ -10,6 +10,7 @@ Search for "TODO" comments inside files, for specific non-urgent ones.
 - [ ] Finish video controls (play, pause, etc.) similar to YoutubeKids's.
 - [ ] Test app in old phone versions (find which should be the last stable one).
 - [ ] Test app in chromecast & tablets.
+- [ ] Document code.
 
 ## Commits
 - `master` is protected and needs pull request.
