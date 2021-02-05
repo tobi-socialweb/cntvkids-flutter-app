@@ -1,18 +1,14 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:admob_flutter/admob_flutter.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:cntvkids_app/r.g.dart';
+import 'package:cntvkids_app/widgets/nav_icon_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'common/helpers.dart';
 
@@ -98,6 +94,7 @@ class _HomePageState extends State<HomePage> {
   /// All options from the navigation bar.
   final List<Widget> _widgetOptions = [
     Featured(),
+    Featured(),
   ];
 
   @override
@@ -134,49 +131,72 @@ class _HomePageState extends State<HomePage> {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
 
-    /// TODO: Use navigator and app bar for routing.
+    /// TODO: Use custom navigator for routing.
     return Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+      children: [
         Container(
             width: size.width,
-            height: 0.20 * size.height,
+            height: NAV_BAR_PERCENTAGE * size.height,
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(0);
-                    },
-                    child: Text("LOGO")),
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(0);
-                    },
-                    child: Text("Destacados")),
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(1);
-                    },
-                    child: Text("Series")),
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(2);
-                    },
-                    child: Text("Listas")),
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(3);
-                    },
-                    child: Text("Juegos")),
-                TextButton(
-                    onPressed: () {
-                      _onNavButtonTapped(4);
-                    },
-                    child: Text("Buscar")),
+                NavIconButton(
+                  icon: R.svg.logo_icon,
+                  iconSize: 0.25 * size.height,
+                  currentSelectedIndex: _selectedIndex,
+                  buttonIndex: 0,
+                  isLogo: true,
+                  onPressed: _onNavButtonTapped,
+                ),
+                NavIconButton(
+                  icon: R.svg.videos_icon,
+                  iconWhenPressed: R.svg.videos_active_icon,
+                  iconSize: 0.1 * size.height,
+                  buttonText: "Destacados",
+                  buttonIndex: 0,
+                  currentSelectedIndex: _selectedIndex,
+                  onPressed: _onNavButtonTapped,
+                ),
+                NavIconButton(
+                  icon: R.svg.series_icon,
+                  iconWhenPressed: R.svg.series_active_icon,
+                  iconSize: 0.1 * size.height,
+                  buttonText: "Series",
+                  buttonIndex: 1,
+                  currentSelectedIndex: _selectedIndex,
+                  onPressed: _onNavButtonTapped,
+                ),
+                NavIconButton(
+                  icon: R.svg.lists_icon,
+                  iconWhenPressed: R.svg.lists_active_icon,
+                  iconSize: 0.1 * size.height,
+                  buttonText: "Listas",
+                  buttonIndex: 1,
+                  currentSelectedIndex: _selectedIndex,
+                  onPressed: _onNavButtonTapped,
+                ),
+                NavIconButton(
+                  icon: R.svg.games_icon,
+                  iconWhenPressed: R.svg.games_active_icon,
+                  iconSize: 0.1 * size.height,
+                  buttonText: "Juegos",
+                  buttonIndex: 1,
+                  currentSelectedIndex: _selectedIndex,
+                  onPressed: _onNavButtonTapped,
+                ),
+                NavIconButton(
+                  icon: R.svg.search_icon,
+                  iconWhenPressed: R.svg.search_icon,
+                  iconSize: 0.13 * size.height,
+                  buttonText: "Buscar",
+                  buttonIndex: 1,
+                  currentSelectedIndex: _selectedIndex,
+                  onPressed: _onNavButtonTapped,
+                ),
               ],
             )),
         Expanded(
@@ -186,7 +206,7 @@ class _HomePageState extends State<HomePage> {
         ),
         Container(
           width: size.width,
-          height: 0.20 * size.height,
+          height: NAV_BAR_PERCENTAGE / 2 * size.height,
         )
       ],
     ));
@@ -194,9 +214,10 @@ class _HomePageState extends State<HomePage> {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
+    print("DEBUG: called by index: $index");
     setState(() {
       /// TODO: Remove following line once there are more pages to load.
-      index = 0;
+      index = index > 1 ? 0 : index;
       _selectedIndex = index;
     });
   }

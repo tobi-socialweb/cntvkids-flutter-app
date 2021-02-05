@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video_display_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// Card widget used to display a clickable video.
 class VideoCard extends StatefulWidget {
@@ -35,20 +37,23 @@ class _VideoCardState extends State<VideoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final double iconHeight = 25.0;
-    final double strokeWidth = 4.0;
+    final Size size = MediaQuery.of(context).size;
+
+    /// How far to move the icon diagonally from the bottom right.
+    final double diagonalDstFactor = 0.3;
+    final double iconSize = 0.175 * size.height;
 
     return Card(
         shadowColor: Colors.transparent,
         borderOnForeground: false,
-        margin: EdgeInsets.fromLTRB(35, 0, 35, 0),
+        margin: EdgeInsets.symmetric(horizontal: 15.0),
         child: FutureBuilder(
             future: completer.future,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return new ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: snapshot.data.width * 1.0,
+                    maxWidth: size.width * 0.425,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -68,25 +73,21 @@ class _VideoCardState extends State<VideoCard> {
 
                               /// Play icon on top of the thumbnail.
                               Positioned(
-                                  right: 0.1 * snapshot.data.width,
-                                  top: 0.9 * snapshot.data.height -
-                                      iconHeight * 2 -
-                                      strokeWidth,
+                                  right:
+                                      snapshot.data.height * diagonalDstFactor -
+                                          iconSize / 2,
+                                  bottom:
+                                      snapshot.data.height * diagonalDstFactor -
+                                          iconSize / 2,
                                   child: Stack(
                                     alignment: Alignment.centerRight,
                                     children: [
-                                      CustomPaint(
-                                        painter: PlayIconCustomPainter(
-                                            context: context,
-                                            sideSize: iconHeight,
-                                            x: -iconHeight * 1.85,
-                                            y: 0.0,
-                                            strokeWidth: strokeWidth),
-                                      ),
-                                      new Icon(
-                                        Icons.play_arrow_rounded,
-                                        size: iconHeight * 1.75,
-                                        color: Theme.of(context).accentColor,
+                                      SvgPicture.asset(
+                                        R.svg
+                                            .videos_badge(height: 0, width: 0)
+                                            .asset,
+                                        width: iconSize,
+                                        height: iconSize,
                                       ),
                                     ],
                                   )),
@@ -120,45 +121,5 @@ class _VideoCardState extends State<VideoCard> {
                 return new Container();
               }
             }));
-  }
-}
-
-/// Temporal play icon being painted.
-class PlayIconCustomPainter extends CustomPainter {
-  final BuildContext context;
-  final double sideSize;
-  final double x;
-  final double y;
-  final double strokeWidth;
-
-  PlayIconCustomPainter(
-      {this.context, this.sideSize, this.x, this.y, this.strokeWidth});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint whitePaint = Paint()
-      ..color = Theme.of(context).primaryColorLight
-      ..style = PaintingStyle.fill;
-    Paint purplePaint = Paint()
-      ..color = Theme.of(context).accentColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    Path path = Path()..moveTo(x, y);
-
-    path.relativeQuadraticBezierTo(0, -sideSize, sideSize, -sideSize);
-    path.relativeQuadraticBezierTo(sideSize, 0, sideSize, sideSize);
-    path.relativeQuadraticBezierTo(0, sideSize, -sideSize, sideSize);
-    path.relativeQuadraticBezierTo(-sideSize, 0, -sideSize, -sideSize);
-
-    path.close();
-
-    canvas.drawPath(path, whitePaint);
-    canvas.drawPath(path, purplePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
