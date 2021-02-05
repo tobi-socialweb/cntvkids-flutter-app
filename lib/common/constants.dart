@@ -28,7 +28,7 @@ const String MISSING_IMAGE_URL =
 const int FEATURED_ID = 10536;
 
 /// Height percentage of the navigation bar that takes up.
-const double NAV_BAR_PERCENTAGE = 0.2;
+const double NAV_BAR_PERCENTAGE = 0.275;
 
 const String ONE_SIGNAL_APP_ID = "45e71839-7d7b-445a-b325-b9009d92171e";
 
