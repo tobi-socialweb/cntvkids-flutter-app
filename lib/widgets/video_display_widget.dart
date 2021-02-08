@@ -9,14 +9,21 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'custom_controls_widget.dart';
 
-typedef Future<bool> FutureBoolCallback();
+typedef bool BoolCallback();
 
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
   final BuildContext context;
-  final VoidCallback toggle;
+  final VoidCallback toggleDisplay;
+  final bool isMinimized;
+  final VoidCallback popDisplay;
 
-  InheritedVideoDisplay({this.context, this.toggle, Widget child})
+  InheritedVideoDisplay(
+      {this.context,
+      this.toggleDisplay,
+      this.isMinimized,
+      this.popDisplay,
+      child})
       : super(child: child);
 
   @override
@@ -30,28 +37,36 @@ class InheritedVideoDisplay extends InheritedWidget {
 class VideoDisplay extends StatefulWidget {
   final Video video;
   final String heroId;
+  final BetterPlayerController betterPlayerController;
 
-  VideoDisplay({@required this.video, @required this.heroId});
+  VideoDisplay(
+      {@required this.video,
+      @required this.heroId,
+      this.betterPlayerController});
 
   @override
   _VideoDisplayState createState() => _VideoDisplayState();
 }
 
 class _VideoDisplayState extends State<VideoDisplay> {
-  bool isMinimized;
-
   /// Video player controller and data source.
   BetterPlayerController _betterPlayerController;
-  BetterPlayerDataSource betterPlayerDataSource;
+  BetterPlayerDataSource _betterPlayerDataSource;
 
   @override
   void initState() {
     super.initState();
 
-    isMinimized = false;
+    /// If
+    if (widget.betterPlayerController != null) {
+      print(
+          "DEBUG: when calling VideoDisplay (full screen), betterPlayerController was not null!");
+      _betterPlayerController = widget.betterPlayerController;
+      return;
+    }
 
     /// Set video source.
-    betterPlayerDataSource = BetterPlayerDataSource(
+    _betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.video.videoUrl);
 
     /// Define values for the player controller.
@@ -84,134 +99,130 @@ class _VideoDisplayState extends State<VideoDisplay> {
             return Center(child: Text(errorMessage));
           },
         ),
-        betterPlayerDataSource: betterPlayerDataSource);
+        betterPlayerDataSource: _betterPlayerDataSource);
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return isMinimized
-        ? _MinimizedVideoDisplay(
-            context: context,
-            toggle: toggleMinimized,
-            controller: _betterPlayerController,
-            onWillPop: () {
-              setState(() {
-                _betterPlayerController.dispose();
-              });
-              return Future<bool>.value(true);
-            },
-          )
-        : _FullScreenVideoDisplay(
-            context: context,
-            toggle: toggleMinimized,
-            controller: _betterPlayerController,
-            onWillPop: () {
-              setState(() {
-                _betterPlayerController.dispose();
-              });
-              return Future<bool>.value(true);
-            },
-          );
-  }
-
-  void toggleMinimized() {
-    setState(() {
-      isMinimized = !isMinimized;
-    });
-  }
-}
-
-class _FullScreenVideoDisplay extends StatelessWidget {
-  final BuildContext context;
-  final VoidCallback toggle;
-  final FutureBoolCallback onWillPop;
-  final BetterPlayerController controller;
-
-  _FullScreenVideoDisplay(
-      {this.context, this.toggle, this.controller, this.onWillPop});
 
   @override
   Widget build(BuildContext context) {
     return InheritedVideoDisplay(
       context: context,
-      toggle: toggle,
+      isMinimized: false,
+      toggleDisplay: toggleDisplay,
+      popDisplay: popDisplay,
       child: FutureBuilder(builder: (context, snapshot) {
         return WillPopScope(
             child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: BetterPlayer(
-                controller: controller,
-              ),
-            ),
+                aspectRatio: 16 / 9,
+                child: Hero(
+                  tag: widget.heroId,
+                  child: BetterPlayer(
+                    controller: _betterPlayerController,
+                  ),
+                )),
 
-            /// When using the 'back' button, close the video.
-            onWillPop: onWillPop);
+            /// When using the 'back' button, toggle minimize.
+            onWillPop: () {
+              return Future<bool>.value(true);
+            });
       }),
     );
   }
+
+  void toggleDisplay() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return MinimizedVideoDisplay(
+        video: widget.video,
+        heroId: widget.heroId,
+        betterPlayerController: _betterPlayerController,
+      );
+    }));
+  }
+
+  void popDisplay() {
+    _betterPlayerController.dispose();
+    Navigator.of(context).pop();
+  }
 }
 
-class _MinimizedVideoDisplay extends StatelessWidget {
-  final BuildContext context;
-  final VoidCallback toggle;
-  final FutureBoolCallback onWillPop;
-  final BetterPlayerController controller;
+/// Shows video controls and other related videos.
+class MinimizedVideoDisplay extends StatefulWidget {
+  final Video video;
+  final String heroId;
+  final BetterPlayerController betterPlayerController;
 
-  _MinimizedVideoDisplay(
-      {this.context, this.toggle, this.controller, this.onWillPop});
+  MinimizedVideoDisplay({this.video, this.heroId, this.betterPlayerController});
+
+  @override
+  _MinimizedVideoDisplayState createState() => _MinimizedVideoDisplayState();
+}
+
+class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(color: Colors.cyan),
-        child: InheritedVideoDisplay(
-          context: context,
-          toggle: toggle,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SvgPicture.asset(
-                          R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                          width: 20.0,
-                          height: 20.0),
-                      InheritedVideoDisplay(
-                          context: context,
-                          toggle: toggle,
-                          child: Container(
-                            width: 200.0,
-                            height: 200.0,
-                            child: FutureBuilder(builder: (context, snapshot) {
-                              return WillPopScope(
-                                  child: AspectRatio(
+    return WillPopScope(
+        child: Material(
+          color: Colors.red,
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SvgPicture.asset(
+                            R.svg.back_icon(width: 0.0, height: 0.0).asset,
+                            width: 20.0,
+                            height: 20.0),
+                        InheritedVideoDisplay(
+                            context: context,
+                            isMinimized: true,
+                            child: Container(
+                              width: 200.0,
+                              height: 200.0,
+                              child:
+                                  FutureBuilder(builder: (context, snapshot) {
+                                return AspectRatio(
                                     aspectRatio: 16 / 9,
-                                    child: BetterPlayer(
-                                      controller: controller,
-                                    ),
-                                  ),
-
-                                  /// When using the 'back' button, close the video.
-                                  onWillPop: onWillPop);
-                            }),
-                          )),
-                      SvgPicture.asset(
-                          R.svg.record_icon(width: 0.0, height: 0.0).asset,
-                          width: 20.0,
-                          height: 20.0),
-                    ],
-                  ),
-                ],
-              ),
-              Featured(isMinimized: true),
-            ],
+                                    child: Hero(
+                                      tag: widget.heroId,
+                                      child: BetterPlayer(
+                                        controller:
+                                            widget.betterPlayerController,
+                                      ),
+                                    ));
+                              }),
+                            )),
+                        SvgPicture.asset(
+                            R.svg.record_icon(width: 0.0, height: 0.0).asset,
+                            width: 20.0,
+                            height: 20.0),
+                      ],
+                    ),
+                  ],
+                ),
+                Featured(isMinimized: true),
+              ],
+            ),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
           ),
-        ));
+        ),
+        onWillPop: () {
+          print("DEBUG: popping screen when minimized");
+          widget.betterPlayerController.dispose();
+          Navigator.of(context).pop();
+          return Future<bool>.value(true);
+        });
   }
 }

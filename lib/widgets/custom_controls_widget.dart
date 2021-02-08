@@ -21,12 +21,14 @@ class _CustomPlayerControlsState extends State<CustomPlayerControls> {
     return Positioned.fill(
         child: WillPopScope(child: GestureDetector(
       onTap: () {
-        InheritedVideoDisplay.of(context).toggle();
         print("DEBUG: tapped");
+        InheritedVideoDisplay.of(context).toggleDisplay();
       },
     ), onWillPop: () {
-      print("DEBUG: popped");
-      Navigator.pop(InheritedVideoDisplay.of(context).context);
+      if (InheritedVideoDisplay.of(context).isMinimized) {
+        Navigator.of(context).pop();
+      }
+      InheritedVideoDisplay.of(context).toggleDisplay();
       return Future<bool>.value(false);
     }));
   }
