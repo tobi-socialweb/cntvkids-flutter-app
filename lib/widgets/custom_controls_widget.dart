@@ -26,6 +26,7 @@ class _CustomPlayerControlsState extends State<CustomPlayerControls> {
       },
     ), onWillPop: () {
       if (InheritedVideoDisplay.of(context).isMinimized) {
+        print("DEBUG: popped while minimized");
         Navigator.of(context).pop();
       }
       InheritedVideoDisplay.of(context).toggleDisplay();
