@@ -9,6 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'custom_controls_widget.dart';
 
+typedef Future<bool> FutureBoolCallback();
+
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
   final BuildContext context;
@@ -88,83 +90,27 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   Widget build(BuildContext context) {
     return isMinimized
-        ? Container(
-            decoration: BoxDecoration(color: Colors.cyan),
-            child: InheritedVideoDisplay(
-              context: context,
-              toggle: toggleMinimized,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SvgPicture.asset(
-                              R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                              width: 20.0,
-                              height: 20.0),
-                          InheritedVideoDisplay(
-                              context: context,
-                              toggle: toggleMinimized,
-                              child: Container(
-                                width: 200.0,
-                                height: 200.0,
-                                child:
-                                    FutureBuilder(builder: (context, snapshot) {
-                                  return WillPopScope(
-                                      child: AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: BetterPlayer(
-                                          controller: _betterPlayerController,
-                                        ),
-                                      ),
-
-                                      /// When using the 'back' button, close the video.
-                                      onWillPop: () {
-                                        setState(() {
-                                          _betterPlayerController.dispose();
-                                        });
-                                        return Future<bool>.value(true);
-                                      });
-                                }),
-                              )),
-                          SvgPicture.asset(
-                              R.svg.record_icon(width: 0.0, height: 0.0).asset,
-                              width: 20.0,
-                              height: 20.0),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Featured(isMinimized: true),
-                ],
-              ),
-            ))
-        : InheritedVideoDisplay(
+        ? _MinimizedVideoDisplay(
             context: context,
             toggle: toggleMinimized,
-            child: FutureBuilder(builder: (context, snapshot) {
-              return WillPopScope(
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: BetterPlayer(
-                      controller: _betterPlayerController,
-                    ),
-                  ),
-
-                  /// When using the 'back' button, close the video.
-                  onWillPop: () {
-                    setState(() {
-                      _betterPlayerController.dispose();
-                    });
-                    return Future<bool>.value(true);
-                  });
-            }),
+            controller: _betterPlayerController,
+            onWillPop: () {
+              setState(() {
+                _betterPlayerController.dispose();
+              });
+              return Future<bool>.value(true);
+            },
+          )
+        : _FullScreenVideoDisplay(
+            context: context,
+            toggle: toggleMinimized,
+            controller: _betterPlayerController,
+            onWillPop: () {
+              setState(() {
+                _betterPlayerController.dispose();
+              });
+              return Future<bool>.value(true);
+            },
           );
   }
 
@@ -172,5 +118,100 @@ class _VideoDisplayState extends State<VideoDisplay> {
     setState(() {
       isMinimized = !isMinimized;
     });
+  }
+}
+
+class _FullScreenVideoDisplay extends StatelessWidget {
+  final BuildContext context;
+  final VoidCallback toggle;
+  final FutureBoolCallback onWillPop;
+  final BetterPlayerController controller;
+
+  _FullScreenVideoDisplay(
+      {this.context, this.toggle, this.controller, this.onWillPop});
+
+  @override
+  Widget build(BuildContext context) {
+    return InheritedVideoDisplay(
+      context: context,
+      toggle: toggle,
+      child: FutureBuilder(builder: (context, snapshot) {
+        return WillPopScope(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: BetterPlayer(
+                controller: controller,
+              ),
+            ),
+
+            /// When using the 'back' button, close the video.
+            onWillPop: onWillPop);
+      }),
+    );
+  }
+}
+
+class _MinimizedVideoDisplay extends StatelessWidget {
+  final BuildContext context;
+  final VoidCallback toggle;
+  final FutureBoolCallback onWillPop;
+  final BetterPlayerController controller;
+
+  _MinimizedVideoDisplay(
+      {this.context, this.toggle, this.controller, this.onWillPop});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(color: Colors.cyan),
+        child: InheritedVideoDisplay(
+          context: context,
+          toggle: toggle,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SvgPicture.asset(
+                          R.svg.back_icon(width: 0.0, height: 0.0).asset,
+                          width: 20.0,
+                          height: 20.0),
+                      InheritedVideoDisplay(
+                          context: context,
+                          toggle: toggle,
+                          child: Container(
+                            width: 200.0,
+                            height: 200.0,
+                            child: FutureBuilder(builder: (context, snapshot) {
+                              return WillPopScope(
+                                  child: AspectRatio(
+                                    aspectRatio: 16 / 9,
+                                    child: BetterPlayer(
+                                      controller: controller,
+                                    ),
+                                  ),
+
+                                  /// When using the 'back' button, close the video.
+                                  onWillPop: onWillPop);
+                            }),
+                          )),
+                      SvgPicture.asset(
+                          R.svg.record_icon(width: 0.0, height: 0.0).asset,
+                          width: 20.0,
+                          height: 20.0),
+                    ],
+                  ),
+                ],
+              ),
+              Featured(isMinimized: true),
+            ],
+          ),
+        ));
   }
 }
