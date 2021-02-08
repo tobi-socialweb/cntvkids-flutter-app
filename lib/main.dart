@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
             primaryColorLight: Colors.white,
             primaryColorDark: Colors.black,
             primaryColor: Colors.red,
-            accentColor: Colors.purple,
+            accentColor: Colors.purple[900],
             canvasColor: Color(0xFFE3E3E3),
             textTheme: TextTheme(
               headline1: TextStyle(
