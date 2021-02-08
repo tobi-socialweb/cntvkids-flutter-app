@@ -164,7 +164,7 @@ class _FeaturedState extends State<Featured> {
     Size size = MediaQuery.of(context).size;
 
     if (widget.isMinimized) {
-      size = new Size(size.width, 0.7 * size.height);
+      size = new Size(size.width, 0.5 * size.height);
     }
 
     return FutureBuilder<List<dynamic>>(
