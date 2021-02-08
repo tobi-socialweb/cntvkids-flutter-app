@@ -141,8 +141,8 @@ class _FeaturedState extends State<Featured> {
 
           /// Otherwise.
         } else {
-          print("[ERROR] " + e.message);
-          print("[     ] " + e.request.toString());
+          print(e.message);
+          print(e.request.toString());
         }
       } else if (DioErrorType.DEFAULT == e.type) {
         if (e.message.contains('SocketException')) {
