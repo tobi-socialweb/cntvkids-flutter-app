@@ -2,12 +2,13 @@ import 'package:better_player/better_player.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:cntvkids_app/r.g.dart';
+import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'custom_controls_widget.dart';
+//import 'video_cast_widget.dart';
 
 typedef bool BoolCallback();
 
@@ -230,13 +231,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                SvgPicture.asset(
-                                  R.svg
-                                      .back_icon(width: 0.0, height: 0.0)
-                                      .asset,
-                                  width: 60.0,
-                                  height: 60.0,
-                                ),
+                                ChromeCast(video: widget.video),
                                 SvgPicture.asset(
                                   R.svg
                                       .back_icon(width: 0.0, height: 0.0)
