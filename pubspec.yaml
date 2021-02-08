@@ -49,6 +49,10 @@ flutter:
   - assets/images/backgrounds/18x9/background-red.svg
   - assets/images/backgrounds/background-red.png
   - assets/images/backgrounds/background-red.svg
+  - assets/images/chromecast/chromecast_active_icon.png
+  - assets/images/chromecast/chromecast_active_icon.svg
+  - assets/images/chromecast/chromecast_icon.png
+  - assets/images/chromecast/chromecast_icon.svg
   - assets/images/games/games_active_icon.svg
   - assets/images/games/games_badge.svg
   - assets/images/games/games_icon.svg

@@ -100,6 +100,18 @@ class _R_Image_AssetResource {
       "assets/images/backgrounds/background-red.png",
       packageName: null);
 
+  /// asset: assets/images/chromecast/chromecast_active_icon.png
+  // ignore: non_constant_identifier_names
+  final chromecast_active_icon = const AssetResource(
+      "assets/images/chromecast/chromecast_active_icon.png",
+      packageName: null);
+
+  /// asset: assets/images/chromecast/chromecast_icon.png
+  // ignore: non_constant_identifier_names
+  final chromecast_icon = const AssetResource(
+      "assets/images/chromecast/chromecast_icon.png",
+      packageName: null);
+
   /// asset: assets/images/logo/logo_icon.png
   // ignore: non_constant_identifier_names
   final logo_icon = const AssetResource("assets/images/logo/logo_icon.png",
@@ -143,6 +155,18 @@ class _R_Svg_AssetResource {
   // ignore: non_constant_identifier_names
   final background_red$1 = const AssetResource(
       "assets/images/backgrounds/background-red.svg",
+      packageName: null);
+
+  /// asset: assets/images/chromecast/chromecast_active_icon.svg
+  // ignore: non_constant_identifier_names
+  final chromecast_active_icon = const AssetResource(
+      "assets/images/chromecast/chromecast_active_icon.svg",
+      packageName: null);
+
+  /// asset: assets/images/chromecast/chromecast_icon.svg
+  // ignore: non_constant_identifier_names
+  final chromecast_icon = const AssetResource(
+      "assets/images/chromecast/chromecast_icon.svg",
       packageName: null);
 
   /// asset: assets/images/games/games_active_icon.svg
@@ -249,6 +273,18 @@ class _R_Image {
     return AssetImage(asset.background_red.keyName);
   }
 
+  /// asset: assets/images/chromecast/chromecast_active_icon.png
+  // ignore: non_constant_identifier_names
+  AssetImage chromecast_active_icon() {
+    return AssetImage(asset.chromecast_active_icon.keyName);
+  }
+
+  /// asset: assets/images/chromecast/chromecast_icon.png
+  // ignore: non_constant_identifier_names
+  AssetImage chromecast_icon() {
+    return AssetImage(asset.chromecast_icon.keyName);
+  }
+
   /// asset: assets/images/logo/logo_icon.png
   // ignore: non_constant_identifier_names
   AssetImage logo_icon() {
@@ -302,6 +338,23 @@ class _R_Svg {
   AssetSvg background_red$1({@required double width, @required double height}) {
     final imageProvider =
         AssetSvg(asset.background_red$1.keyName, width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/chromecast/chromecast_active_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg chromecast_active_icon(
+      {@required double width, @required double height}) {
+    final imageProvider = AssetSvg(asset.chromecast_active_icon.keyName,
+        width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/chromecast/chromecast_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg chromecast_icon({@required double width, @required double height}) {
+    final imageProvider =
+        AssetSvg(asset.chromecast_icon.keyName, width: width, height: height);
     return imageProvider;
   }
 
