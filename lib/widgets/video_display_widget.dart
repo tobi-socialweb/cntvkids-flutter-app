@@ -16,14 +16,9 @@ class InheritedVideoDisplay extends InheritedWidget {
   final BuildContext context;
   final VoidCallback toggleDisplay;
   final bool isMinimized;
-  final VoidCallback popDisplay;
 
   InheritedVideoDisplay(
-      {this.context,
-      this.toggleDisplay,
-      this.isMinimized,
-      this.popDisplay,
-      child})
+      {this.context, this.toggleDisplay, this.isMinimized, child})
       : super(child: child);
 
   @override
@@ -108,7 +103,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
       context: context,
       isMinimized: false,
       toggleDisplay: toggleDisplay,
-      popDisplay: popDisplay,
       child: FutureBuilder(builder: (context, snapshot) {
         return WillPopScope(
             child: AspectRatio(
@@ -137,11 +131,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
       );
     }));
   }
-
-  void popDisplay() {
-    _betterPlayerController.dispose();
-    Navigator.of(context).pop();
-  }
 }
 
 /// Shows video controls and other related videos.
@@ -164,55 +153,110 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return WillPopScope(
         child: Material(
-          color: Colors.red,
+          color: Theme.of(context).accentColor,
           child: InkWell(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+            child: LimitedBox(
+
+                /// TODO: fix
+                maxWidth: 0.85 * size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SvgPicture.asset(
-                            R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                            width: 20.0,
-                            height: 20.0),
-                        InheritedVideoDisplay(
-                            context: context,
-                            isMinimized: true,
-                            child: Container(
-                              width: 200.0,
-                              height: 200.0,
-                              child:
-                                  FutureBuilder(builder: (context, snapshot) {
-                                return AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: Hero(
-                                      tag: widget.heroId,
-                                      child: BetterPlayer(
-                                        controller:
-                                            widget.betterPlayerController,
-                                      ),
-                                    ));
-                              }),
-                            )),
-                        SvgPicture.asset(
-                            R.svg.record_icon(width: 0.0, height: 0.0).asset,
-                            width: 20.0,
-                            height: 20.0),
-                      ],
+                    Container(
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.blue)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.yellow)),
+                            height: 0.65 * size.height,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                SvgPicture.asset(
+                                  R.svg
+                                      .back_icon(width: 0.0, height: 0.0)
+                                      .asset,
+                                  width: 60.0,
+                                  height: 60.0,
+                                ),
+                                SvgPicture.asset(
+                                  R.svg
+                                      .back_icon(width: 0.0, height: 0.0)
+                                      .asset,
+                                  width: 60.0,
+                                  height: 60.0,
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(25.0),
+                              child: InheritedVideoDisplay(
+                                  context: context,
+                                  isMinimized: true,
+                                  toggleDisplay: toggleDisplay,
+                                  child: Container(
+                                    height: 0.65 * size.height,
+                                    child: FutureBuilder(
+                                        builder: (context, snapshot) {
+                                      return AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: Hero(
+                                            tag: widget.heroId,
+                                            child: BetterPlayer(
+                                              controller:
+                                                  widget.betterPlayerController,
+                                            ),
+                                          ));
+                                    }),
+                                  )),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.yellow)),
+                            height: 0.65 * size.height,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                SvgPicture.asset(
+                                  R.svg
+                                      .back_icon(width: 0.0, height: 0.0)
+                                      .asset,
+                                  width: 60.0,
+                                  height: 60.0,
+                                ),
+                                SvgPicture.asset(
+                                  R.svg
+                                      .back_icon(width: 0.0, height: 0.0)
+                                      .asset,
+                                  width: 60.0,
+                                  height: 60.0,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.green)),
+                      child: Featured(isMinimized: true),
                     ),
                   ],
-                ),
-                Featured(isMinimized: true),
-              ],
-            ),
+                )),
             onTap: () {
               Navigator.of(context).pop();
             },
@@ -224,5 +268,9 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
           Navigator.of(context).pop();
           return Future<bool>.value(true);
         });
+  }
+
+  void toggleDisplay() {
+    Navigator.of(context).pop();
   }
 }

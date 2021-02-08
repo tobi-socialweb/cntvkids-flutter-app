@@ -1,2 +1,60 @@
-djkhsgjksdhg
-dsadsad
+Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.blue)),
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SvgPicture.asset(
+                                    R.svg
+                                        .back_icon(width: 0.0, height: 0.0)
+                                        .asset,
+                                    width: 20.0,
+                                    height: 20.0),
+                                InheritedVideoDisplay(
+                                    context: context,
+                                    isMinimized: true,
+                                    child: Container(
+                                      width: 250.0,
+                                      height: 250.0,
+                                      child: FutureBuilder(
+                                          builder: (context, snapshot) {
+                                        return AspectRatio(
+                                            aspectRatio: 16 / 9,
+                                            child: Hero(
+                                              tag: widget.heroId,
+                                              child: BetterPlayer(
+                                                controller: widget
+                                                    .betterPlayerController,
+                                              ),
+                                            ));
+                                      }),
+                                    )),
+                                SvgPicture.asset(
+                                    R.svg
+                                        .record_icon(width: 0.0, height: 0.0)
+                                        .asset,
+                                    width: 20.0,
+                                    height: 20.0),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Featured(isMinimized: true),
+                      ],
+                    )
+                  ],
+                ),
+              ],
