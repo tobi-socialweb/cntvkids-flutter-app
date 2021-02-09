@@ -7,7 +7,6 @@ import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video_display_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// Card widget used to display a clickable video.
 class VideoCard extends StatefulWidget {

@@ -54,7 +54,7 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
   @override
   void initState() {
     super.initState();
-    _children = new List<NavigationBarButton>();
+    _children = [];
 
     /// Will store the currently visited child.
     NavigationBarButton child;

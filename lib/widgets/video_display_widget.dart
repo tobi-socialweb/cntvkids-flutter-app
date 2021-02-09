@@ -7,9 +7,7 @@ import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'custom_controls_widget.dart';
-//import 'video_cast_widget.dart';
 
 typedef bool BoolCallback();
 
