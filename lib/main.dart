@@ -1,6 +1,5 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/widgets/nav_icon_button_widget.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -145,7 +144,13 @@ class _HomePageState extends State<HomePage> {
             BottomColoredBlob(
               size: size,
               currentSelectedIndex: _selectedIndex,
-              colors: [Theme.of(context).primaryColorLight, Colors.cyan],
+              colors: [
+                Colors.white,
+                Colors.cyan,
+                Colors.yellow,
+                Theme.of(context).accentColor,
+                Colors.white
+              ],
               getCurrentSelectedIndex: getCurrentSelectedIndex,
             ),
 
@@ -252,7 +257,7 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
 
   @override
   Widget build(BuildContext context) {
-    widget.getCurrentSelectedIndex();
+    updateSelectedIndex();
     return CustomPaint(
       painter: _BottomColoredBlobPainter(
         size: widget.size,
