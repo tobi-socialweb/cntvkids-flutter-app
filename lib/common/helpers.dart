@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:r_dart_library/asset_svg.dart';
 
 import 'constants.dart';
+
+typedef AssetSvg AssetSvgCallback({double width, double height});
 
 DioCacheManager customDioCacheManager =
     DioCacheManager(CacheConfig(baseUrl: WORDPRESS_URL));
@@ -47,4 +51,21 @@ Future<Null> enableNotification(context, bool val) async {
   onesignal.setSubscription(val);
   Provider.of<AppStateNotifier>(context, listen: false)
       .updateNotifcationSetting(val);
+}
+
+class SvgIcon extends StatelessWidget {
+  final AssetSvgCallback asset;
+  final double width;
+  final double height;
+
+  SvgIcon({@required this.asset, this.width = 10.0, this.height = 10.0});
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      asset(width: 0.0, height: 0.0).asset,
+      width: width,
+      height: height,
+    );
+  }
 }
