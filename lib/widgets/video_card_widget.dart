@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video_display_widget.dart';
@@ -86,10 +87,8 @@ class _VideoCardState extends State<VideoCard> {
                               child: Stack(
                                 alignment: Alignment.centerRight,
                                 children: [
-                                  SvgPicture.asset(
-                                    R.svg
-                                        .videos_badge(height: 0, width: 0)
-                                        .asset,
+                                  SvgIcon(
+                                    asset: R.svg.videos_badge,
                                     width: iconSize,
                                     height: iconSize,
                                   ),

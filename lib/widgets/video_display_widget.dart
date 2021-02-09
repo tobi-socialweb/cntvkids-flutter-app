@@ -1,4 +1,5 @@
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:cntvkids_app/r.g.dart';
@@ -182,17 +183,13 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                SvgPicture.asset(
-                                  R.svg
-                                      .back_icon(width: 0.0, height: 0.0)
-                                      .asset,
+                                SvgIcon(
+                                  asset: R.svg.back_icon,
                                   width: 60.0,
                                   height: 60.0,
                                 ),
-                                SvgPicture.asset(
-                                  R.svg
-                                      .back_icon(width: 0.0, height: 0.0)
-                                      .asset,
+                                SvgIcon(
+                                  asset: R.svg.back_icon,
                                   width: 60.0,
                                   height: 60.0,
                                 )
@@ -232,10 +229,8 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 ChromeCast(video: widget.video),
-                                SvgPicture.asset(
-                                  R.svg
-                                      .back_icon(width: 0.0, height: 0.0)
-                                      .asset,
+                                SvgIcon(
+                                  asset: R.svg.back_icon,
                                   width: 60.0,
                                   height: 60.0,
                                 )
