@@ -129,6 +129,17 @@ class _RoundIconButton extends StatelessWidget {
   }
 }
 
+class InheritedVideoCast extends InheritedWidget {
+  final BuildContext context;
+  InheritedVideoCast({this.context, child}) : super(child: child);
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
+
+  static InheritedVideoCast of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<InheritedVideoCast>();
+}
+
 class ChromeCastView extends StatelessWidget {
   final Widget controladorVideo;
   final Video copiaVideo;
@@ -142,82 +153,94 @@ class ChromeCastView extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return WillPopScope(
-        child: Material(
-          color: Theme.of(context).accentColor,
-          child: LimitedBox(
+    return InheritedVideoCast(
+        context: context,
+        child: FutureBuilder(builder: (context, snapshot) {
+          return WillPopScope(
+              child: Material(
+                color: Theme.of(context).accentColor,
+                child: LimitedBox(
 
-              /// TODO: fix
-              maxWidth: 0.85 * size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.blue)),
-                    child: Row(
+                    /// TODO: fix
+                    maxWidth: 0.85 * size.width,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.yellow)),
-                          height: 0.65 * size.height,
-                          child: Column(
+                              border: Border.all(color: Colors.blue)),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              SvgPicture.asset(
-                                R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                                width: 60.0,
-                                height: 60.0,
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.yellow)),
+                                height: 0.65 * size.height,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    SvgPicture.asset(
+                                      R.svg
+                                          .back_icon(width: 0.0, height: 0.0)
+                                          .asset,
+                                      width: 60.0,
+                                      height: 60.0,
+                                    ),
+                                    SvgPicture.asset(
+                                      R.svg
+                                          .back_icon(width: 0.0, height: 0.0)
+                                          .asset,
+                                      width: 60.0,
+                                      height: 60.0,
+                                    )
+                                  ],
+                                ),
                               ),
-                              SvgPicture.asset(
-                                R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                                width: 60.0,
-                                height: 60.0,
-                              )
+                              Stack(
+                                children: [
+                                  Image.network(copiaVideo.thumbnailUrl,
+                                      height: 0.4 * size.height),
+                                  controladorVideo,
+                                ],
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.yellow)),
+                                height: 0.65 * size.height,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    ChromeCast(video: copiaVideo),
+                                    SvgPicture.asset(
+                                      R.svg
+                                          .back_icon(width: 0.0, height: 0.0)
+                                          .asset,
+                                      width: 60.0,
+                                      height: 60.0,
+                                    )
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                        Stack(
-                          children: [
-                            Image.network(copiaVideo.thumbnailUrl,
-                                height: 0.4 * size.height),
-                            controladorVideo,
-                          ],
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.yellow)),
-                          height: 0.65 * size.height,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              ChromeCast(video: copiaVideo),
-                              SvgPicture.asset(
-                                R.svg.back_icon(width: 0.0, height: 0.0).asset,
-                                width: 60.0,
-                                height: 60.0,
-                              )
-                            ],
-                          ),
+                              border: Border.all(color: Colors.green)),
+                          child: Featured(isMinimized: true),
                         ),
                       ],
-                    ),
-                  ),
-                  Container(
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.green)),
-                    child: Featured(isMinimized: true),
-                  ),
-                ],
-              )),
-        ),
-        onWillPop: () {
-          Navigator.of(context).pop();
-          return Future<bool>.value(true);
-        });
+                    )),
+              ),
+              onWillPop: () {
+                Navigator.of(context).pop();
+                return Future<bool>.value(true);
+              });
+        }));
   }
 }
