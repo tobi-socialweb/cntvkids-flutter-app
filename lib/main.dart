@@ -1,11 +1,11 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/nav_icon_button_widget.dart';
+import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,6 +95,9 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = [
     Featured(),
     Featured(),
+    Featured(),
+    Featured(),
+    Featured(),
   ];
 
   @override
@@ -133,92 +136,163 @@ class _HomePageState extends State<HomePage> {
 
     /// TODO: Use custom navigator for routing.
     return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
         body: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-            width: size.width,
-            height: NAV_BAR_PERCENTAGE * size.height,
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                NavIconButton(
-                  icon: R.svg.logo_icon,
-                  iconSize: 0.25 * size.height,
-                  currentSelectedIndex: _selectedIndex,
-                  buttonIndex: 0,
-                  isLogo: true,
-                  onPressed: _onNavButtonTapped,
-                ),
-                NavIconButton(
-                  icon: R.svg.videos_icon,
-                  iconWhenPressed: R.svg.videos_active_icon,
-                  iconSize: 0.1 * size.height,
-                  buttonText: "Destacados",
-                  buttonIndex: 0,
-                  currentSelectedIndex: _selectedIndex,
-                  onPressed: _onNavButtonTapped,
-                ),
-                NavIconButton(
-                  icon: R.svg.series_icon,
-                  iconWhenPressed: R.svg.series_active_icon,
-                  iconSize: 0.1 * size.height,
-                  buttonText: "Series",
-                  buttonIndex: 1,
-                  currentSelectedIndex: _selectedIndex,
-                  onPressed: _onNavButtonTapped,
-                ),
-                NavIconButton(
-                  icon: R.svg.lists_icon,
-                  iconWhenPressed: R.svg.lists_active_icon,
-                  iconSize: 0.1 * size.height,
-                  buttonText: "Listas",
-                  buttonIndex: 1,
-                  currentSelectedIndex: _selectedIndex,
-                  onPressed: _onNavButtonTapped,
-                ),
-                NavIconButton(
-                  icon: R.svg.games_icon,
-                  iconWhenPressed: R.svg.games_active_icon,
-                  iconSize: 0.1 * size.height,
-                  buttonText: "Juegos",
-                  buttonIndex: 1,
-                  currentSelectedIndex: _selectedIndex,
-                  onPressed: _onNavButtonTapped,
-                ),
-                NavIconButton(
-                  icon: R.svg.search_icon,
-                  iconWhenPressed: R.svg.search_icon,
-                  iconSize: 0.13 * size.height,
-                  buttonText: "Buscar",
-                  buttonIndex: 1,
-                  currentSelectedIndex: _selectedIndex,
-                  onPressed: _onNavButtonTapped,
-                ),
-              ],
-            )),
-        Expanded(
-          child: Center(
-            child: _widgetOptions.elementAt(_selectedIndex),
-          ),
-        ),
-        Container(
-          width: size.width,
-          height: NAV_BAR_PERCENTAGE / 2 * size.height,
-        )
-      ],
-    ));
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            /// The colored curved blob in the background (white, yellow, etc.).
+            BottomColoredBlob(
+              size: size,
+              currentSelectedIndex: _selectedIndex,
+              colors: [Theme.of(context).primaryColorLight, Colors.cyan],
+              getCurrentSelectedIndex: getCurrentSelectedIndex,
+            ),
+
+            /// Top Navigation Bar.
+            Container(
+                width: size.width,
+                height: NAV_BAR_PERCENTAGE * size.height,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: TopNavigationBar(
+                  getSelectedIndex: getCurrentSelectedIndex,
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  defaultIconSizes: 0.125 * size.height,
+                  defaultOnPressed: _onNavButtonTapped,
+                  defaultTextScaleFactor: 0.0025 * size.height,
+                  children: [
+                    NavigationBarButton(
+                      icon: R.svg.logo_icon,
+                      size: 0.25 * size.height,
+                      resetCount: true,
+                    ),
+                    NavigationBarButton(
+                      icon: R.svg.videos_icon,
+                      activeIcon: R.svg.videos_active_icon,
+                      text: "Destacados",
+                    ),
+                    NavigationBarButton(
+                      icon: R.svg.series_icon,
+                      activeIcon: R.svg.series_active_icon,
+                      text: "Series",
+                    ),
+                    NavigationBarButton(
+                      icon: R.svg.lists_icon,
+                      activeIcon: R.svg.lists_active_icon,
+                      text: "Listas",
+                    ),
+                    NavigationBarButton(
+                      icon: R.svg.games_icon,
+                      activeIcon: R.svg.games_active_icon,
+                      text: "Juegos",
+                    ),
+                    NavigationBarButton(
+                      icon: R.svg.search_icon,
+                      text: "Buscar",
+                    ),
+                  ],
+                )),
+
+            /// Video & Game Cards' List.
+            Expanded(
+              child: Center(
+                child: _widgetOptions.elementAt(_selectedIndex),
+              ),
+            ),
+
+            /// Space filler to keep things kinda centered.
+            Container(
+              width: size.width,
+              height: NAV_BAR_PERCENTAGE / 2 * size.height,
+            )
+          ],
+        ));
   }
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    print("DEBUG: called by index: $index");
     setState(() {
-      /// TODO: Remove following line once there are more pages to load.
-      index = index > 1 ? 0 : index;
       _selectedIndex = index;
     });
+  }
+
+  int getCurrentSelectedIndex() {
+    return _selectedIndex;
+  }
+}
+
+typedef int IntCallback();
+
+/// Custom painter for the colored bottom blob.
+class BottomColoredBlob extends StatefulWidget {
+  final Size size;
+  final int currentSelectedIndex;
+  final List<Color> colors;
+  final IntCallback getCurrentSelectedIndex;
+
+  BottomColoredBlob(
+      {this.size,
+      this.currentSelectedIndex,
+      this.colors,
+      this.getCurrentSelectedIndex});
+
+  @override
+  _BottomColoredBlobState createState() => _BottomColoredBlobState();
+}
+
+class _BottomColoredBlobState extends State<BottomColoredBlob> {
+  int currentSelectedIndex;
+
+  @override
+  void initState() {
+    currentSelectedIndex = widget.getCurrentSelectedIndex();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    widget.getCurrentSelectedIndex();
+    return CustomPaint(
+      painter: _BottomColoredBlobPainter(
+        size: widget.size,
+        color: widget.colors[currentSelectedIndex],
+      ),
+    );
+  }
+
+  void updateSelectedIndex() {
+    setState(() {
+      currentSelectedIndex = widget.getCurrentSelectedIndex();
+    });
+  }
+}
+
+class _BottomColoredBlobPainter extends CustomPainter {
+  final Size size;
+  final Color color;
+
+  _BottomColoredBlobPainter({this.size, this.color});
+
+  @override
+  void paint(Canvas canvas, Size _) {
+    Paint p = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    Path path = Path()..moveTo(0.5 * -size.width, 0.65 * size.height);
+
+    path.quadraticBezierTo(
+        0.0, 0.5 * size.height, 0.5 * size.width, 0.775 * size.height);
+    path.lineTo(0.5 * size.width, size.height);
+    path.lineTo(-0.5 * size.width, size.height);
+    path.close();
+
+    canvas.drawPath(path, p);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

@@ -41,88 +41,92 @@ class _VideoCardState extends State<VideoCard> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    /// How far to move the icon diagonally from the bottom right.
-    final double diagonalDstFactor = 0.3;
-    final double iconSize = 0.175 * size.height * widget.sizeFactor;
-
     return Card(
         shadowColor: Colors.transparent,
+        color: Colors.transparent,
         borderOnForeground: false,
-        margin: EdgeInsets.symmetric(horizontal: 15.0),
+        margin: EdgeInsets.symmetric(horizontal: 0.025 * size.width),
         child: FutureBuilder(
             future: completer.future,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return new ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: size.width * 0.425 * widget.sizeFactor,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(25.0),
-                        child: LimitedBox(
-                          maxHeight: snapshot.data.height.toDouble() *
-                              widget.sizeFactor,
-                          child: Stack(
-                            children: [
-                              /// Video card thumbnail.
-                              CachedNetworkImage(
-                                imageUrl: widget.video.thumbnailUrl,
-                                filterQuality: FilterQuality.high,
-                              ),
+                /// the video card's height
+                final double height = 0.4 * size.height;
+                final double iconSize = 0.45 * height * widget.sizeFactor;
 
-                              /// Play icon on top of the thumbnail.
-                              Positioned(
-                                  right: snapshot.data.height *
-                                          widget.sizeFactor *
-                                          diagonalDstFactor -
-                                      iconSize / 2,
-                                  bottom: snapshot.data.height *
-                                          widget.sizeFactor *
-                                          diagonalDstFactor -
-                                      iconSize / 2,
-                                  child: Stack(
-                                    alignment: Alignment.centerRight,
-                                    children: [
-                                      SvgPicture.asset(
-                                        R.svg
-                                            .videos_badge(height: 0, width: 0)
-                                            .asset,
-                                        width: iconSize,
-                                        height: iconSize,
-                                      ),
-                                    ],
-                                  )),
+                /// How far to move the icon diagonally from the bottom right.
+                final double diagonalDstFactor = 0.3;
 
-                              /// Full screen video "on demand".
-                              Positioned.fill(
-                                  child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    /// When tapped, open video.
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return VideoDisplay(
-                                        video: widget.video,
-                                        heroId: widget.heroId,
-                                      );
-                                    }));
-                                  },
-                                ),
-                              )),
-                            ],
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(0.15 * height),
+                      child: Stack(
+                        children: [
+                          /// Video card thumbnail.
+                          CachedNetworkImage(
+                            imageUrl: widget.video.thumbnailUrl,
+                            filterQuality: FilterQuality.high,
+                            height: height,
+                            fit: BoxFit.fitHeight,
                           ),
-                        ),
+
+                          /// Play icon on top of the thumbnail.
+                          Positioned(
+                              right: height *
+                                      widget.sizeFactor *
+                                      diagonalDstFactor -
+                                  iconSize / 2,
+                              bottom: height *
+                                      widget.sizeFactor *
+                                      diagonalDstFactor -
+                                  iconSize / 2,
+                              child: Stack(
+                                alignment: Alignment.centerRight,
+                                children: [
+                                  SvgPicture.asset(
+                                    R.svg
+                                        .videos_badge(height: 0, width: 0)
+                                        .asset,
+                                    width: iconSize,
+                                    height: iconSize,
+                                  ),
+                                ],
+                              )),
+
+                          /// Full screen video "on demand".
+                          Positioned.fill(
+                              child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                /// When tapped, open video.
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return VideoDisplay(
+                                    video: widget.video,
+                                    heroId: widget.heroId,
+                                  );
+                                }));
+                              },
+                            ),
+                          )),
+                        ],
                       ),
-                      Text(
-                        widget.video.title,
+                    ),
+                    Container(
+                      width:
+                          height / snapshot.data.height * snapshot.data.width,
+                      child: Text(
+                        "${widget.video.extra} - ${widget.video.title}\n\n${widget.video.series}",
+                        textAlign: TextAlign.left,
+                        softWrap: true,
+                        textScaleFactor: 0.006 * height,
                       ),
-                    ],
-                  ),
+                    )
+                  ],
                 );
               } else {
                 return new Container();
