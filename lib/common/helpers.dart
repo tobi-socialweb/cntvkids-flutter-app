@@ -57,15 +57,23 @@ class SvgIcon extends StatelessWidget {
   final AssetSvgCallback asset;
   final double width;
   final double height;
+  final EdgeInsets padding;
 
-  SvgIcon({@required this.asset, this.width = 10.0, this.height = 10.0});
+  SvgIcon(
+      {@required this.asset,
+      this.width = 10.0,
+      this.height = 10.0,
+      this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      asset(width: 0.0, height: 0.0).asset,
-      width: width,
-      height: height,
+    return Padding(
+      padding: padding,
+      child: SvgPicture.asset(
+        asset(width: 0.0, height: 0.0).asset,
+        width: width,
+        height: height,
+      ),
     );
   }
 }
