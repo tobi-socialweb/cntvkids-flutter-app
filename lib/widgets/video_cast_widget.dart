@@ -55,10 +55,7 @@ class _ChromeCastState extends State<ChromeCast> {
     });
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ChromeCastView(
-        controladorVideo: _handleState(),
-        copiaVideo: widget.video,
-        controladorCast: _controller,
-      );
+          controladorVideo: _handleState(), copiaVideo: widget.video);
     }));
   }
 
@@ -87,16 +84,23 @@ class _ChromeCastState extends State<ChromeCast> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         _RoundIconButton(
-          icon: Icons.replay_10,
-          onPressed: () => _controller.seek(relative: true, interval: -10.0),
-        ),
+            icon: Icons.replay_10,
+            onPressed: () {
+              _controller.seek(relative: true, interval: -10.0);
+              print("DEBUG: se adelanto");
+            }),
         _RoundIconButton(
             icon: _playing ? Icons.pause : Icons.play_arrow,
-            onPressed: _playPause),
+            onPressed: () {
+              _playPause();
+              print("DEBUG: play/stop");
+            }),
         _RoundIconButton(
-          icon: Icons.forward_10,
-          onPressed: () => _controller.seek(relative: true, interval: 10.0),
-        )
+            icon: Icons.forward_10,
+            onPressed: () {
+              _controller.seek(relative: true, interval: 10.0);
+              print("DEBUG: se retrocedio");
+            })
       ],
     );
   }
@@ -140,15 +144,21 @@ class InheritedVideoCast extends InheritedWidget {
       context.dependOnInheritedWidgetOfExactType<InheritedVideoCast>();
 }
 
-class ChromeCastView extends StatelessWidget {
+class ChromeCastView extends StatefulWidget {
   final Widget controladorVideo;
   final Video copiaVideo;
-  final ChromeCastController controladorCast;
 
-  ChromeCastView(
-      {@required this.controladorVideo,
-      @required this.copiaVideo,
-      @required this.controladorCast});
+  ChromeCastView({@required this.controladorVideo, @required this.copiaVideo});
+  @override
+  _ChromeCastViewState createState() => _ChromeCastViewState();
+}
+
+class _ChromeCastViewState extends State<ChromeCastView> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -201,9 +211,9 @@ class ChromeCastView extends StatelessWidget {
                               ),
                               Stack(
                                 children: [
-                                  Image.network(copiaVideo.thumbnailUrl,
+                                  Image.network(widget.copiaVideo.thumbnailUrl,
                                       height: 0.4 * size.height),
-                                  controladorVideo,
+                                  widget.controladorVideo,
                                 ],
                               ),
                               Container(
@@ -215,7 +225,7 @@ class ChromeCastView extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
-                                    ChromeCast(video: copiaVideo),
+                                    ChromeCast(video: widget.copiaVideo),
                                     SvgPicture.asset(
                                       R.svg
                                           .back_icon(width: 0.0, height: 0.0)
@@ -238,7 +248,7 @@ class ChromeCastView extends StatelessWidget {
                     )),
               ),
               onWillPop: () {
-                Navigator.of(context).pop();
+                Navigator.of(InheritedVideoCast.of(context).context).pop();
                 return Future<bool>.value(true);
               });
         }));

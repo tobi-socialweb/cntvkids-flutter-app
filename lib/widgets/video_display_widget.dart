@@ -252,6 +252,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
         ),
         onWillPop: () {
           print("DEBUG: popping screen when minimized");
+          //widget.betterPlayerController.videoPlayerController.dispose();
           widget.betterPlayerController.dispose();
           Navigator.of(context).pop();
           return Future<bool>.value(true);
