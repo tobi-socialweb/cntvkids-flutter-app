@@ -175,11 +175,13 @@ class _FeaturedState extends State<Featured> {
           if (snapshot.data.length == 0) return Container();
 
           return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Expanded(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxHeight: 0.6 * size.height),
                   child: ListView.builder(
+                    /// TODO: Fix max scroll indicator being cut.
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data.length + 1,
                     shrinkWrap: true,
@@ -215,7 +217,7 @@ class _FeaturedState extends State<Featured> {
                             child: Loading(
                                 indicator: BallBeatIndicator(),
                                 size: 60.0,
-                                color: Theme.of(context).accentColor));
+                                color: Colors.white));
                       }
 
                       /// Otherwise show nothing at the end.
@@ -239,7 +241,7 @@ class _FeaturedState extends State<Featured> {
             child: Loading(
                 indicator: BallBeatIndicator(),
                 size: 60.0,
-                color: Theme.of(context).accentColor));
+                color: Colors.white));
       },
     );
   }

@@ -195,14 +195,20 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             ),
                           ),
                           Container(
+                            padding: EdgeInsets.fromLTRB(
+                                0.025 * size.width,
+                                0.05 * size.height,
+                                0.025 * size.width,
+                                0.05 * size.height),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(25.0),
+                              /// TODO: use proportions for border radius (see video_card_widget).
+                              borderRadius: BorderRadius.circular(50.0),
                               child: InheritedVideoDisplay(
                                   context: context,
                                   isMinimized: true,
                                   toggleDisplay: toggleDisplay,
                                   child: Container(
-                                    height: 0.65 * size.height,
+                                    height: 0.5 * size.height,
                                     child: FutureBuilder(
                                         builder: (context, snapshot) {
                                       return AspectRatio(

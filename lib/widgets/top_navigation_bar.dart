@@ -192,6 +192,10 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
                 child: Text(
                   widget.text,
                   textScaleFactor: widget.textScaleFactor,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "FredokaOne",
+                  ),
                 ),
               )
             : Container()
@@ -208,7 +212,6 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
 
   @override
   void didChangeDependencies() {
-    print("DEBUG: didChangeDependencies for ${widget.text}");
     setState(() {
       isPressed = InheritedTopNavigationBar.of(context).getSelectedIndex() ==
           widget.index;

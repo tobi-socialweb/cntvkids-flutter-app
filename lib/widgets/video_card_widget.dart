@@ -58,7 +58,7 @@ class _VideoCardState extends State<VideoCard> {
                 final double diagonalDstFactor = 0.3;
 
                 return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ClipRRect(
@@ -118,12 +118,13 @@ class _VideoCardState extends State<VideoCard> {
                       width:
                           height / snapshot.data.height * snapshot.data.width,
                       child: Text(
-                        "${widget.video.extra} - ${widget.video.title}\n\n${widget.video.series}",
+                        "${widget.video.series}\n${widget.video.extra} - ${widget.video.title}",
                         textAlign: TextAlign.left,
                         softWrap: true,
                         textScaleFactor: 0.006 * height,
+                        style: TextStyle(color: Colors.black),
                       ),
-                    )
+                    ),
                   ],
                 );
               } else {
