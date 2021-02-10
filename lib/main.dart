@@ -36,47 +36,73 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppStateNotifier>(builder: (context, appState, child) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'CNTV Kids',
-        theme: ThemeData(
-            brightness: Brightness.light,
-            primaryColorLight: Colors.white,
-            primaryColorDark: Colors.black,
-            primaryColor: Colors.red,
-            accentColor: Color(0xFF390084),
-            canvasColor: Color(0xFFE3E3E3),
-            textTheme: TextTheme(
-              headline1: TextStyle(
-                fontSize: 17,
-                color: Colors.black,
-                height: 1.2,
-                //fontWeight: FontWeight.w500,
-                fontFamily: "FredokaOne",
-              ),
-              headline2: TextStyle(
-                  color: Colors.black,
-                  //fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  fontFamily: "FredokaOne"),
-              caption: TextStyle(color: Colors.black45, fontSize: 10),
-              bodyText1: TextStyle(
-                  fontSize: 16,
-                  height: 1.5,
-                  color: Colors.black87,
-                  fontFamily: "FredokaOne"),
-              bodyText2: TextStyle(
-                  fontSize: 14,
-                  height: 1.2,
-                  color: Colors.black54,
-                  fontFamily: "FredokaOne"),
-            ),
-            backgroundColor: Colors.white,
-            scaffoldBackgroundColor: Colors.white),
-        home: HomePage(),
-      );
-    });
+    return FutureBuilder(
+      future: Future.delayed(Duration(seconds: 3)),
+      builder: (context, AsyncSnapshot snapshot) {
+        // Show splash screen while waiting for app resources to load:
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(home: Splash());
+        } else {
+          // Loading is done, return the app:
+          return Consumer<AppStateNotifier>(
+              builder: (context, appState, child) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'CNTV Kids',
+              theme: ThemeData(
+                  brightness: Brightness.light,
+                  primaryColorLight: Colors.white,
+                  primaryColorDark: Colors.black,
+                  primaryColor: Colors.red,
+                  accentColor: Color(0xFF390084),
+                  canvasColor: Color(0xFFE3E3E3),
+                  textTheme: TextTheme(
+                    headline1: TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                      height: 1.2,
+                      //fontWeight: FontWeight.w500,
+                      fontFamily: "FredokaOne",
+                    ),
+                    headline2: TextStyle(
+                        color: Colors.black,
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontFamily: "FredokaOne"),
+                    caption: TextStyle(color: Colors.black45, fontSize: 10),
+                    bodyText1: TextStyle(
+                        fontSize: 16,
+                        height: 1.5,
+                        color: Colors.black87,
+                        fontFamily: "FredokaOne"),
+                    bodyText2: TextStyle(
+                        fontSize: 14,
+                        height: 1.2,
+                        color: Colors.black54,
+                        fontFamily: "FredokaOne"),
+                  ),
+                  backgroundColor: Colors.white,
+                  scaffoldBackgroundColor: Colors.white),
+              home: HomePage(),
+            );
+          });
+        }
+      },
+    );
+  }
+}
+
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Icon(
+          Icons.apartment_outlined,
+          size: MediaQuery.of(context).size.width * 0.785,
+        ),
+      ),
+    );
   }
 }
 
