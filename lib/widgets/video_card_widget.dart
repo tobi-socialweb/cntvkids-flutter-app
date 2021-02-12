@@ -13,8 +13,11 @@ class VideoCard extends StatefulWidget {
   final String heroId;
   final double sizeFactor;
 
-  VideoCard(
-      {@required this.video, @required this.heroId, this.sizeFactor = 1.0});
+  VideoCard({
+    @required this.video,
+    @required this.heroId,
+    this.sizeFactor = 1.0,
+  });
 
   @override
   _VideoCardState createState() => _VideoCardState();
