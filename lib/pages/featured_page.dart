@@ -18,10 +18,12 @@ import 'package:http/http.dart' as http;
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 /// Shows video widgets that have 'featured' category.
 class Featured extends StatefulWidget {
   final bool isMinimized;
-
   Featured({this.isMinimized = false});
 
   @override
@@ -79,6 +81,13 @@ class _FeaturedState extends State<Featured> {
     }
   }
 
+  /// play sounds
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
   /// Listener for scroll changes.
   ///
   /// Loads the next page (per page) for featured videos if the scroll is
@@ -86,12 +95,20 @@ class _FeaturedState extends State<Featured> {
   _scrollControllerListener() {
     if (!this.mounted) return;
 
+    /// reach bottom
     if (_controller.offset >= _controller.position.maxScrollExtent &&
         !_controller.position.outOfRange) {
+      playSound("sounds/beam/beam.mp3");
       setState(() {
         currentPage += 1;
         _futureFeatured = fetchFeatured(currentPage);
       });
+    }
+
+    /// reach top
+    if (_controller.offset <= _controller.position.minScrollExtent &&
+        !_controller.position.outOfRange) {
+      playSound("sounds/beam/beam.mp3");
     }
   }
 
