@@ -1,13 +1,19 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
+
 import 'package:better_player/better_player.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video_cast_widget.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'custom_controls_widget.dart';
+import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 
 typedef bool BoolCallback();
 
@@ -44,6 +50,9 @@ class VideoDisplay extends StatefulWidget {
 }
 
 class _VideoDisplayState extends State<VideoDisplay> {
+  BetterPlayer video;
+  CancelableCompleter completer;
+
   /// Video player controller and data source.
   BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource _betterPlayerDataSource;
@@ -52,10 +61,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   void initState() {
     super.initState();
 
-    /// If
     if (widget.betterPlayerController != null) {
-      print(
-          "DEBUG: when calling VideoDisplay (full screen), betterPlayerController was not null!");
       _betterPlayerController = widget.betterPlayerController;
       return;
     }
@@ -95,6 +101,33 @@ class _VideoDisplayState extends State<VideoDisplay> {
           },
         ),
         betterPlayerDataSource: _betterPlayerDataSource);
+
+    /// Set completer to dispose the player controller when cancelling.
+    completer = new CancelableCompleter(onCancel: () {
+      setState(() {
+        video.controller.dispose();
+      });
+    });
+  }
+
+  Future<dynamic> _getFutureVideo() {
+    video = BetterPlayer(controller: _betterPlayerController);
+
+    video.controller.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
+        completer.complete(video);
+      }
+
+      /// TODO: Check if controller is still not disposed correctly.
+      if (video != null &&
+          video.controller.isPlaying() &&
+          completer.isCanceled) {
+        video.controller.pause();
+        video.controller.dispose();
+      }
+    });
+
+    return completer.operation.value;
   }
 
   @override
@@ -103,22 +136,40 @@ class _VideoDisplayState extends State<VideoDisplay> {
       context: context,
       isMinimized: false,
       toggleDisplay: toggleDisplay,
-      child: FutureBuilder(builder: (context, snapshot) {
-        return WillPopScope(
-            child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Hero(
-                  tag: widget.heroId,
-                  child: BetterPlayer(
-                    controller: _betterPlayerController,
-                  ),
-                )),
+      child: FutureBuilder(
+          future: _getFutureVideo(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && !completer.isCanceled) {
+              return WillPopScope(
+                  child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Hero(
+                        tag: widget.heroId,
+                        child: snapshot.data,
+                      )),
 
-            /// When using the 'back' button, toggle minimize.
-            onWillPop: () {
-              return Future<bool>.value(true);
-            });
-      }),
+                  /// When using the 'back' button, toggle minimize.
+                  onWillPop: () {
+                    return Future<bool>.value(true);
+                  });
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error);
+            } else {
+              return WillPopScope(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+
+                  /// When using the 'back' button, toggle minimize.
+                  onWillPop: () {
+                    /// Dispose video if user pops out before its initialized.
+                    completer.operation.cancel();
+                    return Future<bool>.value(true);
+                  });
+            }
+          }),
     );
   }
 
@@ -130,6 +181,12 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerController: _betterPlayerController,
       );
     }));
+  }
+
+  @override
+  void dispose() {
+    video.controller.dispose();
+    super.dispose();
   }
 }
 
@@ -155,6 +212,9 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
+    final double iconSize = 0.15 * size.height;
+    final double miniVideoSize = 0.6 * size.height;
+
     return WillPopScope(
         child: Material(
           color: Theme.of(context).accentColor,
@@ -166,89 +226,77 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      decoration:
-                          BoxDecoration(border: Border.all(color: Colors.blue)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.yellow)),
-                            height: 0.65 * size.height,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                SvgIcon(
-                                  asset: R.svg.back_icon,
-                                  width: 60.0,
-                                  height: 60.0,
-                                ),
-                                SvgIcon(
-                                  asset: R.svg.back_icon,
-                                  width: 60.0,
-                                  height: 60.0,
-                                )
-                              ],
-                            ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Left side icons.
+                        Container(
+                          height: miniVideoSize,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.05 * size.height),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              SvgIcon(
+                                asset: R.svg.back_icon,
+                                size: iconSize,
+                              ),
+                            ],
                           ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(
-                                0.025 * size.width,
-                                0.05 * size.height,
-                                0.025 * size.width,
-                                0.05 * size.height),
-                            child: ClipRRect(
-                              /// TODO: use proportions for border radius (see video_card_widget).
-                              borderRadius: BorderRadius.circular(50.0),
-                              child: InheritedVideoDisplay(
-                                  context: context,
-                                  isMinimized: true,
-                                  toggleDisplay: toggleDisplay,
-                                  child: Container(
-                                    height: 0.5 * size.height,
-                                    child: FutureBuilder(
-                                        builder: (context, snapshot) {
-                                      return AspectRatio(
-                                          aspectRatio: 16 / 9,
-                                          child: Hero(
-                                            tag: widget.heroId,
-                                            child: BetterPlayer(
-                                              controller:
-                                                  widget.betterPlayerController,
-                                            ),
-                                          ));
-                                    }),
-                                  )),
-                            ),
+                        ),
+
+                        /// Centered video.
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 0.01 * size.width),
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(0.075 * size.height),
+                            child: InheritedVideoDisplay(
+                                context: context,
+                                isMinimized: true,
+                                toggleDisplay: toggleDisplay,
+                                child: Container(
+                                  height: miniVideoSize,
+                                  child: AspectRatio(
+                                      aspectRatio: 16 / 9,
+                                      child: MediaQuery(
+                                        data: MediaQueryData(
+                                            size: Size(miniVideoSize * 16 / 9,
+                                                miniVideoSize)),
+                                        child: Hero(
+                                          tag: widget.heroId,
+                                          child: BetterPlayer(
+                                            controller:
+                                                widget.betterPlayerController,
+                                          ),
+                                        ),
+                                      )),
+                                )),
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.yellow)),
-                            height: 0.65 * size.height,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                ChromeCast(video: widget.video),
-                                SvgIcon(
-                                  asset: R.svg.back_icon,
-                                  width: 60.0,
-                                  height: 60.0,
-                                )
-                              ],
-                            ),
+                        ),
+
+                        /// Right side icons.
+                        Container(
+                          height: miniVideoSize,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              ChromeCast(
+                                  video: widget.video, iconSize: iconSize),
+                              SvgIcon(
+                                asset: R.svg.back_icon,
+                                size: iconSize,
+                              )
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.green)),
-                      child: Featured(isMinimized: true),
-                    ),
+                    Featured(isMinimized: true),
                   ],
                 )),
             onTap: () {
@@ -257,8 +305,6 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
           ),
         ),
         onWillPop: () {
-          print("DEBUG: popping screen when minimized");
-          //widget.betterPlayerController.videoPlayerController.dispose();
           widget.betterPlayerController.dispose();
           Navigator.of(context).pop();
           return Future<bool>.value(true);

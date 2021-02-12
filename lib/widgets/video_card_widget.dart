@@ -11,16 +11,19 @@ import 'package:flutter/material.dart';
 class VideoCard extends StatefulWidget {
   final Video video;
   final String heroId;
-  final double sizeFactor;
+  final bool isMinimized;
 
   VideoCard(
-      {@required this.video, @required this.heroId, this.sizeFactor = 1.0});
+      {@required this.video, @required this.heroId, this.isMinimized = false});
 
   @override
   _VideoCardState createState() => _VideoCardState();
 }
 
 class _VideoCardState extends State<VideoCard> {
+  /// The size factor shrinks the video card by this amount.
+  double sizeFactor;
+
   /// Video thumbnail and completer for the future builder.
   Image thumbnail;
   Completer completer = new Completer();
@@ -34,6 +37,8 @@ class _VideoCardState extends State<VideoCard> {
     thumbnail.image.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener(
             (ImageInfo info, bool _) => {completer.complete(info.image)}));
+
+    sizeFactor = widget.isMinimized ? 0.9 : 1.0;
   }
 
   @override
@@ -44,14 +49,17 @@ class _VideoCardState extends State<VideoCard> {
         shadowColor: Colors.transparent,
         color: Colors.transparent,
         borderOnForeground: false,
-        margin: EdgeInsets.symmetric(horizontal: 0.025 * size.width),
+        margin: widget.isMinimized
+            ? EdgeInsets.symmetric(
+                horizontal: 0.005 * size.width, vertical: 0.005 * size.width)
+            : EdgeInsets.symmetric(horizontal: 0.025 * size.width),
         child: FutureBuilder(
             future: completer.future,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 /// the video card's height
-                final double height = 0.4 * size.height;
-                final double iconSize = 0.45 * height * widget.sizeFactor;
+                final double height = 0.4 * size.height * sizeFactor;
+                final double iconSize = 0.45 * height;
 
                 /// How far to move the icon diagonally from the bottom right.
                 final double diagonalDstFactor = 0.3;
@@ -74,21 +82,14 @@ class _VideoCardState extends State<VideoCard> {
 
                           /// Play icon on top of the thumbnail.
                           Positioned(
-                              right: height *
-                                      widget.sizeFactor *
-                                      diagonalDstFactor -
-                                  iconSize / 2,
-                              bottom: height *
-                                      widget.sizeFactor *
-                                      diagonalDstFactor -
-                                  iconSize / 2,
+                              right: height * diagonalDstFactor - iconSize / 2,
+                              bottom: height * diagonalDstFactor - iconSize / 2,
                               child: Stack(
                                 alignment: Alignment.centerRight,
                                 children: [
                                   SvgIcon(
                                     asset: R.svg.videos_badge,
-                                    width: iconSize,
-                                    height: iconSize,
+                                    size: iconSize,
                                   ),
                                 ],
                               )),
@@ -113,17 +114,18 @@ class _VideoCardState extends State<VideoCard> {
                         ],
                       ),
                     ),
-                    Container(
-                      width:
-                          height / snapshot.data.height * snapshot.data.width,
-                      child: Text(
-                        "${widget.video.series}\n${widget.video.extra} - ${widget.video.title}",
-                        textAlign: TextAlign.left,
-                        softWrap: true,
-                        textScaleFactor: 0.006 * height,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
+                    if (!widget.isMinimized)
+                      Container(
+                        width:
+                            height / snapshot.data.height * snapshot.data.width,
+                        child: Text(
+                          "${widget.video.series}\n${widget.video.extra} - ${widget.video.title}",
+                          textAlign: TextAlign.left,
+                          softWrap: true,
+                          textScaleFactor: 0.006 * height,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      )
                   ],
                 );
               } else {

@@ -8,9 +8,9 @@ import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ChromeCast extends StatefulWidget {
-  static const _iconSize = 50.0;
+  final double iconSize;
   final Video video;
-  ChromeCast({@required this.video});
+  ChromeCast({@required this.video, this.iconSize = 50.0});
   @override
   _ChromeCastState createState() => _ChromeCastState();
 }
@@ -26,7 +26,7 @@ class _ChromeCastState extends State<ChromeCast> {
   @override
   Widget build(BuildContext context) {
     return boton = ChromeCastButton(
-        size: ChromeCast._iconSize,
+        size: widget.iconSize,
         color: Colors.black,
         onButtonCreated: _onButtonCreated,
         onSessionStarted: _onSessionStarted,

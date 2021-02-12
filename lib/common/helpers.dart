@@ -55,15 +55,11 @@ Future<Null> enableNotification(context, bool val) async {
 
 class SvgIcon extends StatelessWidget {
   final AssetSvgCallback asset;
-  final double width;
-  final double height;
+  final double size;
   final EdgeInsets padding;
 
   SvgIcon(
-      {@required this.asset,
-      this.width = 10.0,
-      this.height = 10.0,
-      this.padding = EdgeInsets.zero});
+      {@required this.asset, this.size = 10.0, this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +67,8 @@ class SvgIcon extends StatelessWidget {
       padding: padding,
       child: SvgPicture.asset(
         asset(width: 0.0, height: 0.0).asset,
-        width: width,
-        height: height,
+        width: size,
+        height: size,
       ),
     );
   }

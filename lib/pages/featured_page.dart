@@ -164,7 +164,7 @@ class _FeaturedState extends State<Featured> {
     Size size = MediaQuery.of(context).size;
 
     if (widget.isMinimized) {
-      size = new Size(size.width, 0.5 * size.height);
+      size = new Size(size.width, 0.66 * size.height);
     }
 
     return FutureBuilder<List<dynamic>>(
@@ -198,7 +198,7 @@ class _FeaturedState extends State<Featured> {
                           video: snapshot.data[index],
                           heroId: snapshot.data[index].id.toString() +
                               new Random().nextInt(10000).toString(),
-                          sizeFactor: widget.isMinimized ? 0.5 : 1.0,
+                          isMinimized: widget.isMinimized,
                         );
 
                         /// Otherwise, it's the loading widget.
@@ -210,6 +210,7 @@ class _FeaturedState extends State<Featured> {
                           _futureFeatured = fetchFeatured(++currentPage);
                         }
 
+                        /// TODO: Check if widget is visible, if so then load pages.
                         /// Show the loading widget at the end.
                         return Container(
                             alignment: Alignment.center,

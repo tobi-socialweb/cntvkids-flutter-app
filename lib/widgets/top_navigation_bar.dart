@@ -183,7 +183,7 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
               asset: (isPressed && widget.activeIcon != null)
                   ? widget.activeIcon
                   : widget.icon,
-              height: widget.size),
+              size: widget.size),
           onPressed: _onPressed,
         ),
         (widget.text != null && widget.text != "")
