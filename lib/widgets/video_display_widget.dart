@@ -213,7 +213,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     Size size = MediaQuery.of(context).size;
 
     final double iconSize = 0.15 * size.height;
-    final double miniVideoSize = 0.6 * size.height;
+    final double miniVideoSize = 0.5 * size.height;
 
     return WillPopScope(
         child: Material(
@@ -239,9 +239,16 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              SvgIcon(
-                                asset: R.svg.back_icon,
-                                size: iconSize,
+                              InkWell(
+                                child: SvgIcon(
+                                  asset: R.svg.back_icon,
+                                  size: iconSize,
+                                ),
+                                onTap: () {
+                                  widget.betterPlayerController.dispose();
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
                               ),
                             ],
                           ),
@@ -249,8 +256,8 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
 
                         /// Centered video.
                         Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 0.01 * size.width),
+                          padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                              0.05 * size.height, 0.01 * size.width, 0.0),
                           child: ClipRRect(
                             borderRadius:
                                 BorderRadius.circular(0.075 * size.height),
@@ -287,10 +294,6 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             children: [
                               ChromeCast(
                                   video: widget.video, iconSize: iconSize),
-                              SvgIcon(
-                                asset: R.svg.back_icon,
-                                size: iconSize,
-                              )
                             ],
                           ),
                         ),

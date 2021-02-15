@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.delayed(Duration(seconds: 10)),
+      future: Future.delayed(Duration(seconds: 6)),
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -109,7 +109,7 @@ class Splash extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 16 / 9,
             child: BetterPlayer.network(
-              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+              "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
               betterPlayerConfiguration: BetterPlayerConfiguration(
                 aspectRatio: 16 / 9,
                 autoPlay: true,
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (ENABLE_ADS) _startAdMob();
   }
 
-  // dispose funtions
+  // Dispose funtions
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return player;
   }
 
-  // change background sound in agreement of app state
+  // Change background sound in agreement of app state
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if ((state == AppLifecycleState.paused ||
@@ -199,7 +199,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  ///
   _startAdMob() {
     Admob.initialize(ADMOB_ID);
   }
@@ -317,7 +316,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             )));
   }
 
-  /// play sounds efects
+  /// Play sounds efects
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
@@ -337,14 +336,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 }
 
-typedef int IntCallback();
-
 /// Custom painter for the colored bottom blob.
 class BottomColoredBlob extends StatefulWidget {
   final Size size;
   final int currentSelectedIndex;
   final List<Color> colors;
-  final IntCallback getCurrentSelectedIndex;
+  final int Function() getCurrentSelectedIndex;
 
   BottomColoredBlob(
       {this.size,
@@ -409,6 +406,6 @@ class _BottomColoredBlobPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }

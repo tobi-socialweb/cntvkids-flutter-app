@@ -206,6 +206,30 @@ class _R_Svg_AssetResource {
   final logo_icon = const AssetResource("assets/images/logo/logo_icon.svg",
       packageName: null);
 
+  /// asset: assets/images/player_next/player_next_icon.svg
+  // ignore: non_constant_identifier_names
+  final player_next_icon = const AssetResource(
+      "assets/images/player_next/player_next_icon.svg",
+      packageName: null);
+
+  /// asset: assets/images/player_pause/player_pause_icon.svg
+  // ignore: non_constant_identifier_names
+  final player_pause_icon = const AssetResource(
+      "assets/images/player_pause/player_pause_icon.svg",
+      packageName: null);
+
+  /// asset: assets/images/player_play/player_play_icon.svg
+  // ignore: non_constant_identifier_names
+  final player_play_icon = const AssetResource(
+      "assets/images/player_play/player_play_icon.svg",
+      packageName: null);
+
+  /// asset: assets/images/player_previous/player_previous_icon.svg
+  // ignore: non_constant_identifier_names
+  final player_previous_icon = const AssetResource(
+      "assets/images/player_previous/player_previous_icon.svg",
+      packageName: null);
+
   /// asset: assets/images/record/record_icon.svg
   // ignore: non_constant_identifier_names
   final record_icon = const AssetResource(
@@ -413,6 +437,40 @@ class _R_Svg {
   AssetSvg logo_icon({@required double width, @required double height}) {
     final imageProvider =
         AssetSvg(asset.logo_icon.keyName, width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/player_next/player_next_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg player_next_icon({@required double width, @required double height}) {
+    final imageProvider =
+        AssetSvg(asset.player_next_icon.keyName, width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/player_pause/player_pause_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg player_pause_icon(
+      {@required double width, @required double height}) {
+    final imageProvider =
+        AssetSvg(asset.player_pause_icon.keyName, width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/player_play/player_play_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg player_play_icon({@required double width, @required double height}) {
+    final imageProvider =
+        AssetSvg(asset.player_play_icon.keyName, width: width, height: height);
+    return imageProvider;
+  }
+
+  /// asset: assets/images/player_previous/player_previous_icon.svg
+  // ignore: non_constant_identifier_names
+  AssetSvg player_previous_icon(
+      {@required double width, @required double height}) {
+    final imageProvider = AssetSvg(asset.player_previous_icon.keyName,
+        width: width, height: height);
     return imageProvider;
   }
 

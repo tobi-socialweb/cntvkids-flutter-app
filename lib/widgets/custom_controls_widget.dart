@@ -85,8 +85,8 @@ class _VideoControlsBarState extends State<VideoControlsBar> {
                     (states) => Colors.transparent),
                 child: SvgIcon(
                   asset: widget.controller.isPlaying()
-                      ? R.svg.back_icon
-                      : R.svg.videos_icon,
+                      ? R.svg.player_pause_icon
+                      : R.svg.player_play_icon,
                   size: 0.25 * size.height,
                   padding: EdgeInsets.only(left: 0.005 * size.height),
                 ),
@@ -189,7 +189,6 @@ class _VideoProgressBarState extends State<_CustomProgressBar> {
 
   @override
   Widget build(BuildContext context) {
-    /// TODO: Show current time when seeking to new position.
     void seekToRelativePosition(Offset globalPosition) {
       final box = context.findRenderObject() as RenderBox;
       final Offset tapPos = box.globalToLocal(globalPosition);
@@ -198,10 +197,17 @@ class _VideoProgressBarState extends State<_CustomProgressBar> {
         final Duration position =
             widget.controller.videoPlayerController.value.duration * relative;
 
+        /// If position is greater than video duration, then move to max.
         if (position >
             betterPlayerController.videoPlayerController.value.duration) {
           betterPlayerController.seekTo(
               betterPlayerController.videoPlayerController.value.duration);
+
+          /// If position is less than 0, move to 0.
+        } else if (position < Duration.zero) {
+          betterPlayerController.seekTo(Duration.zero);
+
+          /// Otherwise, move to position.
         } else {
           betterPlayerController.seekTo(position);
         }
@@ -357,19 +363,19 @@ class _DisplayTime extends StatefulWidget {
       Color color = Colors.white,
       double diagonalOffset = 2.5}) {
     dynamic value = controller.videoPlayerController.value;
-    return _DisplayTime.formatTime(
-        value.duration.inMinutes, value.duration.inSeconds,
+    return _DisplayTime.formatTime(value.duration.inSeconds,
         textScaleFactor: textScaleFactor,
         color: color,
         diagonalOffset: diagonalOffset);
   }
 
   /// Expects minutes and seconds to be the total of each respective one separately.
-  static Text formatTime(int minutes, int seconds,
+  static Text formatTime(int seconds,
       {double textScaleFactor = 2.5,
       Color color = Colors.white,
       double diagonalOffset = 2.5}) {
-    seconds = seconds - 60 * minutes;
+    int minutes = (seconds / 60).floor();
+    seconds = seconds % 60;
 
     String sMinutes = (minutes < 10) ? "0$minutes" : minutes.toString();
     String sSeconds = (seconds < 10) ? "0$seconds" : seconds.toString();
@@ -390,81 +396,84 @@ class _DisplayTime extends StatefulWidget {
 }
 
 class _DisplayTimeState extends State<_DisplayTime> {
+  /// Text component that displays the time.
   Text text;
+
+  /// Timer that calls the _timerCallback function every second.
   Timer timer;
 
-  int minuteCounter;
-  int passedMinutes;
+  /// The currently passed seconds.
   int passedSeconds;
 
-  int maxMinutes;
+  /// The max seconds according to the video duration.
   int maxSeconds;
 
+  BetterPlayerController get controller => widget.controller;
   dynamic get value => widget.controller.videoPlayerController.value;
-  Timer getTimer() => Timer.periodic(Duration(seconds: 1), _timerCallback);
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), _timerCallback);
+  }
+
+  void cancelTimer() {
+    if (timer != null) timer.cancel();
+  }
 
   @override
   void initState() {
     _updateTimePassed();
 
-    if (widget.controller.isPlaying()) {
-      timer = getTimer();
-    }
+    if (controller.isPlaying()) startTimer();
 
-    widget.controller.addEventsListener((event) {
+    controller.addEventsListener((event) {
       if (!this.mounted) return;
 
       setState(() {
         /// seekTo event.
         if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
-          if (timer != null) timer.cancel();
-
+          cancelTimer();
           _updateTimePassed();
 
-          if (widget.controller.isPlaying()) {
-            timer = getTimer();
+          if (controller.isPlaying()) {
+            startTimer();
           }
 
           /// play event.
         } else if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-          if (timer != null) timer.cancel();
-
+          cancelTimer();
           _updateTimePassed();
 
-          timer = getTimer();
+          startTimer();
 
           /// pause event.
         } else if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
           _updateTimePassed();
 
-          if (timer != null) timer.cancel();
+          cancelTimer();
         } else if (event.betterPlayerEventType ==
             BetterPlayerEventType.finished) {
           _updateTimePassed();
 
           if (timer != null) {
             /// Show the max minutes and seconds because the video finished.
-            if (passedSeconds >= maxSeconds) {
-              text = _DisplayTime.formatTime(maxMinutes, maxSeconds,
+            if (passedSeconds > maxSeconds) {
+              text = _DisplayTime.formatTime(maxSeconds,
                   textScaleFactor: widget.textScaleFactor);
             }
 
-            timer.cancel();
+            cancelTimer();
           }
         }
-
-        /// TODO: Cancel timer when video stops for buffering the rest (when there is lag).
       });
 
-      maxMinutes = value.duration.inMinutes;
       maxSeconds = value.duration.inSeconds;
     });
 
-    widget.controller.videoPlayerController.addListener(() {
+    controller.videoPlayerController.addListener(() {
       if (value.isBuffering && timer.isActive) {
-        timer.cancel();
+        cancelTimer();
       } else if (!value.isBuffering && timer != null && !timer.isActive) {
-        timer = getTimer();
+        startTimer();
       }
     });
 
@@ -476,33 +485,33 @@ class _DisplayTimeState extends State<_DisplayTime> {
 
     setState(() {
       passedSeconds += 1;
-      minuteCounter += 1;
 
-      if (minuteCounter > 59) {
-        passedMinutes += 1;
-        minuteCounter = 0;
-      }
-
-      /// Check if current values go 2 seconds beyond the real video position.
-      if (passedSeconds + 1 > value.position.inSeconds) {
+      /// Check if current values go 1 second beyond the real video position.
+      if (passedSeconds > value.position.inSeconds) {
+        print("DEBUG: substracting one second. going too fast.");
         passedSeconds -= 1;
-        minuteCounter -= 1;
       }
 
-      text = _DisplayTime.formatTime(passedMinutes, passedSeconds,
+      /// Check if current values go 1 second behind the real video position.
+      if (passedSeconds < value.position.inSeconds) {
+        print("DEBUG: adding one second. going too slow.");
+        passedSeconds += 1;
+      }
+
+      /// Change the text widget to reflect new time.
+      text = _DisplayTime.formatTime(passedSeconds,
           textScaleFactor: widget.textScaleFactor);
     });
   }
 
+  /// Get the current position according to the video controller and update text.
   void _updateTimePassed() {
     if (!this.mounted) return;
 
     setState(() {
-      passedMinutes = value.position.inMinutes;
       passedSeconds = value.position.inSeconds;
-      minuteCounter = passedSeconds - 60 * passedMinutes;
 
-      text = _DisplayTime.formatTime(passedMinutes, passedSeconds,
+      text = _DisplayTime.formatTime(passedSeconds,
           textScaleFactor: widget.textScaleFactor);
     });
   }
