@@ -286,7 +286,9 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               ChromeCast(
-                                  video: widget.video, iconSize: iconSize),
+                                video: widget.video,
+                                iconSize: iconSize,
+                              ),
                               SvgIcon(
                                 asset: R.svg.back_icon,
                                 size: iconSize,

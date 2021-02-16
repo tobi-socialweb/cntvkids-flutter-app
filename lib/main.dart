@@ -104,21 +104,20 @@ class Splash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: AspectRatio(
+      body: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: BetterPlayer.network(
+          "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
+          betterPlayerConfiguration: BetterPlayerConfiguration(
             aspectRatio: 16 / 9,
-            child: BetterPlayer.network(
-              "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-              betterPlayerConfiguration: BetterPlayerConfiguration(
-                aspectRatio: 16 / 9,
-                autoPlay: true,
-                controlsConfiguration:
-                    BetterPlayerControlsConfiguration(showControls: false),
-              ),
-            ),
+            autoPlay: true,
+            fullScreenByDefault: true,
+            controlsConfiguration:
+                BetterPlayerControlsConfiguration(showControls: false),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
