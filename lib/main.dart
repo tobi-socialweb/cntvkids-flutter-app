@@ -1,4 +1,3 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +150,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _startOneSignal();
     loopMusic();
-    if (ENABLE_ADS) _startAdMob();
   }
 
   // Dispose funtions
@@ -199,10 +197,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  _startAdMob() {
-    Admob.initialize(ADMOB_ID);
-  }
-
   _startOneSignal() async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'notification';
@@ -231,7 +225,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           stopMusic();
         },
         onVisibilityGained: () {
-          if (!musicOn) {
+          if (musicOn != null && !musicOn) {
             cache.clearCache();
             loopMusic();
           }
