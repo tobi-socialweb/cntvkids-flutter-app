@@ -1,4 +1,3 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +43,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.delayed(Duration(seconds: 10)),
+      future: Future.delayed(Duration(seconds: 6)),
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -111,7 +110,6 @@ class Splash extends StatelessWidget {
           betterPlayerConfiguration: BetterPlayerConfiguration(
             aspectRatio: 16 / 9,
             autoPlay: true,
-            fullScreenByDefault: true,
             controlsConfiguration:
                 BetterPlayerControlsConfiguration(showControls: false),
           ),
@@ -150,10 +148,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _startOneSignal();
     loopMusic();
-    if (ENABLE_ADS) _startAdMob();
   }
 
-  // dispose funtions
+  // Dispose funtions
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -186,7 +183,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return player;
   }
 
-  // change background sound in agreement of app state
+  // Change background sound in agreement of app state
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if ((state == AppLifecycleState.paused ||
@@ -196,11 +193,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed && !musicOn) {
       resumeMusic();
     }
-  }
-
-  ///
-  _startAdMob() {
-    Admob.initialize(ADMOB_ID);
   }
 
   _startOneSignal() async {
@@ -231,7 +223,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           stopMusic();
         },
         onVisibilityGained: () {
-          if (!musicOn) {
+          if (musicOn != null && !musicOn) {
             cache.clearCache();
             loopMusic();
           }
@@ -316,7 +308,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             )));
   }
 
-  /// play sounds efects
+  /// Play sounds efects
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
@@ -336,14 +328,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 }
 
-typedef int IntCallback();
-
 /// Custom painter for the colored bottom blob.
 class BottomColoredBlob extends StatefulWidget {
   final Size size;
   final int currentSelectedIndex;
   final List<Color> colors;
-  final IntCallback getCurrentSelectedIndex;
+  final int Function() getCurrentSelectedIndex;
 
   BottomColoredBlob(
       {this.size,
@@ -408,6 +398,6 @@ class _BottomColoredBlobPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }
