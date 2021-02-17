@@ -1,14 +1,8 @@
-import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'common/helpers.dart';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -16,6 +10,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:focus_detector/focus_detector.dart';
 
 import 'package:better_player/better_player.dart';
+
+import 'package:cntvkids_app/r.g.dart';
+import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+import 'package:cntvkids_app/pages/featured_page.dart';
+import 'package:cntvkids_app/pages/series_page.dart';
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -136,7 +137,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
     Featured(),
-    Featured(),
+    SeriesList(),
     Featured(),
     Featured(),
     Featured(),
