@@ -24,8 +24,9 @@ const Map<ErrorTypes, String> ERROR_MESSAGE = {
 const String MISSING_IMAGE_URL =
     "$WORDPRESS_URL/cntv/wp-content/uploads/2019/09/noimage-1.jpg";
 
-/// Featured category ID (for Home Screen top section)
+/// Category IDs
 const int FEATURED_ID = 10536;
+const int SERIES_ID = 10287;
 
 /// Height percentage of the navigation bar that takes up.
 const double NAV_BAR_PERCENTAGE = 0.275;

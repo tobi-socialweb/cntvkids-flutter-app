@@ -4,6 +4,8 @@ class Video {
   final String thumbnailUrl;
   final String videoUrl;
   final String series;
+  final String season;
+  final String chapter;
   final String extra;
   final List<int> categories;
 
@@ -13,10 +15,12 @@ class Video {
       this.thumbnailUrl,
       this.videoUrl,
       this.series,
+      this.season,
+      this.chapter,
       this.extra,
       this.categories});
 
-  /// Get [Video] from JSON object.
+  /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json) {
     /// Default values
     int id = -1;
@@ -24,6 +28,8 @@ class Video {
     String thumbnailUrl = "";
     String videoUrl = "";
     String series = "";
+    String season = "";
+    String chapter = "";
     String extra = "";
 
     List<int> categories = [];
@@ -35,8 +41,8 @@ class Video {
     videoUrl = json["wpcf-vimeo-player-dl"];
     series = json["serie_info"]["title"];
 
-    String season = json["wpcf-season"].toString();
-    String chapter = json["wpcf-chapter"].toString();
+    season = json["wpcf-season"].toString();
+    chapter = json["wpcf-chapter"].toString();
     extra = "T${season}E$chapter";
 
     for (int i = 0; i < json["categories"].length; i++) {

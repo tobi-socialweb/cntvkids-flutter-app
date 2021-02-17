@@ -77,7 +77,7 @@ class _FeaturedState extends State<Featured> {
         }
       }
     } on SocketException {
-      throw (ERROR_MESSAGE["NO_CONNECTION"]);
+      throw (ERROR_MESSAGE[ErrorTypes.NO_CONNECTION]);
     }
   }
 
