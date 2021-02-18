@@ -49,8 +49,12 @@ class _GamesState extends State<Games> {
         });
         var i = 0;
         while (i < games.length) {
-          games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
-          i++;
+          if (i < 5) {
+            games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
+            i++;
+          } else {
+            games.removeAt(i);
+          }
         }
         return games;
       }
