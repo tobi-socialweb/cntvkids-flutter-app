@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.delayed(Duration(seconds: 6)),
+      future: Future.delayed(Duration(seconds: 7)),
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -104,6 +104,7 @@ class Splash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: AspectRatio(
         aspectRatio: 16 / 9,
         child: BetterPlayer.network(
@@ -111,6 +112,7 @@ class Splash extends StatelessWidget {
           betterPlayerConfiguration: BetterPlayerConfiguration(
             aspectRatio: 16 / 9,
             autoPlay: true,
+            fullScreenByDefault: true,
             controlsConfiguration:
                 BetterPlayerControlsConfiguration(showControls: false),
           ),
