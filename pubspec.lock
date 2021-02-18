@@ -866,7 +866,7 @@ packages:
     source: hosted
     version: "0.9.7+15"
   webview_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: webview_flutter
       url: "https://pub.dartlang.org"

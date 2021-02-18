@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/pages/games_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +139,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Featured(),
     Featured(),
     Featured(),
-    Featured(),
+    Games(),
     Featured(),
   ];
 
