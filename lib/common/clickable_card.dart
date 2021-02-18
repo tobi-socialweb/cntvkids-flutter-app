@@ -122,6 +122,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
                       ],
                     ),
                   ),
+                  afterThumbnailWidget(),
                 ],
               );
 

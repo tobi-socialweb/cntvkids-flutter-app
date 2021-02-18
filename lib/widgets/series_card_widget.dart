@@ -42,7 +42,8 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
   @override
   Widget afterThumbnailWidget() {
     return Container(
-        /*
+      child: Text(widget.series.title),
+      /*
         width: width,
         child: Text(
           widget.series.title,
@@ -51,7 +52,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
           textScaleFactor: 0.006 * height,
           style: TextStyle(color: Colors.black),
         )*/
-        );
+    );
   }
 
   @override

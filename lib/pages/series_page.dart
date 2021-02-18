@@ -38,41 +38,49 @@ class _SeriesListState extends CardListState<SeriesList> {
       builder: (context, snapshot) {
         /// If there are values.
         if (snapshot.hasData && snapshot.data.length > 0) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: height),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: snapshot.data.length + 1,
-              controller: controller,
-              itemBuilder: (context, index) {
-                /// The `init` part of the list (all but the last element)
-                /// correspond to each series card.
-                if (index < snapshot.data.length) {
-                  return SeriesCard(
-                    series: snapshot.data[index],
-                    heroId: snapshot.data[index].id.toString() +
-                        new Random().nextInt(10000).toString(),
-                  );
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: height),
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data.length + 1,
+                    controller: controller,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      /// The `init` part of the list (all but the last element)
+                      /// correspond to each series card.
+                      if (index < snapshot.data.length) {
+                        return SeriesCard(
+                          series: snapshot.data[index],
+                          heroId: snapshot.data[index].id.toString() +
+                              new Random().nextInt(10000).toString(),
+                        );
 
-                  /// Otherwise, show the loading widget.
-                } else if (continueLoadingPages) {
-                  /// If scroll controller cant get dimensions, it means that
-                  /// the loading element is visible and should load more pages.
-                  if (!controller.position.haveDimensions) {
-                    futureCards = fetchCards(++currentPage);
-                  }
+                        /// Otherwise, show the loading widget.
+                      } else if (continueLoadingPages) {
+                        /// If scroll controller cant get dimensions, it means that
+                        /// the loading element is visible and should load more pages.
+                        if (!controller.position.haveDimensions) {
+                          futureCards = fetchCards(++currentPage);
+                        }
 
-                  return Container(
-                      alignment: Alignment.center,
-                      child: Loading(
-                          indicator: BallSpinFadeLoaderIndicator(),
-                          size: 0.4 * height,
-                          color: Colors.white));
-                }
+                        return Container(
+                            alignment: Alignment.center,
+                            child: Loading(
+                                indicator: BallSpinFadeLoaderIndicator(),
+                                size: 0.4 * height,
+                                color: Colors.white));
+                      }
 
-                return Container();
-              },
-            ),
+                      return Container();
+                    },
+                  ),
+                ),
+              )
+            ],
           );
 
           /// If there is an error.

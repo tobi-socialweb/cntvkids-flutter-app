@@ -104,20 +104,11 @@ abstract class CardListState<T extends StatefulWidget> extends State<T> {
   /// The specific category to use when fetching the data.
   int get category;
 
-  /// Must convert the json recieved to the corresponding model object.
-  ///
-  /// After fetching the data when loading all the cards, the values obtained
-  /// must be inserted to the object model that represents it and returned in
-  /// the form of a list. For example, if fetching data for videos:
+  /// Recieves the snapshot data and converts each one into the model object,
+  /// returning a list of these objects.
   ///
   /// ```dart
-  ///   return data.map((value) => Video.fromJson(value)).toList());
-  /// ```
-  ///
-  /// Which now is used as:
-  ///
-  /// ```dart
-  ///   return data.map((value) => jsonToModel(value)).toList());
+  ///   return data.map((value) => MODEL.fromJson(value)).toList();
   /// ```
   List<dynamic> dataToCardList(dynamic data);
 
