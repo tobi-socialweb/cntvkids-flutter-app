@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/video_card_widget.dart';
+import 'package:cntvkids_app/widgets/video/video_card_widget.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
@@ -22,17 +22,17 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 /// Shows video widgets that have 'featured' category.
-class Featured extends StatefulWidget {
+class FeaturedList extends StatefulWidget {
   final bool isMinimized;
-  Featured({this.isMinimized = false});
+  FeaturedList({this.isMinimized = false});
 
   @override
-  _FeaturedState createState() => _FeaturedState();
+  _FeaturedListState createState() => _FeaturedListState();
 }
 
-class _FeaturedState extends State<Featured> {
+class _FeaturedListState extends State<FeaturedList> {
   List<dynamic> featured = [];
-  Future<List<dynamic>> _futureFeatured;
+  Future<List<dynamic>> _futureFeaturedList;
 
   ScrollController _controller;
 
@@ -45,7 +45,7 @@ class _FeaturedState extends State<Featured> {
     super.initState();
 
     currentPage = 1;
-    _futureFeatured = fetchFeatured(currentPage);
+    _futureFeaturedList = fetchFeaturedList(currentPage);
 
     _controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
@@ -72,7 +72,7 @@ class _FeaturedState extends State<Featured> {
           setState(() {
             featured = [];
             currentPage = 1;
-            _futureFeatured = fetchFeatured(currentPage);
+            _futureFeaturedList = fetchFeaturedList(currentPage);
           });
         }
       }
@@ -101,7 +101,7 @@ class _FeaturedState extends State<Featured> {
       playSound("sounds/beam/beam.mp3");
       setState(() {
         currentPage += 1;
-        _futureFeatured = fetchFeatured(currentPage);
+        _futureFeaturedList = fetchFeaturedList(currentPage);
       });
     }
 
@@ -114,8 +114,8 @@ class _FeaturedState extends State<Featured> {
 
   /// Fetch featured videos by page.
   ///
-  /// Featured videos have category 10536 in their [categories].
-  Future<List<dynamic>> fetchFeatured(int page) async {
+  /// FeaturedList videos have category 10536 in their [categories].
+  Future<List<dynamic>> fetchFeaturedList(int page) async {
     if (!this.mounted) return featured;
 
     /// Try get the requested data and wait.
@@ -185,7 +185,7 @@ class _FeaturedState extends State<Featured> {
     }
 
     return FutureBuilder<List<dynamic>>(
-      future: _futureFeatured,
+      future: _futureFeaturedList,
       builder: (context, snapshot) {
         /// If snapshot has values.
         if (snapshot.hasData) {
@@ -224,7 +224,8 @@ class _FeaturedState extends State<Featured> {
                         /// that the loading element is visible and should load
                         /// more pages.
                         if (!_controller.position.haveDimensions) {
-                          _futureFeatured = fetchFeatured(++currentPage);
+                          _futureFeaturedList =
+                              fetchFeaturedList(++currentPage);
                         }
 
                         /// TODO: Check if widget is visible, if so then load pages.
