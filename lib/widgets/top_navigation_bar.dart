@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/helpers.dart';
+import 'package:r_dart_library/asset_svg.dart';
 
 typedef void VoidIndexCallback(int index);
 typedef int IntCallback();
@@ -106,8 +107,8 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
 
 /// A single button for the [TopNavigationBar] widget.
 class NavigationBarButton extends StatefulWidget {
-  final AssetSvgCallback icon;
-  final AssetSvgCallback activeIcon;
+  final AssetSvg Function({double width, double height}) icon;
+  final AssetSvg Function({double width, double height}) activeIcon;
   final bool isPressed;
   final double size;
   final int index;
