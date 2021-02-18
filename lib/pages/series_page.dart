@@ -204,17 +204,11 @@ class _SeriesListState extends State<SeriesList> {
 
                       /// If currently viewing video items.
                       if (index != snapshot.data.length) {
-                        return MediaQuery(
-                            data: MediaQueryData(
-                                size: Size(
-                                    MediaQuery.of(context).size.width,
-                                    MediaQuery.of(context).size.height *
-                                        (1 - 3 * NAV_BAR_PERCENTAGE / 2))),
-                            child: SeriesCard(
-                              series: snapshot.data[index],
-                              heroId: snapshot.data[index].id.toString() +
-                                  new Random().nextInt(10000).toString(),
-                            ));
+                        return SeriesCard(
+                          series: snapshot.data[index],
+                          heroId: snapshot.data[index].id.toString() +
+                              new Random().nextInt(10000).toString(),
+                        );
 
                         /// Otherwise, it's the loading widget.
                       } else if (_continueLoadingPages) {

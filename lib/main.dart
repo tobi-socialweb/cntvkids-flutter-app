@@ -218,6 +218,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
+    final double navHeight = NAV_BAR_PERCENTAGE * size.height;
 
     return FocusDetector(
         onVisibilityLost: () {
@@ -252,7 +253,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 /// Top Navigation Bar.
                 Container(
                     width: size.width,
-                    height: NAV_BAR_PERCENTAGE * size.height,
+                    height: navHeight,
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: TopNavigationBar(
                       getSelectedIndex: getCurrentSelectedIndex,
@@ -303,7 +304,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 /// Space filler to keep things kinda centered.
                 Container(
                   width: size.width,
-                  height: NAV_BAR_PERCENTAGE / 2 * size.height,
+                  height: navHeight / 2,
                 ),
               ],
             )));

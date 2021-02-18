@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/series_model.dart';
+import 'package:cntvkids_app/pages/series_detail_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +23,8 @@ class _SeriesCardState extends State<SeriesCard> {
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
 
+  Image thumbnail;
+
   /// How far to move the icon diagonally from the bottom right.
   final double diagonalIconDstFactor = 0.3;
 
@@ -38,9 +42,11 @@ class _SeriesCardState extends State<SeriesCard> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    final double height = size.height * 0.7;
+    final double height =
+        0.7 * (size.height * (1 - 3 * NAV_BAR_PERCENTAGE / 2));
     final double width = height * 16 / 9;
     final double iconSize = 0.45 * height;
+
     return Card(
         shadowColor: Colors.transparent,
         color: Colors.transparent,
@@ -59,12 +65,15 @@ class _SeriesCardState extends State<SeriesCard> {
                     borderRadius: BorderRadius.circular(0.15 * height),
                     child: Stack(
                       children: [
-                        /// Video card thumbnail.
-                        Image(
-                          image: imgProvider,
-                          height: height,
-                          width: width,
-                          fit: BoxFit.cover,
+                        /// Series card thumbnail.
+                        Hero(
+                          tag: widget.heroId,
+                          child: Image(
+                            image: imgProvider,
+                            height: height,
+                            width: width,
+                            fit: BoxFit.cover,
+                          ),
                         ),
 
                         /// Play icon on top of the thumbnail.
@@ -91,7 +100,10 @@ class _SeriesCardState extends State<SeriesCard> {
                             onTap: () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
-                                return Container(color: Colors.cyan);
+                                return SeriesDetail(
+                                    series: widget.series,
+                                    heroId: widget.heroId,
+                                    imgProvider: imgProvider);
                               }));
                             },
                           ),
