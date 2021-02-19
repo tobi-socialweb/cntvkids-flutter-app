@@ -22,12 +22,12 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 /// Shows video widgets that have 'series' category.
-class SeriesList extends StatefulWidget {
+class SeriesCardList extends StatefulWidget {
   @override
-  _SeriesListState createState() => _SeriesListState();
+  _SeriesCardListState createState() => _SeriesCardListState();
 }
 
-class _SeriesListState extends State<SeriesList> {
+class _SeriesCardListState extends State<SeriesCardList> {
   List<dynamic> series = [];
   Future<List<dynamic>> _futureSeries;
 

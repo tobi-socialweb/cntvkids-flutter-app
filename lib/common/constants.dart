@@ -27,6 +27,9 @@ const String MISSING_IMAGE_URL =
 /// Category IDs
 const int FEATURED_ID = 10536;
 const int SERIES_ID = 10287;
+const int LISTS_ID = 10564;
+const int IOS_GAMES_ID = 10564;
+const int AND_GAMES_ID = 10563;
 
 /// Height percentage of the navigation bar that takes up.
 const double NAV_BAR_PERCENTAGE = 0.275;

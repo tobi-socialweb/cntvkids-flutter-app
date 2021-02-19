@@ -22,15 +22,15 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 /// Shows video widgets that have 'featured' category.
-class FeaturedList extends StatefulWidget {
+class FeaturedCardList extends StatefulWidget {
   final bool isMinimized;
-  FeaturedList({this.isMinimized = false});
+  FeaturedCardList({this.isMinimized = false});
 
   @override
-  _FeaturedListState createState() => _FeaturedListState();
+  _FeaturedCardListState createState() => _FeaturedCardListState();
 }
 
-class _FeaturedListState extends State<FeaturedList> {
+class _FeaturedCardListState extends State<FeaturedCardList> {
   List<dynamic> featured = [];
   Future<List<dynamic>> _futureFeaturedList;
 
