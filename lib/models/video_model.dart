@@ -37,7 +37,9 @@ class Video {
     /// TODO: Check if values can be null or empty.
     id = json["id"];
     title = (json["title"] != null) ? json["title"]["rendered"] : "";
-    thumbnailUrl = json["fimg_url"];
+    thumbnailUrl = json["fimg_url"].toString() == "false"
+        ? ""
+        : json["fimg_url"].toString();
     videoUrl = json["wpcf-vimeo-player-dl"];
     series = json["serie_info"]["title"];
 

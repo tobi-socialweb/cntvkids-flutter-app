@@ -1,6 +1,8 @@
+import 'package:cntvkids_app/pages/series/series_page.dart';
 import 'package:cntvkids_app/pages/games_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
@@ -139,11 +141,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
-    Featured(),
-    Featured(),
-    Featured(),
+    FeaturedList(),
+    SeriesList(),
+    FeaturedList(),
     Games(),
-    Featured(),
+    FeaturedList(),
   ];
 
   @override
@@ -222,6 +224,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
+    final double navHeight = NAV_BAR_PERCENTAGE * size.height;
 
     return FocusDetector(
         onVisibilityLost: () {
@@ -258,7 +261,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 /// Top Navigation Bar.
                 Container(
                     width: size.width,
-                    height: NAV_BAR_PERCENTAGE * size.height,
+                    height: navHeight,
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: TopNavigationBar(
                       getSelectedIndex: getCurrentSelectedIndex,
@@ -309,7 +312,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 /// Space filler to keep things kinda centered.
                 Container(
                   width: size.width,
-                  height: NAV_BAR_PERCENTAGE / 2 * size.height,
+                  height: navHeight / 2,
                 ),
               ],
             )));
@@ -366,7 +369,7 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   Widget build(BuildContext context) {
     updateSelectedIndex();
     return CustomPaint(
-      painter: _BottomColoredBlobPainter(
+      painter: BottomColoredBlobPainter(
         size: widget.size,
         color: widget.colors[currentSelectedIndex],
       ),
@@ -380,11 +383,11 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   }
 }
 
-class _BottomColoredBlobPainter extends CustomPainter {
+class BottomColoredBlobPainter extends CustomPainter {
   final Size size;
   final Color color;
 
-  _BottomColoredBlobPainter({this.size, this.color});
+  BottomColoredBlobPainter({this.size, this.color});
 
   @override
   void paint(Canvas canvas, Size _) {
