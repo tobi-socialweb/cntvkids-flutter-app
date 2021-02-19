@@ -24,8 +24,8 @@ class _VideoCardState extends State<VideoCard> {
   /// The size factor shrinks the video card by this amount.
   double sizeFactor;
 
-  /// Video thumbnail and completer for the future builder.
-  Image thumbnail;
+  /// Used to fetch the thumbnail and wait for it to load.
+  CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
 
   @override
@@ -33,10 +33,10 @@ class _VideoCardState extends State<VideoCard> {
     super.initState();
 
     /// Get thumbnail and add listener for completion.
-    thumbnail = Image.network(widget.video.thumbnailUrl);
-    thumbnail.image.resolve(new ImageConfiguration()).addListener(
-        ImageStreamListener(
-            (ImageInfo info, bool _) => {completer.complete(info.image)}));
+    /// Set the URL and add a listener to complete the future.
+    imgProvider = new CachedNetworkImageProvider(widget.video.thumbnailUrl);
+    imgProvider.resolve(new ImageConfiguration()).addListener(
+        ImageStreamListener((info, _) => completer.complete(info.image)));
 
     sizeFactor = widget.isMinimized ? 0.9 : 1.0;
   }
@@ -73,8 +73,8 @@ class _VideoCardState extends State<VideoCard> {
                       child: Stack(
                         children: [
                           /// Video card thumbnail.
-                          CachedNetworkImage(
-                            imageUrl: widget.video.thumbnailUrl,
+                          Image(
+                            image: imgProvider,
                             filterQuality: FilterQuality.high,
                             height: height,
                             fit: BoxFit.fitHeight,

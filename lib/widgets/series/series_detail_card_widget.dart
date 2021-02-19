@@ -4,21 +4,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/series_model.dart';
-import 'package:cntvkids_app/pages/series_detail_page.dart';
+import 'package:cntvkids_app/pages/series/series_detail_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:flutter/material.dart';
 
-class SeriesCard extends StatefulWidget {
+class SeriesDetailCard extends StatefulWidget {
   final Series series;
   final String heroId;
 
-  const SeriesCard({Key key, this.series, this.heroId}) : super(key: key);
+  const SeriesDetailCard({Key key, this.series, this.heroId}) : super(key: key);
 
   @override
-  _SeriesCardState createState() => _SeriesCardState();
+  _SeriesDetailCardState createState() => _SeriesDetailCardState();
 }
 
-class _SeriesCardState extends State<SeriesCard> {
+class _SeriesDetailCardState extends State<SeriesDetailCard> {
   /// Used to fetch the thumbnail and wait for it to load.
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();

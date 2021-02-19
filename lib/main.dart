@@ -1,7 +1,8 @@
-import 'package:cntvkids_app/pages/series_page.dart';
+import 'package:cntvkids_app/pages/series/series_page.dart';
 import 'package:cntvkids_app/pages/games_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
@@ -364,7 +365,7 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   Widget build(BuildContext context) {
     updateSelectedIndex();
     return CustomPaint(
-      painter: _BottomColoredBlobPainter(
+      painter: BottomColoredBlobPainter(
         size: widget.size,
         color: widget.colors[currentSelectedIndex],
       ),
@@ -378,11 +379,11 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   }
 }
 
-class _BottomColoredBlobPainter extends CustomPainter {
+class BottomColoredBlobPainter extends CustomPainter {
   final Size size;
   final Color color;
 
-  _BottomColoredBlobPainter({this.size, this.color});
+  BottomColoredBlobPainter({this.size, this.color});
 
   @override
   void paint(Canvas canvas, Size _) {
