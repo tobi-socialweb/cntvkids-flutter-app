@@ -296,10 +296,6 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                                 video: widget.video,
                                 iconSize: iconSize,
                               ),
-                              SvgIcon(
-                                asset: R.svg.back_icon,
-                                size: iconSize,
-                              )
                             ],
                           ),
                         ),

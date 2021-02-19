@@ -35,11 +35,22 @@ class _ChromeCastState extends State<ChromeCast> {
   ChromeCastController _controller;
   @override
   Widget build(BuildContext context) {
-    return ChromeCastButton(
-      size: widget.iconSize,
-      color: Colors.black,
-      onButtonCreated: _onButtonCreated,
-      onSessionStarted: _onSessionStarted,
+    return Column(
+      children: [
+        AirPlayButton(
+          size: widget.iconSize,
+          color: Colors.white,
+          activeColor: Colors.amber,
+          onRoutesOpening: () => print('opening'),
+          onRoutesClosed: () => print('closed'),
+        ),
+        ChromeCastButton(
+          size: widget.iconSize,
+          color: Colors.white,
+          onButtonCreated: _onButtonCreated,
+          onSessionStarted: _onSessionStarted,
+        ),
+      ],
     );
   }
 
@@ -143,7 +154,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                                       ),
                                       Positioned(
                                           top: 75,
-                                          left: 50 ,
+                                          left: 50,
                                           child: _mediaControls())
                                     ],
                                   )))),

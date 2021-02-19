@@ -135,6 +135,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   static AudioCache cache = new AudioCache();
   static AudioPlayer player = new AudioPlayer();
   bool musicOn;
+  bool visibility;
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
@@ -151,6 +152,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _startOneSignal();
     loopMusic();
+    visibility = true;
   }
 
   // Dispose funtions
@@ -193,7 +195,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive && musicOn)) {
       pauseMusic();
-    } else if (state == AppLifecycleState.resumed && !musicOn) {
+    } else if (state == AppLifecycleState.resumed && !musicOn & visibility) {
       resumeMusic();
     }
   }
@@ -223,9 +225,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     return FocusDetector(
         onVisibilityLost: () {
+          visibility = false;
           stopMusic();
         },
         onVisibilityGained: () {
+          visibility = true;
           if (musicOn != null && !musicOn) {
             cache.clearCache();
             loopMusic();
