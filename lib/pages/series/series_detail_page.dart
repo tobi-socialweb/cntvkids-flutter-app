@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
-
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
@@ -9,14 +6,8 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/main.dart';
 import 'package:cntvkids_app/models/series_model.dart';
 import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/widgets/series/series_detail_card_widget.dart';
 import 'package:cntvkids_app/widgets/video/video_card_widget.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:loading/indicator/ball_beat_indicator.dart';
-import 'package:loading/loading.dart';
 
 class SeriesDetail extends StatefulWidget {
   final Series series;
