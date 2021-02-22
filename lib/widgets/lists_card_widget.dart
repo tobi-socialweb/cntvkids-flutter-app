@@ -3,22 +3,22 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/models/series_model.dart';
-import 'package:cntvkids_app/pages/series_detail_page.dart';
+import 'package:cntvkids_app/models/lists_model.dart';
+import 'package:cntvkids_app/pages/lists_detail_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:flutter/material.dart';
 
-class SeriesCard extends StatefulWidget {
-  final Series series;
+class ListsCard extends StatefulWidget {
+  final Lists lists;
   final String heroId;
 
-  const SeriesCard({Key key, this.series, this.heroId}) : super(key: key);
+  const ListsCard({Key key, this.lists, this.heroId}) : super(key: key);
 
   @override
-  _SeriesCardState createState() => _SeriesCardState();
+  _ListsCardState createState() => _ListsCardState();
 }
 
-class _SeriesCardState extends State<SeriesCard> {
+class _ListsCardState extends State<ListsCard> {
   /// Used to fetch the thumbnail and wait for it to load.
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
@@ -31,7 +31,7 @@ class _SeriesCardState extends State<SeriesCard> {
   @override
   void initState() {
     /// Set the URL and add a listener to complete the future.
-    imgProvider = new CachedNetworkImageProvider(widget.series.thumbnailUrl);
+    imgProvider = new CachedNetworkImageProvider(widget.lists.thumbnailUrl);
     imgProvider.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener((info, _) => completer.complete(info.image)));
 
@@ -86,7 +86,7 @@ class _SeriesCardState extends State<SeriesCard> {
                               alignment: Alignment.centerRight,
                               children: [
                                 SvgIcon(
-                                  asset: R.svg.series_badge,
+                                  asset: R.svg.lists_badge,
                                   size: iconSize,
                                 ),
                               ],
@@ -100,8 +100,8 @@ class _SeriesCardState extends State<SeriesCard> {
                             onTap: () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
-                                return SeriesCardDetail(
-                                    series: widget.series,
+                                return ListsCardDetail(
+                                    lists: widget.lists,
                                     heroId: widget.heroId,
                                     imgProvider: imgProvider);
                               }));
@@ -114,7 +114,7 @@ class _SeriesCardState extends State<SeriesCard> {
                   Container(
                       width: width,
                       child: Text(
-                        widget.series.title,
+                        widget.lists.title,
                         textAlign: TextAlign.left,
                         softWrap: true,
                         textScaleFactor: 0.006 * height,

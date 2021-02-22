@@ -4,23 +4,23 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/main.dart';
-import 'package:cntvkids_app/models/series_model.dart';
+import 'package:cntvkids_app/models/lists_model.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video/video_card_widget.dart';
 import 'package:flutter/material.dart';
 
-class SeriesDetail extends StatefulWidget {
-  final Series series;
+class ListsCardDetail extends StatefulWidget {
+  final Lists lists;
   final String heroId;
   final ImageProvider imgProvider;
 
-  const SeriesDetail({Key key, this.imgProvider, this.series, this.heroId})
+  const ListsCardDetail({Key key, this.imgProvider, this.lists, this.heroId})
       : super(key: key);
 
-  _SeriesDetailState createState() => _SeriesDetailState();
+  _ListsCardDetailState createState() => _ListsCardDetailState();
 }
 
-class _SeriesDetailState extends State<SeriesDetail> {
+class _ListsCardDetailState extends State<ListsCardDetail> {
   ScrollController _controller;
 
   @override
@@ -41,7 +41,7 @@ class _SeriesDetailState extends State<SeriesDetail> {
 
   /// Listener for scroll changes.
   ///
-  /// Loads the next page (per page) for series videos if the scroll is
+  /// Loads the next page (per page) for lists videos if the scroll is
   /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
@@ -136,14 +136,13 @@ class _SeriesDetailState extends State<SeriesDetail> {
                               fontSize: 0.15 * topBarHeight,
                               fontWeight: FontWeight.bold,
                               fontFamily: "FredokaOne"),
-                          text: widget.series.title,
+                          text: widget.lists.title,
                           children: [
                             TextSpan(
                               style: TextStyle(
                                   fontSize: 0.125 * topBarHeight,
                                   fontWeight: FontWeight.normal),
-                              text:
-                                  clean("\n" + widget.series.shortDescription),
+                              text: clean("\n" + widget.lists.description),
                             ),
                           ],
                         ),
@@ -165,13 +164,13 @@ class _SeriesDetailState extends State<SeriesDetail> {
                       child: ListView.builder(
                         /// TODO: Fix max scroll indicator being cut.
                         scrollDirection: Axis.horizontal,
-                        itemCount: widget.series.videos.length,
+                        itemCount: widget.lists.videos.length,
                         shrinkWrap: false,
                         controller: _controller,
                         itemBuilder: (context, index) {
                           return VideoCard(
-                            video: widget.series.videos[index],
-                            heroId: widget.series.videos[index].id.toString() +
+                            video: widget.lists.videos[index],
+                            heroId: widget.lists.videos[index].id.toString() +
                                 new Random().nextInt(10000).toString(),
                           );
                         },

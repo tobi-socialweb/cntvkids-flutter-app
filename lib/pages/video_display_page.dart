@@ -301,7 +301,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         ),
                       ],
                     ),
-                    FeaturedList(isMinimized: true),
+                    FeaturedCardList(isMinimized: true),
                   ],
                 )),
             onTap: () {

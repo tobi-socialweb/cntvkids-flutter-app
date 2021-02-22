@@ -1,4 +1,5 @@
-import 'package:cntvkids_app/pages/series/series_page.dart';
+import 'package:cntvkids_app/pages/lists_page.dart';
+import 'package:cntvkids_app/pages/series_page.dart';
 import 'package:cntvkids_app/pages/games_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
@@ -141,11 +142,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
-    FeaturedList(),
-    SeriesList(),
-    FeaturedList(),
-    Games(),
-    FeaturedList(),
+    FeaturedCardList(),
+    SeriesCardList(),
+    ListsCardList(),
+    GamesCardList(),
+    FeaturedCardList(),
   ];
 
   @override

@@ -9,12 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Shows video widgets that have 'Games' category.
-class Games extends StatefulWidget {
+class GamesCardList extends StatefulWidget {
   @override
-  _GamesState createState() => _GamesState();
+  _GamesCardListState createState() => _GamesCardListState();
 }
 
-class _GamesState extends State<Games> {
+class _GamesCardListState extends State<GamesCardList> {
   List<dynamic> games = [];
   Future<List<dynamic>> _futureGames;
   ScrollController _controller;
