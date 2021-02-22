@@ -7,6 +7,7 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
 
 /// Shows video widgets that have 'Games' category.
 class GamesCardList extends StatefulWidget {
@@ -47,13 +48,25 @@ class _GamesCardListState extends State<GamesCardList> {
           games.addAll(
               response.data.map((value) => Game.fromJson(value)).toList());
         });
-        var i = 0;
-        while (i < games.length) {
-          if (i < 5) {
-            games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
-            i++;
-          } else {
-            games.removeAt(i);
+        if (Platform.isAndroid) {
+          var i = 0;
+          while (i < games.length) {
+            if (games[i].categories.contains(AND_GAMES_ID)) {
+              games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
+              i++;
+            } else {
+              games.removeAt(i);
+            }
+          }
+        } else if (Platform.isIOS) {
+          var i = 0;
+          while (i < games.length) {
+            if (games[i].categories.contains(IOS_GAMES_ID)) {
+              games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
+              i++;
+            } else {
+              games.removeAt(i);
+            }
           }
         }
         return games;
