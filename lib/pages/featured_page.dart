@@ -39,11 +39,11 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
   int currentPage;
   bool _continueLoadingPages;
   final int featuredPerPage = 2;
+  bool beginScrolling = false;
 
   @override
   void initState() {
     super.initState();
-
     currentPage = 1;
     _futureFeaturedList = fetchFeaturedList(currentPage);
 
@@ -98,18 +98,22 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
     /// reach bottom
     if (_controller.offset >= _controller.position.maxScrollExtent &&
         !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
       setState(() {
         currentPage += 1;
         _futureFeaturedList = fetchFeaturedList(currentPage);
       });
     }
 
-    /// reach top
-    if (_controller.offset <= _controller.position.minScrollExtent &&
-        !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_controller.position.isScrollingNotifier.value) {
+        if (!beginScrolling) {
+          playSound("sounds/beam/beam.mp3");
+          beginScrolling = true;
+        }
+      } else {
+        beginScrolling = false;
+      }
+    });
   }
 
   /// Fetch featured videos by page.

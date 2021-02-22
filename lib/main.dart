@@ -115,7 +115,6 @@ class Splash extends StatelessWidget {
           betterPlayerConfiguration: BetterPlayerConfiguration(
             aspectRatio: 16 / 9,
             autoPlay: true,
-            fullScreenByDefault: true,
             controlsConfiguration:
                 BetterPlayerControlsConfiguration(showControls: false),
           ),

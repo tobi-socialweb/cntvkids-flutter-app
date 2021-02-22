@@ -55,11 +55,12 @@ class _ChromeCastState extends State<ChromeCast> {
   }
 
   Future<void> _onButtonCreated(ChromeCastController controller) async {
-    _controller = controller;
-    await _controller.addSessionListener();
+    setState(() => _controller = controller);
+    _controller?.addSessionListener();
   }
 
   Future<void> _onSessionStarted() async {
+    _controller.loadMedia(widget.video.videoUrl);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ChromeCastView(
           video: widget.video,
@@ -79,19 +80,6 @@ class ChromeCastView extends StatefulWidget {
 }
 
 class _ChromeCastViewState extends State<ChromeCastView> {
-  void initState() {
-    super.initState();
-    cargarMedia();
-  }
-
-  void cargarMedia() async {
-    if (await widget.controlador.isConnected()) {
-      widget.controlador.loadMedia(widget.video.videoUrl);
-    } else {
-      print("no esta conectado al chromecast");
-    }
-  }
-
   bool _playing = false;
   @override
   Widget build(BuildContext context) {
@@ -153,8 +141,8 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                                         height: miniVideoSize,
                                       ),
                                       Positioned(
-                                          top: 75,
-                                          left: 50,
+                                          top: 0.25 * miniVideoSize,
+                                          left: 0.25 * miniVideoSize,
                                           child: _mediaControls())
                                     ],
                                   )))),
@@ -167,7 +155,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             ChromeCastButton(
-                                size: widget.iconSize, color: Colors.black)
+                                size: widget.iconSize, color: Colors.white)
                           ],
                         ),
                       ),

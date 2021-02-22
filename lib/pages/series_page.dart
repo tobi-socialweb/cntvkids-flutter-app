@@ -36,6 +36,7 @@ class _SeriesCardListState extends State<SeriesCardList> {
   int currentPage;
   bool _continueLoadingPages;
   final int seriesPerPage = 2;
+  bool beginScrolling = false;
 
   @override
   void initState() {
@@ -95,18 +96,21 @@ class _SeriesCardListState extends State<SeriesCardList> {
     /// reach bottom
     if (_controller.offset >= _controller.position.maxScrollExtent &&
         !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
       setState(() {
         currentPage += 1;
         _futureSeries = fetchSeries(currentPage);
       });
     }
-
-    /// reach top
-    if (_controller.offset <= _controller.position.minScrollExtent &&
-        !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_controller.position.isScrollingNotifier.value) {
+        if (!beginScrolling) {
+          playSound("sounds/beam/beam.mp3");
+          beginScrolling = true;
+        }
+      } else {
+        beginScrolling = false;
+      }
+    });
   }
 
   /// Fetch series videos by page.
