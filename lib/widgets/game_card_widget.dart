@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/models/games_model.dart';
-import 'package:cntvkids_app/widgets/game_display_widget.dart';
+import 'package:cntvkids_app/pages/game_display_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/r.g.dart';
