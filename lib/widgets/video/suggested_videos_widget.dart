@@ -21,31 +21,35 @@ import 'package:loading/loading.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-/// Shows video widgets that have 'featured' category.
-class FeaturedCardList extends StatefulWidget {
-  final bool isMinimized;
-  FeaturedCardList({this.isMinimized = false});
+/// Shows small video card widgets when displaying a video and it's minimized.
+class SuggestedVideosCardList extends StatefulWidget {
+  final List<int> categories;
+  final int skipIndex;
+
+  const SuggestedVideosCardList({Key key, this.categories, this.skipIndex})
+      : super(key: key);
 
   @override
-  _FeaturedCardListState createState() => _FeaturedCardListState();
+  _SuggestedVideosCardListState createState() =>
+      _SuggestedVideosCardListState();
 }
 
-class _FeaturedCardListState extends State<FeaturedCardList> {
-  List<dynamic> featured = [];
-  Future<List<dynamic>> _futureFeaturedList;
+class _SuggestedVideosCardListState extends State<SuggestedVideosCardList> {
+  List<dynamic> suggestedVideos = [];
+  Future<List<dynamic>> _futureSuggestedVideos;
 
   ScrollController _controller;
 
   int currentPage;
   bool _continueLoadingPages;
-  final int featuredPerPage = 2;
+  final int suggestedVideosPerPage = 2;
 
   @override
   void initState() {
     super.initState();
 
     currentPage = 1;
-    _futureFeaturedList = fetchFeaturedList(currentPage);
+    _futureSuggestedVideos = fetchSuggestedVideos(currentPage);
 
     _controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
@@ -70,9 +74,9 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
           customDioCacheManager.clearAll();
 
           setState(() {
-            featured = [];
+            suggestedVideos = [];
             currentPage = 1;
-            _futureFeaturedList = fetchFeaturedList(currentPage);
+            _futureSuggestedVideos = fetchSuggestedVideos(currentPage);
           });
         }
       }
@@ -90,7 +94,7 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
 
   /// Listener for scroll changes.
   ///
-  /// Loads the next page (per page) for featured videos if the scroll is
+  /// Loads the next page (per page) for suggestedVideos videos if the scroll is
   /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
@@ -101,7 +105,7 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
       playSound("sounds/beam/beam.mp3");
       setState(() {
         currentPage += 1;
-        _futureFeaturedList = fetchFeaturedList(currentPage);
+        _futureSuggestedVideos = fetchSuggestedVideos(currentPage);
       });
     }
 
@@ -112,16 +116,16 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
     }
   }
 
-  /// Fetch featured videos by page.
+  /// Fetch suggestedVideos videos by page.
   ///
-  /// FeaturedList videos have category 10536 in their [categories].
-  Future<List<dynamic>> fetchFeaturedList(int page) async {
-    if (!this.mounted) return featured;
+  /// SuggestedVideos videos have category 10536 in their [categories].
+  Future<List<dynamic>> fetchSuggestedVideos(int page) async {
+    if (!this.mounted) return suggestedVideos;
 
     /// Try get the requested data and wait.
     try {
       String requestUrl =
-          "$VIDEOS_URL&categories[]=$FEATURED_ID&page=$page&per_page=$featuredPerPage";
+          "$VIDEOS_URL&categories[]=$FEATURED_ID&page=$page&per_page=$suggestedVideosPerPage";
 
       Response response = await customDio.get(
         requestUrl,
@@ -131,20 +135,20 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
 
       /// If request has succeeded.
       if (response.statusCode == 200) {
-        if (!this.mounted) return featured;
+        if (!this.mounted) return suggestedVideos;
 
-        /// Add new videos to [featured] by updating this widget's state.
+        /// Add new videos to [suggestedVideos] by updating this widget's state.
         setState(() {
-          featured.addAll(
+          suggestedVideos.addAll(
               response.data.map((value) => Video.fromJson(value)).toList());
 
-          if (featured.length % featuredPerPage != 0)
+          if (suggestedVideos.length % suggestedVideosPerPage != 0)
             _continueLoadingPages = false;
         });
 
-        if (page == 1) _checkForForceUpdate(featured[0].id);
+        if (page == 1) _checkForForceUpdate(suggestedVideos[0].id);
 
-        return featured;
+        return suggestedVideos;
       }
     } on DioError catch (e) {
       if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
@@ -174,7 +178,7 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
       }
     }
 
-    return featured;
+    return suggestedVideos;
   }
 
   @override
@@ -182,12 +186,8 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
     /// Get size of the current context widget.
     Size size = MediaQuery.of(context).size;
 
-    if (widget.isMinimized) {
-      size = new Size(size.width, 0.66 * size.height);
-    }
-
     return FutureBuilder<List<dynamic>>(
-      future: _futureFeaturedList,
+      future: _futureSuggestedVideos,
       builder: (context, snapshot) {
         /// If snapshot has values.
         if (snapshot.hasData) {
@@ -217,7 +217,6 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
                           video: snapshot.data[index],
                           heroId: snapshot.data[index].id.toString() +
                               new Random().nextInt(10000).toString(),
-                          isMinimized: widget.isMinimized,
                         );
 
                         /// Otherwise, it's the loading widget.
@@ -226,8 +225,8 @@ class _FeaturedCardListState extends State<FeaturedCardList> {
                         /// that the loading element is visible and should load
                         /// more pages.
                         if (!_controller.position.haveDimensions) {
-                          _futureFeaturedList =
-                              fetchFeaturedList(++currentPage);
+                          _futureSuggestedVideos =
+                              fetchSuggestedVideos(++currentPage);
                         }
 
                         /// TODO: Check if widget is visible, if so then load pages.

@@ -9,8 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/featured_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'common/helpers.dart';
 
@@ -51,7 +51,8 @@ class MyApp extends StatelessWidget {
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return MaterialApp(debugShowCheckedModeBanner: false, home: Splash());
+          return MaterialApp(
+              debugShowCheckedModeBanner: false, home: SplashScreen());
         } else {
           // Loading is done, return the app:
           return Consumer<AppStateNotifier>(
@@ -103,25 +104,39 @@ class MyApp extends StatelessWidget {
 }
 
 /// The second splash screen to be shown when starting the app.
-class Splash extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  SplashScreenState createState() => SplashScreenState();
+}
+
+class SplashScreenState extends State<SplashScreen> {
+  final BetterPlayer videoSplashScreen = BetterPlayer.network(
+    "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
+    betterPlayerConfiguration: BetterPlayerConfiguration(
+      aspectRatio: 16 / 9,
+      autoPlay: true,
+      autoDispose: false,
+      controlsConfiguration:
+          BetterPlayerControlsConfiguration(showControls: false),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: BetterPlayer.network(
-          "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
-          betterPlayerConfiguration: BetterPlayerConfiguration(
-            aspectRatio: 16 / 9,
-            autoPlay: true,
-            fullScreenByDefault: true,
-            controlsConfiguration:
-                BetterPlayerControlsConfiguration(showControls: false),
-          ),
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: videoSplashScreen,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    videoSplashScreen.controller.dispose();
+    super.dispose();
   }
 }
 

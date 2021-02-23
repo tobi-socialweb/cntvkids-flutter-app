@@ -127,28 +127,45 @@ class _SeriesCardDetailState extends State<SeriesCardDetail> {
 
                     /// Series title & description.
                     Container(
-                      margin: EdgeInsets.only(top: 0.1 * topBarHeight),
-                      width: 0.9 * size.width - 1.375 * topBarHeight,
-                      child: RichText(
-                        overflow: TextOverflow.visible,
-                        text: TextSpan(
-                          style: TextStyle(
-                              fontSize: 0.15 * topBarHeight,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "FredokaOne"),
-                          text: widget.series.title,
+                        margin: EdgeInsets.only(top: 0.1 * topBarHeight),
+                        width: 0.9 * size.width - 1.375 * topBarHeight,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextSpan(
+                            /// Title
+                            Text(
+                              widget.series.title,
                               style: TextStyle(
-                                  fontSize: 0.125 * topBarHeight,
-                                  fontWeight: FontWeight.normal),
-                              text:
-                                  clean("\n" + widget.series.shortDescription),
+                                  fontSize: 0.15 * topBarHeight,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: "FredokaOne"),
                             ),
+
+                            /// Description
+                            Expanded(
+                              child: ListView(
+                                primary: false,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                children: [
+                                  Container(
+                                    height: 0.05 * topBarHeight,
+                                  ),
+                                  Text(
+                                    clean(widget.series.shortDescription),
+                                    style: TextStyle(
+                                      fontSize: 0.125 * topBarHeight,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
-                        ),
-                      ),
-                    ),
+                        )),
                   ],
                 )),
 

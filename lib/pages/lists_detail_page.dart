@@ -133,18 +133,10 @@ class _ListsCardDetailState extends State<ListsCardDetail> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(
                           style: TextStyle(
-                              fontSize: 0.15 * topBarHeight,
+                              fontSize: 0.25 * topBarHeight,
                               fontWeight: FontWeight.bold,
                               fontFamily: "FredokaOne"),
                           text: widget.lists.title,
-                          children: [
-                            TextSpan(
-                              style: TextStyle(
-                                  fontSize: 0.125 * topBarHeight,
-                                  fontWeight: FontWeight.normal),
-                              text: clean("\n" + widget.lists.description),
-                            ),
-                          ],
                         ),
                       ),
                     ),

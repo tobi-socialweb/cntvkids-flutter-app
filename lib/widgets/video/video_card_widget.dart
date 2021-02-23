@@ -119,7 +119,7 @@ class _VideoCardState extends State<VideoCard> {
                         width:
                             height / snapshot.data.height * snapshot.data.width,
                         child: Text(
-                          "${widget.video.series}\n${widget.video.extra} - ${widget.video.title}",
+                          formatVideoText(),
                           textAlign: TextAlign.left,
                           softWrap: true,
                           textScaleFactor: 0.006 * height,
@@ -132,5 +132,15 @@ class _VideoCardState extends State<VideoCard> {
                 return new Container();
               }
             }));
+  }
+
+  String formatVideoText() {
+    String result = "";
+
+    if (widget.video.series != "") result += "${widget.video.series}\n";
+    if (widget.video.extra != "") result += "${widget.video.extra} - ";
+
+    result += widget.video.title;
+    return result;
   }
 }

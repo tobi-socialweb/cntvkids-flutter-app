@@ -39,11 +39,15 @@ class VideoDisplay extends StatefulWidget {
   final Video video;
   final String heroId;
   final BetterPlayerController betterPlayerController;
+  final List<Video> suggested;
 
-  VideoDisplay(
-      {@required this.video,
+  const VideoDisplay(
+      {Key key,
+      @required this.video,
       @required this.heroId,
-      this.betterPlayerController});
+      this.betterPlayerController,
+      this.suggested})
+      : super(key: key);
 
   @override
   _VideoDisplayState createState() => _VideoDisplayState();
