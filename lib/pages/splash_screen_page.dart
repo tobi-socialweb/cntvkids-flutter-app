@@ -4,21 +4,14 @@ import 'package:better_player/better_player.dart';
 
 /// The second splash screen to be shown when starting the app.
 class SplashScreen extends StatefulWidget {
+  final BetterPlayer videoSplashScreen;
+
+  SplashScreen({this.videoSplashScreen});
+
   SplashScreenState createState() => SplashScreenState();
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  final BetterPlayer videoSplashScreen = BetterPlayer.network(
-    "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
-    betterPlayerConfiguration: BetterPlayerConfiguration(
-      aspectRatio: 16 / 9,
-      autoPlay: true,
-      autoDispose: false,
-      controlsConfiguration:
-          BetterPlayerControlsConfiguration(showControls: false),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +19,7 @@ class SplashScreenState extends State<SplashScreen> {
       child: Center(
         child: AspectRatio(
           aspectRatio: 16 / 9,
-          child: videoSplashScreen,
+          child: widget.videoSplashScreen,
         ),
       ),
     );
@@ -34,7 +27,8 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
-    videoSplashScreen.controller.dispose();
+    print("dispose ----------");
+    widget.videoSplashScreen.controller.dispose(forceDispose: true);
     super.dispose();
   }
 }

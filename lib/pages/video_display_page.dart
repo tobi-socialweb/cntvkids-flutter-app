@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'package:async/async.dart';
-
 import 'package:better_player/better_player.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -51,7 +48,7 @@ class VideoDisplay extends StatefulWidget {
 
 class _VideoDisplayState extends State<VideoDisplay> {
   BetterPlayer video;
-  CancelableCompleter completer;
+  Completer completer = new Completer();
 
   /// Video player controller and data source.
   BetterPlayerController _betterPlayerController;
@@ -101,13 +98,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
           },
         ),
         betterPlayerDataSource: _betterPlayerDataSource);
-
-    /// Set completer to dispose the player controller when cancelling.
-    completer = new CancelableCompleter(onCancel: () {
-      setState(() {
-        video.controller.dispose();
-      });
-    });
   }
 
   Future<dynamic> _getFutureVideo() {
@@ -117,17 +107,9 @@ class _VideoDisplayState extends State<VideoDisplay> {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(video);
       }
-
-      /// TODO: Check if controller is still not disposed correctly.
-      if (video != null &&
-          video.controller.isPlaying() &&
-          completer.isCanceled) {
-        video.controller.pause();
-        video.controller.dispose();
-      }
     });
 
-    return completer.operation.value;
+    return completer.future;
   }
 
   @override
@@ -139,7 +121,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
       child: FutureBuilder(
           future: _getFutureVideo(),
           builder: (context, snapshot) {
-            if (snapshot.hasData && !completer.isCanceled) {
+            if (snapshot.hasData) {
               return WillPopScope(
                   child: AspectRatio(
                       aspectRatio: 16 / 9,
@@ -155,19 +137,11 @@ class _VideoDisplayState extends State<VideoDisplay> {
             } else if (snapshot.hasError) {
               return Text(snapshot.error);
             } else {
-              return WillPopScope(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-
-                  /// When using the 'back' button, toggle minimize.
-                  onWillPop: () {
-                    /// Dispose video if user pops out before its initialized.
-                    completer.operation.cancel();
-                    return Future<bool>.value(true);
-                  });
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              );
             }
           }),
     );
@@ -185,7 +159,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   @override
   void dispose() {
-    video.controller.dispose();
+    video.controller.dispose(forceDispose: true);
     super.dispose();
   }
 }
