@@ -10,9 +10,9 @@ import 'package:flutter/services.dart';
 
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/featured_page.dart';
+import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/widgets/video/video_cast_widget.dart';
+import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 
 typedef bool BoolCallback();

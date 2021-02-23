@@ -1,7 +1,7 @@
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/games_model.dart';
-import 'package:cntvkids_app/widgets/game_card_widget.dart';
+import 'package:cntvkids_app/widgets/cards/game_card_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 

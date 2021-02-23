@@ -5,8 +5,8 @@ import 'dart:math';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/models/series_model.dart';
-import 'package:cntvkids_app/widgets/series_card_widget.dart';
+import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
@@ -21,29 +21,31 @@ import 'package:loading/loading.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-/// Shows video widgets that have 'series' category.
-class SeriesCardList extends StatefulWidget {
+/// Shows video widgets that have 'featured' category.
+class FeaturedCardList extends StatefulWidget {
+  final bool isMinimized;
+  FeaturedCardList({this.isMinimized = false});
+
   @override
-  _SeriesCardListState createState() => _SeriesCardListState();
+  _FeaturedCardListState createState() => _FeaturedCardListState();
 }
 
-class _SeriesCardListState extends State<SeriesCardList> {
-  List<dynamic> series = [];
-  Future<List<dynamic>> _futureSeries;
+class _FeaturedCardListState extends State<FeaturedCardList> {
+  List<dynamic> featured = [];
+  Future<List<dynamic>> _futureFeaturedList;
 
   ScrollController _controller;
 
   int currentPage;
   bool _continueLoadingPages;
-  final int seriesPerPage = 2;
+  final int featuredPerPage = 2;
   bool beginScrolling = false;
 
   @override
   void initState() {
     super.initState();
-
     currentPage = 1;
-    _futureSeries = fetchSeries(currentPage);
+    _futureFeaturedList = fetchFeaturedList(currentPage);
 
     _controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
@@ -57,7 +59,7 @@ class _SeriesCardListState extends State<SeriesCardList> {
     if (!this.mounted) return;
     try {
       String requestUrl =
-          "$SERIES_URL&categories[]=$SERIES_ID&page=1&per_page=1";
+          "$VIDEOS_URL&categories[]=$FEATURED_ID&page=1&per_page=1";
       var response = await http.get(
         requestUrl,
       );
@@ -68,9 +70,9 @@ class _SeriesCardListState extends State<SeriesCardList> {
           customDioCacheManager.clearAll();
 
           setState(() {
-            series = [];
+            featured = [];
             currentPage = 1;
-            _futureSeries = fetchSeries(currentPage);
+            _futureFeaturedList = fetchFeaturedList(currentPage);
           });
         }
       }
@@ -88,7 +90,7 @@ class _SeriesCardListState extends State<SeriesCardList> {
 
   /// Listener for scroll changes.
   ///
-  /// Loads the next page (per page) for series videos if the scroll is
+  /// Loads the next page (per page) for featured videos if the scroll is
   /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
@@ -98,9 +100,10 @@ class _SeriesCardListState extends State<SeriesCardList> {
         !_controller.position.outOfRange) {
       setState(() {
         currentPage += 1;
-        _futureSeries = fetchSeries(currentPage);
+        _futureFeaturedList = fetchFeaturedList(currentPage);
       });
     }
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (_controller.position.isScrollingNotifier.value) {
         if (!beginScrolling) {
@@ -113,16 +116,16 @@ class _SeriesCardListState extends State<SeriesCardList> {
     });
   }
 
-  /// Fetch series videos by page.
+  /// Fetch featured videos by page.
   ///
-  /// Series videos have category 10536 in their [categories].
-  Future<List<dynamic>> fetchSeries(int page) async {
-    if (!this.mounted) return series;
+  /// FeaturedList videos have category 10536 in their [categories].
+  Future<List<dynamic>> fetchFeaturedList(int page) async {
+    if (!this.mounted) return featured;
 
     /// Try get the requested data and wait.
     try {
       String requestUrl =
-          "$SERIES_URL&categories[]=$SERIES_ID&page=$page&per_page=$seriesPerPage";
+          "$VIDEOS_URL&categories[]=$FEATURED_ID&page=$page&per_page=$featuredPerPage";
 
       Response response = await customDio.get(
         requestUrl,
@@ -132,17 +135,18 @@ class _SeriesCardListState extends State<SeriesCardList> {
 
       /// If request has succeeded.
       if (response.statusCode == 200) {
-        /// Add new videos to [series] by updating this widget's state.
+        /// Add new videos to [featured] by updating this widget's state.
         setState(() {
-          series.addAll(
-              response.data.map((value) => Series.fromJson(value)).toList());
+          featured.addAll(
+              response.data.map((value) => Video.fromJson(value)).toList());
 
-          if (series.length % seriesPerPage != 0) _continueLoadingPages = false;
+          if (featured.length % featuredPerPage != 0)
+            _continueLoadingPages = false;
         });
 
-        if (page == 1) _checkForForceUpdate(series[0].id);
+        if (page == 1) _checkForForceUpdate(featured[0].id);
 
-        return series;
+        return featured;
       }
     } on DioError catch (e) {
       if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
@@ -172,7 +176,7 @@ class _SeriesCardListState extends State<SeriesCardList> {
       }
     }
 
-    return series;
+    return featured;
   }
 
   @override
@@ -180,8 +184,12 @@ class _SeriesCardListState extends State<SeriesCardList> {
     /// Get size of the current context widget.
     Size size = MediaQuery.of(context).size;
 
+    if (widget.isMinimized) {
+      size = new Size(size.width, 0.66 * size.height);
+    }
+
     return FutureBuilder<List<dynamic>>(
-      future: _futureSeries,
+      future: _futureFeaturedList,
       builder: (context, snapshot) {
         /// If snapshot has values.
         if (snapshot.hasData) {
@@ -207,10 +215,11 @@ class _SeriesCardListState extends State<SeriesCardList> {
 
                       /// If currently viewing video items.
                       if (index != snapshot.data.length) {
-                        return SeriesCard(
-                          series: snapshot.data[index],
+                        return VideoCard(
+                          video: snapshot.data[index],
                           heroId: snapshot.data[index].id.toString() +
                               new Random().nextInt(10000).toString(),
+                          isMinimized: widget.isMinimized,
                         );
 
                         /// Otherwise, it's the loading widget.
@@ -219,7 +228,8 @@ class _SeriesCardListState extends State<SeriesCardList> {
                         /// that the loading element is visible and should load
                         /// more pages.
                         if (!_controller.position.haveDimensions) {
-                          _futureSeries = fetchSeries(++currentPage);
+                          _futureFeaturedList =
+                              fetchFeaturedList(++currentPage);
                         }
 
                         /// TODO: Check if widget is visible, if so then load pages.

@@ -3,10 +3,10 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/main.dart';
+import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/models/lists_model.dart';
 import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/widgets/video/video_card_widget.dart';
+import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 import 'package:flutter/material.dart';
 
 class ListsCardDetail extends StatefulWidget {
@@ -22,7 +22,7 @@ class ListsCardDetail extends StatefulWidget {
 
 class _ListsCardDetailState extends State<ListsCardDetail> {
   ScrollController _controller;
-
+  bool beginScrolling = false;
   @override
   void initState() {
     super.initState();
@@ -46,17 +46,16 @@ class _ListsCardDetailState extends State<ListsCardDetail> {
   _scrollControllerListener() {
     if (!this.mounted) return;
 
-    /// reach bottom
-    if (_controller.offset >= _controller.position.maxScrollExtent &&
-        !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
-    }
-
-    /// reach top
-    if (_controller.offset <= _controller.position.minScrollExtent &&
-        !_controller.position.outOfRange) {
-      playSound("sounds/beam/beam.mp3");
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_controller.position.isScrollingNotifier.value) {
+        if (!beginScrolling) {
+          playSound("sounds/beam/beam.mp3");
+          beginScrolling = true;
+        }
+      } else {
+        beginScrolling = false;
+      }
+    });
   }
 
   /// Remove HTML tags from string [text].

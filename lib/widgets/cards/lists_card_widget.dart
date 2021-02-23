@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/lists_model.dart';
-import 'package:cntvkids_app/pages/lists_detail_page.dart';
+import 'package:cntvkids_app/pages/menu/lists_detail_page.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:flutter/material.dart';
 

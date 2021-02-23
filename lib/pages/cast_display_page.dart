@@ -1,74 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_video_cast/flutter_video_cast.dart';
-import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-
-class _RoundIconButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  _RoundIconButton({@required this.icon, @required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton(
-        child: Icon(icon, color: Colors.white),
-        padding: EdgeInsets.all(16.0),
-        color: Colors.black,
-        shape: CircleBorder(),
-        onPressed: onPressed);
-  }
-}
-
-class ChromeCast extends StatefulWidget {
-  final double iconSize;
-  final Video video;
-  ChromeCast({@required this.video, this.iconSize});
-  @override
-  _ChromeCastState createState() => _ChromeCastState();
-}
-
-class _ChromeCastState extends State<ChromeCast> {
-  ChromeCastController _controller;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AirPlayButton(
-          size: widget.iconSize,
-          color: Colors.white,
-          activeColor: Colors.amber,
-          onRoutesOpening: () => print('opening'),
-          onRoutesClosed: () => print('closed'),
-        ),
-        ChromeCastButton(
-          size: widget.iconSize,
-          color: Colors.white,
-          onButtonCreated: _onButtonCreated,
-          onSessionStarted: _onSessionStarted,
-        ),
-      ],
-    );
-  }
-
-  Future<void> _onButtonCreated(ChromeCastController controller) async {
-    setState(() => _controller = controller);
-    _controller?.addSessionListener();
-  }
-
-  Future<void> _onSessionStarted() async {
-    _controller.loadMedia(widget.video.videoUrl);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ChromeCastView(
-          video: widget.video,
-          iconSize: widget.iconSize,
-          controlador: _controller);
-    }));
-  }
-}
+import 'package:flutter/material.dart';
+import 'package:flutter_video_cast/flutter_video_cast.dart';
+import 'package:cntvkids_app/models/video_model.dart';
 
 class ChromeCastView extends StatefulWidget {
   final double iconSize;
@@ -204,5 +139,22 @@ class _ChromeCastViewState extends State<ChromeCastView> {
       await widget.controlador.play();
     }
     setState(() => _playing = !playing);
+  }
+}
+
+class _RoundIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  _RoundIconButton({@required this.icon, @required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+        child: Icon(icon, color: Colors.white),
+        padding: EdgeInsets.all(16.0),
+        color: Colors.black,
+        shape: CircleBorder(),
+        onPressed: onPressed);
   }
 }
