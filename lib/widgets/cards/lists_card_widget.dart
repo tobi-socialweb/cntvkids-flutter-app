@@ -43,7 +43,7 @@ class _ListsCardState extends State<ListsCard> {
     Size size = MediaQuery.of(context).size;
 
     final double height =
-        0.7 * (size.height * (1 - 3 * NAV_BAR_PERCENTAGE / 2));
+        0.7 * (size.height * (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
     final double width = height * 16 / 9;
     final double iconSize = 0.45 * height;
 
@@ -86,7 +86,7 @@ class _ListsCardState extends State<ListsCard> {
                               alignment: Alignment.centerRight,
                               children: [
                                 SvgIcon(
-                                  asset: R.svg.lists_badge,
+                                  asset: SvgAsset.lists_badge,
                                   size: iconSize,
                                 ),
                               ],

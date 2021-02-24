@@ -217,17 +217,15 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              InkWell(
-                                child: SvgIcon(
-                                  asset: R.svg.back_icon,
-                                  size: iconSize,
-                                ),
+                              SvgButton(
+                                asset: SvgAsset.back_icon,
+                                size: iconSize,
                                 onTap: () {
                                   widget.betterPlayerController.dispose();
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                 },
-                              ),
+                              )
                             ],
                           ),
                         ),

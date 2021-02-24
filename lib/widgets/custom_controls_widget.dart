@@ -80,16 +80,12 @@ class _VideoControlsBarState extends State<VideoControlsBar> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               /// Play/pause button.
-              InkWell(
-                overlayColor: MaterialStateColor.resolveWith(
-                    (states) => Colors.transparent),
-                child: SvgIcon(
-                  asset: widget.controller.isPlaying()
-                      ? R.svg.player_pause_icon
-                      : R.svg.player_play_icon,
-                  size: 0.25 * size.height,
-                  padding: EdgeInsets.only(left: 0.005 * size.height),
-                ),
+              SvgButton(
+                asset: widget.controller.isPlaying()
+                    ? SvgAsset.player_pause_icon
+                    : SvgAsset.player_play_icon,
+                size: 0.25 * size.height,
+                padding: EdgeInsets.only(left: 0.005 * size.height),
                 onTap: () {
                   setState(() {
                     if (widget.controller.isPlaying())

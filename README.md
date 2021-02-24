@@ -14,6 +14,10 @@ Search for "TODO" comments inside files, for specific non-urgent ones.
 - [x] Finish video controls (play, pause, etc.) similar to YoutubeKids's.
 - [x] Add opening animation and sound for the app.
 
+## Before pushing to `master` branch
+- `Flr` plugin is used only to generate code in the `r.g.dart` file, therefore, there is no need to keep it when pushing to `master` branch.
+- This also applies to the file `svg.py` that is used to automatically read all svg constants and redo them into the `helpers.dart` file.
+
 ## Commits
 - `master` is protected and needs pull request.
 - Use other feature specific branches if needed.

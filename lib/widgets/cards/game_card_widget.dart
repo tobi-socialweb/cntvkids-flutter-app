@@ -78,7 +78,7 @@ class _GameCardState extends State<GameCard> {
                                 alignment: Alignment.centerRight,
                                 children: [
                                   SvgIcon(
-                                    asset: R.svg.games_badge,
+                                    asset: SvgAsset.games_badge,
                                     size: iconSize,
                                   ),
                                 ],
