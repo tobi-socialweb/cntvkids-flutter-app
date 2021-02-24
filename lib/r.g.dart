@@ -557,12 +557,4 @@ class _R_FontFamily {
   /// font family: FredokaOne
   // ignore: non_constant_identifier_names
   final fredokaOne = "FredokaOne";
-
-  /// font family: Poppins
-  // ignore: non_constant_identifier_names
-  final poppins = "Poppins";
-
-  /// font family: Soleil
-  // ignore: non_constant_identifier_names
-  final soleil = "Soleil";
 }

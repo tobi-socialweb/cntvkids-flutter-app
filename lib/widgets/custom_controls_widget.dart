@@ -5,7 +5,7 @@ import 'package:better_player/better_player.dart' hide VideoPlayerValue;
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/video_display_widget.dart';
+import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/r.g.dart';
 
