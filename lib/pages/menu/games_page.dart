@@ -83,7 +83,7 @@ class _GamesCardListState extends State<GamesCardList> {
         if (Platform.isAndroid) {
           var i = 0;
           while (i < games.length) {
-            if (games[i].categories.contains(AND_GAMES_ID)) {
+            if (games[i].categories.contains(ANDROID_GAMES_ID)) {
               games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
               i++;
             } else {

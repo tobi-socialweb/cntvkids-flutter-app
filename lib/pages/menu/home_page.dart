@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
-    final double navHeight = NAV_BAR_PERCENTAGE * size.height;
+    final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return FocusDetector(
         onVisibilityLost: () {
@@ -169,32 +169,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       defaultTextScaleFactor: 0.0025 * size.height,
                       children: [
                         NavigationBarButton(
-                          icon: R.svg.logo_icon,
+                          icon: SvgAsset.logo_icon,
                           size: 0.25 * size.height,
                           resetCount: true,
                         ),
                         NavigationBarButton(
-                          icon: R.svg.videos_icon,
-                          activeIcon: R.svg.videos_active_icon,
+                          icon: SvgAsset.videos_icon,
+                          activeIcon: SvgAsset.videos_active_icon,
                           text: "Destacados",
                         ),
                         NavigationBarButton(
-                          icon: R.svg.series_icon,
-                          activeIcon: R.svg.series_active_icon,
+                          icon: SvgAsset.series_icon,
+                          activeIcon: SvgAsset.series_active_icon,
                           text: "Series",
                         ),
                         NavigationBarButton(
-                          icon: R.svg.lists_icon,
-                          activeIcon: R.svg.lists_active_icon,
+                          icon: SvgAsset.lists_icon,
+                          activeIcon: SvgAsset.lists_active_icon,
                           text: "Listas",
                         ),
                         NavigationBarButton(
-                          icon: R.svg.games_icon,
-                          activeIcon: R.svg.games_active_icon,
+                          icon: SvgAsset.games_icon,
+                          activeIcon: SvgAsset.games_active_icon,
                           text: "Juegos",
                         ),
                         NavigationBarButton(
-                          icon: R.svg.search_icon,
+                          icon: SvgAsset.search_icon,
                           text: "Buscar",
                         ),
                       ],

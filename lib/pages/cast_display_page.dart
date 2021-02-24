@@ -44,15 +44,13 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            InkWell(
-                              child: SvgIcon(
-                                asset: R.svg.back_icon,
-                                size: iconSize,
-                              ),
+                            SvgButton(
+                              asset: SvgAsset.back_icon,
+                              size: iconSize,
                               onTap: () {
                                 Navigator.of(context).pop();
                               },
-                            ),
+                            )
                           ],
                         ),
                       ),

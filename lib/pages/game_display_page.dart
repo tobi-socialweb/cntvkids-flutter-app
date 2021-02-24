@@ -35,7 +35,7 @@ class _WebViewPageState extends State<WebViewPage> {
               Navigator.of(context).pop();
             },
             child: SvgIcon(
-              asset: R.svg.back_icon,
+              asset: SvgAsset.back_icon,
               size: iconSize,
             ),
           );

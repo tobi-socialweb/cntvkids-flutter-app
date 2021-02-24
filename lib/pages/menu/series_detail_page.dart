@@ -76,7 +76,7 @@ class _SeriesCardDetailState extends State<SeriesCardDetail> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    final double topBarHeight = NAV_BAR_PERCENTAGE * size.height;
+    final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
@@ -100,16 +100,12 @@ class _SeriesCardDetailState extends State<SeriesCardDetail> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     /// Back button.
-                    Container(
-                      margin: EdgeInsets.fromLTRB(
+                    SvgButton(
+                      asset: SvgAsset.back_icon,
+                      size: 0.5 * topBarHeight,
+                      padding: EdgeInsets.fromLTRB(
                           0.125 * topBarHeight, 0.0, 0.0, 0.25 * topBarHeight),
-                      child: InkWell(
-                        child: SvgIcon(
-                          asset: R.svg.back_icon,
-                          size: 0.5 * topBarHeight,
-                        ),
-                        onTap: () => Navigator.of(context).pop(),
-                      ),
+                      onTap: () => Navigator.of(context).pop(),
                     ),
 
                     /// Series thumbnail avatar.
@@ -178,7 +174,7 @@ class _SeriesCardDetailState extends State<SeriesCardDetail> {
                   Expanded(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                          maxHeight: size.height * (1 - NAV_BAR_PERCENTAGE)),
+                          maxHeight: size.height * (1 - NAVBAR_HEIGHT_PROP)),
                       child: ListView.builder(
                         /// TODO: Fix max scroll indicator being cut.
                         scrollDirection: Axis.horizontal,

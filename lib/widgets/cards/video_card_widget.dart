@@ -88,7 +88,7 @@ class _VideoCardState extends State<VideoCard> {
                                 alignment: Alignment.centerRight,
                                 children: [
                                   SvgIcon(
-                                    asset: R.svg.videos_badge,
+                                    asset: SvgAsset.videos_badge,
                                     size: iconSize,
                                   ),
                                 ],
