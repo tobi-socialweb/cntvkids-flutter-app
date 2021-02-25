@@ -14,39 +14,43 @@ class Lists {
 
   /// Get `Lists` from JSON object.
   factory Lists.fromJson(Map<String, dynamic> json) {
-    /// Default values;
+    /// Default values.
     int _id = has<int>(json["id"], value: -1);
-    String _title = has<String>(json["title"]["rendered"], value: "Serie");
-    String _description = has<String>(json["content"]["rendered"]);
+
+    String _title =
+        has<String>(json["title"]["rendered"], value: "Serie", comp: [""]);
+
+    String _description =
+        has<String>(json["content"]["rendered"], value: "", comp: [""]);
+
     String _thumbnailUrl =
-        has<String>(json["fimg_url"], value: MISSING_IMAGE_URL);
+        has<String>(json["fimg_url"], value: MISSING_IMAGE_URL, comp: [""]);
 
     List<Video> _videos = new List<Video>();
-
-    List<dynamic> children = json["lista_childs"];
-    if (children != null) {
+    has<List<dynamic>>(json["lista_childs"], then: (object) {
       String _season;
       String _chapter;
       String _extra;
-      for (int i = 0; i < children.length; i++) {
-        _season = has<String>(children[i]["season"]);
-        _chapter = has<String>(children[i]["chapter"]);
+
+      for (int i = 0; i < object.length; i++) {
+        _season = has<String>(object[i]["season"], value: "", comp: [""]);
+        _chapter = has<String>(object[i]["chapter"], value: "", comp: [""]);
 
         _extra = (_season != "" ? "T$_season" : "") +
             (_chapter != "" ? "E$_chapter" : "");
 
         _videos.add(Video(
-            id: children[i]["id"],
-            title: children[i]["title"],
-            thumbnailUrl:
-                has<String>(children[i]["image"], value: MISSING_IMAGE_URL),
-            videoUrl: children[i]["dl"],
+            id: has<int>(object[i]["id"], value: -1),
+            title: has<String>(object[i]["title"], value: "", comp: [""]),
+            thumbnailUrl: has<String>(object[i]["image"],
+                value: MISSING_IMAGE_URL, comp: [""]),
+            videoUrl: has<String>(object[i]["dl"], comp: [""]),
             series: "",
             season: _season,
             chapter: _chapter,
             extra: _extra));
       }
-    }
+    });
 
     return Lists(
       id: _id,
@@ -57,15 +61,29 @@ class Lists {
     );
   }
 
-  /// Checks if object is null or empty. If null, return `value`, otherwise
-  /// return the object.
-  static T has<T>(T object, {T value}) {
-    if (T is String) {
-      return (object != null && object != "")
-          ? object
-          : (value == null ? "" : value);
+  /// Compare object to null and to the elements in `comp`, if any. Returns
+  /// `object` if it's not equal to any of those things; otherwise, return
+  /// `value` which by default is null. `then` gets called if `object` is
+  /// returned.
+  static T has<T>(T object,
+      {T value, List<T> comp = const [], void Function(T object) then}) {
+    if (comp.length == 0) {
+      if (object != null) {
+        if (then != null) then(object);
+        return object;
+      } else {
+        return value;
+      }
     } else {
-      return object != null ? object : value;
+      bool res = object != null;
+
+      for (int i = 0; i < comp.length; i++) {
+        res &= object != comp[i];
+      }
+
+      if (res && then != null) then(object);
+
+      return res ? object : value;
     }
   }
 }
