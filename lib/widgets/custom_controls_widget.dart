@@ -65,6 +65,9 @@ class VideoControlsBar extends StatefulWidget {
 }
 
 class _VideoControlsBarState extends State<VideoControlsBar> {
+  /// TODO: add listener to controller, to check if video is finished and restart
+  /// video on
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -503,14 +506,16 @@ class _DisplayTimeState extends State<_DisplayTime> {
       passedTime += timeOffset;
 
       /// Get the error between the current position and the time has passed.
-      double error = (value.position.inMilliseconds - passedTime) as double;
+      int error = value.position.inMilliseconds - passedTime;
 
       /// If the error goes beyond the error range, then fix.
       if (error.abs() >= timeOffset * errorRange) {
         print(
-            "DEBUG: fixing timePassed, because it's value (abs($error) = ${error.abs()}) is greater or equal than\n timeOffset * errorRange = $timeOffset * $errorRange = ${timeOffset * errorRange}");
+            "DEBUG: fixing passedTime from ($passedTime)->(${error > 0 ? passedTime + timeOffset * errorRange : passedTime - timeOffset * errorRange}), because the error (abs(error) = abs($error) = ${error.abs()}) is greater or equal than\nDEBUG:\t-> timeOffset * errorRange = $timeOffset * $errorRange = ${timeOffset * errorRange}\nDEBUG:");
 
-        passedTime += error > 0 ? timeOffset : -timeOffset;
+        passedTime +=
+            (error > 0 ? timeOffset * errorRange : -timeOffset * errorRange)
+                .floor();
       }
 
       /// Change the text widget to reflect new time.

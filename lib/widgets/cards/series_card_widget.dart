@@ -40,4 +40,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
 
   @override
   String get heroId => widget.heroId;
+
+  @override
+  bool get hasTextDecoration => true;
 }

@@ -48,9 +48,6 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
   @override
   void initState() {
-    print(
-        "DEBUG: going to get imgProvider by using thumbnailUrl=\"$thumbnailUrl\"");
-
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(thumbnailUrl);
     imgProvider.resolve(new ImageConfiguration()).addListener(

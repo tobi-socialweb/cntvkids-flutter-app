@@ -83,7 +83,12 @@ class SvgButton extends StatelessWidget {
   final double size;
   final EdgeInsets padding;
 
-  const SvgButton({Key key, this.onTap, this.asset, this.size, this.padding})
+  const SvgButton(
+      {Key key,
+      this.onTap,
+      this.asset,
+      this.size,
+      this.padding = EdgeInsets.zero})
       : super(key: key);
 
   @override
