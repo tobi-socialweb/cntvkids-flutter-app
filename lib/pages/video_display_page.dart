@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'package:better_player/better_player.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:better_player/better_player.dart';
+
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 
@@ -277,7 +277,8 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         ),
                       ],
                     ),
-                    FeaturedCardList(isMinimized: true),
+
+                    /// FeaturedCardList(isMinimized: true),
                   ],
                 )),
             onTap: () {

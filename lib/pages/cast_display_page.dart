@@ -1,8 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cntvkids_app/r.g.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter_video_cast/flutter_video_cast.dart';
+
+import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 
 class ChromeCastView extends StatefulWidget {

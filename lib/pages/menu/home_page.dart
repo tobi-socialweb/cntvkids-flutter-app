@@ -4,8 +4,7 @@ import 'package:cntvkids_app/pages/menu/series_page.dart';
 import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 
-/// Resources
-import 'package:cntvkids_app/r.g.dart';
+/// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
 
 /// General plugins

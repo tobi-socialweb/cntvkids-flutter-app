@@ -2,11 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
-typedef void VoidIndexCallback(int index);
-typedef int IntCallback();
-
 class InheritedTopNavigationBar extends InheritedWidget {
-  final IntCallback getSelectedIndex;
+  final int Function() getSelectedIndex;
 
   InheritedTopNavigationBar({this.getSelectedIndex, child})
       : super(child: child);
@@ -23,11 +20,11 @@ class TopNavigationBar extends StatefulWidget {
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final List<NavigationBarButton> children;
-  final IntCallback getSelectedIndex;
+  final int Function() getSelectedIndex;
   final EdgeInsets padding;
   final double defaultIconSizes;
   final double defaultTextScaleFactor;
-  final VoidIndexCallback defaultOnPressed;
+  final void Function(int index) defaultOnPressed;
   final EdgeInsets defaultPadding;
 
   TopNavigationBar(
@@ -112,7 +109,7 @@ class NavigationBarButton extends StatefulWidget {
   final double size;
   final int index;
   final int realIndex;
-  final VoidIndexCallback onPressed;
+  final void Function(int index) onPressed;
   final String text;
   final double textScaleFactor;
   final EdgeInsets padding;
