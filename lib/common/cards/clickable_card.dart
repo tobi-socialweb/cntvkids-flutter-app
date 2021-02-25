@@ -6,29 +6,32 @@ import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:r_dart_library/asset_svg.dart';
-
 import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/common/constants.dart';
 
 abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   /// The available space
-  Size get size;
+  Size get size => Size(MediaQuery.of(context).size.width,
+      MediaQuery.of(context).size.height * (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
 
   /// The card's margins.
-  EdgeInsets get margin;
+  EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);
 
   /// Getter for the thumbnail URL to be loaded.
   String get thumbnailUrl;
 
+  /// Getter for the hero ID.
+  String get heroId;
+
   /// The height percentage the image will take, considering 1.0 to be the space
   /// available between the nav bar and the bottom.
-  double get heightFactor;
+  double get heightFactor => 0.675;
 
   /// The void function to be called when tapping on the card.
   void onTap();
 
   /// The icon that will show on top of the thumbnail.
-  AssetSvg Function({double width, double height}) get badge;
+  String get badge;
 
   /// Used to fetch the thumbnail and wait for it to load.
   CachedNetworkImageProvider imgProvider;
@@ -37,29 +40,21 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   /// How far to move the icon diagonally from the bottom right.
   final double diagonalIconDstFactor = 0.3;
 
-  /*/// The video card's height.
-  double height;
-
-  /// The video card's width.
-  double width;
-
-  /// The video card icon/badge's size.
-  double iconSize;*/
-
-  /// Gets called after finishing loading the thumbnail image and it's placed
+  /// Shown after finishing loading the thumbnail image and it's placed
   /// below it.
-  Widget afterThumbnailWidget();
+  String get cardText;
+
+  bool get hasTextDecoration => false;
 
   @override
   void initState() {
+    print(
+        "DEBUG: going to get imgProvider by using thumbnailUrl=\"$thumbnailUrl\"");
+
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(thumbnailUrl);
     imgProvider.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener((info, _) => completer.complete(info.image)));
-
-    /*height = size.height * heightFactor;
-    width = height * 16 / 9;
-    iconSize = 0.45 * height;*/
 
     super.initState();
   }
@@ -69,11 +64,12 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
     final double height = size.height * heightFactor;
     final double width = height * 16 / 9;
     final double iconSize = 0.45 * height;
+
     return Card(
         shadowColor: Colors.transparent,
         color: Colors.transparent,
         borderOnForeground: false,
-        margin: margin,
+        margin: EdgeInsets.symmetric(horizontal: 0.025 * size.width),
         child: FutureBuilder(
           future: completer.future,
           builder: (context, snapshot) {
@@ -87,12 +83,16 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
                     borderRadius: BorderRadius.circular(0.15 * height),
                     child: Stack(
                       children: [
-                        /// Video card thumbnail.
-                        Image(
-                          image: imgProvider,
-                          height: height,
-                          width: width,
-                          fit: BoxFit.cover,
+                        /// Series card thumbnail.
+                        Hero(
+                          tag: heroId,
+                          child: Image(
+                            image: imgProvider,
+                            height: height,
+                            width: width,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.medium,
+                          ),
                         ),
 
                         /// Play icon on top of the thumbnail.
@@ -122,7 +122,33 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
                       ],
                     ),
                   ),
-                  afterThumbnailWidget(),
+                  if (cardText != null && cardText != "")
+                    Container(
+                        width: hasTextDecoration ? 0.95 * width : width,
+                        decoration: hasTextDecoration
+                            ? BoxDecoration(
+                                color: Colors.purple[900],
+                                borderRadius:
+                                    BorderRadius.circular(0.1 * height),
+                              )
+                            : null,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: hasTextDecoration
+                                  ? 0.05 * width
+                                  : 0.025 * width,
+                              vertical: 0.025 * height),
+                          child: Text(
+                            cardText,
+                            textAlign: TextAlign.left,
+                            softWrap: true,
+                            textScaleFactor: 0.005 * size.height * heightFactor,
+                            style: TextStyle(
+                                color: hasTextDecoration
+                                    ? Colors.white
+                                    : Colors.black),
+                          ),
+                        ))
                 ],
               );
 

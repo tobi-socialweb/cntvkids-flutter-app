@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:better_player/better_player.dart' hide VideoPlayerValue;
-
 import 'package:flutter/material.dart';
+
+import 'package:better_player/better_player.dart' hide VideoPlayerValue;
 
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/r.g.dart';
 
 /// The controls for managing the videos state.
 class CustomPlayerControls extends StatefulWidget {
@@ -359,25 +358,30 @@ class _DisplayTime extends StatefulWidget {
       Color color = Colors.white,
       double diagonalOffset = 2.5}) {
     dynamic value = controller.videoPlayerController.value;
-    return _DisplayTime.formatTime(value.duration.inSeconds,
+    return _DisplayTime.formatTime(value.duration.inMilliseconds,
         textScaleFactor: textScaleFactor,
         color: color,
         diagonalOffset: diagonalOffset);
   }
 
   /// Expects minutes and seconds to be the total of each respective one separately.
-  static Text formatTime(int seconds,
+  static Text formatTime(int milliseconds,
       {double textScaleFactor = 2.5,
       Color color = Colors.white,
       double diagonalOffset = 2.5}) {
-    int minutes = (seconds / 60).floor();
-    seconds = seconds % 60;
+    /// Get the ammount of seconds and minutes.
+    int numSeconds = (milliseconds / 1000).floor();
+    int numMinutes = (numSeconds / 60).floor();
+    numSeconds = numSeconds % 60;
 
-    String sMinutes = (minutes < 10) ? "0$minutes" : minutes.toString();
-    String sSeconds = (seconds < 10) ? "0$seconds" : seconds.toString();
+    /// Format correctly as strings.
+    String strSeconds =
+        (numSeconds < 10) ? "0$numSeconds" : numSeconds.toString();
+    String strMinutes =
+        (numMinutes < 10) ? "0$numMinutes" : numMinutes.toString();
 
     return Text(
-      "$sMinutes:$sSeconds",
+      "$strMinutes:$strSeconds",
       style: TextStyle(
         shadows: [
           Shadow(
@@ -398,17 +402,30 @@ class _DisplayTimeState extends State<_DisplayTime> {
   /// Timer that calls the _timerCallback function every second.
   Timer timer;
 
-  /// The currently passed seconds.
-  int passedSeconds;
+  /// The ammount of milliseconds to wait for the [timerPeriodicity].
+  final int timeOffset = 100;
 
-  /// The max seconds according to the video duration.
-  int maxSeconds;
+  /// The ammount of time to wait before trying to update the timer if there is
+  /// a shift or delay. Used inside [startTimer()].
+  ///
+  /// Currently, the value is for 1/10 of a second.
+  Duration timerPeriodicity;
+
+  /// The currently passed time in the units used.
+  int passedTime;
+
+  /// The max time units according to the video duration.
+  int maxTime;
+
+  /// The ammount of possible error range (proportion of the [timeOffset])
+  /// when checking for the current video position (must be a positive value).
+  final double errorRange = 0.5;
 
   BetterPlayerController get controller => widget.controller;
   dynamic get value => widget.controller.videoPlayerController.value;
 
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), _timerCallback);
+    timer = Timer.periodic(timerPeriodicity, _timerCallback);
   }
 
   void cancelTimer() {
@@ -417,6 +434,8 @@ class _DisplayTimeState extends State<_DisplayTime> {
 
   @override
   void initState() {
+    timerPeriodicity = Duration(milliseconds: timeOffset);
+
     _updateTimePassed();
 
     if (controller.isPlaying()) startTimer();
@@ -452,8 +471,8 @@ class _DisplayTimeState extends State<_DisplayTime> {
 
           if (timer != null) {
             /// Show the max minutes and seconds because the video finished.
-            if (passedSeconds > maxSeconds) {
-              text = _DisplayTime.formatTime(maxSeconds,
+            if (passedTime > maxTime) {
+              text = _DisplayTime.formatTime(maxTime,
                   textScaleFactor: widget.textScaleFactor);
             }
 
@@ -462,7 +481,7 @@ class _DisplayTimeState extends State<_DisplayTime> {
         }
       });
 
-      maxSeconds = value.duration.inSeconds;
+      maxTime = value.duration.inMilliseconds;
     });
 
     controller.videoPlayerController.addListener(() {
@@ -480,22 +499,22 @@ class _DisplayTimeState extends State<_DisplayTime> {
     if (!this.mounted) return;
 
     setState(() {
-      passedSeconds += 1;
+      /// Add the time passed.
+      passedTime += timeOffset;
 
-      /// Check if current values go 1 second beyond the real video position.
-      if (passedSeconds > value.position.inSeconds) {
-        print("DEBUG: substracting one second. going too fast.");
-        passedSeconds -= 1;
-      }
+      /// Get the error between the current position and the time has passed.
+      double error = (value.position.inMilliseconds - passedTime) as double;
 
-      /// Check if current values go 1 second behind the real video position.
-      if (passedSeconds < value.position.inSeconds) {
-        print("DEBUG: adding one second. going too slow.");
-        passedSeconds += 1;
+      /// If the error goes beyond the error range, then fix.
+      if (error.abs() >= timeOffset * errorRange) {
+        print(
+            "DEBUG: fixing timePassed, because it's value (abs($error) = ${error.abs()}) is greater or equal than\n timeOffset * errorRange = $timeOffset * $errorRange = ${timeOffset * errorRange}");
+
+        passedTime += error > 0 ? timeOffset : -timeOffset;
       }
 
       /// Change the text widget to reflect new time.
-      text = _DisplayTime.formatTime(passedSeconds,
+      text = _DisplayTime.formatTime(passedTime,
           textScaleFactor: widget.textScaleFactor);
     });
   }
@@ -505,9 +524,9 @@ class _DisplayTimeState extends State<_DisplayTime> {
     if (!this.mounted) return;
 
     setState(() {
-      passedSeconds = value.position.inSeconds;
+      passedTime = value.position.inMilliseconds;
 
-      text = _DisplayTime.formatTime(passedSeconds,
+      text = _DisplayTime.formatTime(passedTime,
           textScaleFactor: widget.textScaleFactor);
     });
   }
