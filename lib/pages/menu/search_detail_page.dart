@@ -1,13 +1,16 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/models/games_model.dart';
-import 'package:cntvkids_app/widgets/cards/game_card_widget.dart';
+import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
+
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
@@ -15,69 +18,48 @@ import 'package:loading/loading.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-/// Shows video widgets that have 'Games' category.
-class GamesCardList extends StatefulWidget {
+/// Shows videos 'searched'
+class SearchCardList extends StatefulWidget {
+  final bool isMinimized;
+  final String search;
+  SearchCardList({this.isMinimized = false, this.search});
+
   @override
-  _GamesCardListState createState() => _GamesCardListState();
+  _SearchCardListState createState() => _SearchCardListState();
 }
 
-class _GamesCardListState extends State<GamesCardList> {
-  List<dynamic> games = [];
-  Future<List<dynamic>> _futureGames;
+class _SearchCardListState extends State<SearchCardList> {
+  List<dynamic> searched = [];
+  Future<List<dynamic>> _futureSearch;
+
   ScrollController _controller;
+
   int currentPage;
   bool _continueLoadingPages;
+  //final int featuredPerPage = 2;
   bool beginScrolling = false;
 
   @override
   void initState() {
     super.initState();
     currentPage = 1;
-    _futureGames = fetchGames(currentPage);
+    _futureSearch = fetchSearchList(currentPage, widget.search);
     _controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     _controller.addListener(_scrollControllerListener);
+
     _continueLoadingPages = true;
   }
 
-  /// play sounds
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
-  /// controlador de scroll
-  _scrollControllerListener() {
-    if (!this.mounted) return;
-
-    /// reach bottom
-    if (_controller.offset >= _controller.position.maxScrollExtent &&
-        !_controller.position.outOfRange) {
-      setState(() {
-        currentPage += 1;
-        _futureGames = fetchGames(currentPage);
-      });
-    }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (_controller.position.isScrollingNotifier.value) {
-        if (!beginScrolling) {
-          playSound("sounds/beam/beam.mp3");
-          beginScrolling = true;
-        }
-      } else {
-        beginScrolling = false;
-      }
-    });
-  }
-
-  /// adquirir juegos
-  Future<List<dynamic>> fetchGames(int page) async {
-    if (!this.mounted) return games;
+  /// Fetch searched videos by page.
+  ///
+  /// FeaturedList videos have category 10536 in their [categories].
+  Future<List<dynamic>> fetchSearchList(int page, String busqueda) async {
+    if (!this.mounted) return searched;
 
     /// Try get the requested data and wait.
     try {
-      String requestUrl = "$GAMES_URL&page=$page";
+      String requestUrl = "$VIDEOS_URL&search=$busqueda&page=$page";
 
       Response response = await customDio.get(
         requestUrl,
@@ -87,32 +69,22 @@ class _GamesCardListState extends State<GamesCardList> {
 
       /// If request has succeeded.
       if (response.statusCode == 200) {
+        if (!this.mounted) return searched;
+
+        /// Add new videos to [searched] by updating this widget's state.
         setState(() {
-          games.addAll(
-              response.data.map((value) => Game.fromJson(value)).toList());
+          searched.addAll(
+              response.data.map((value) => Video.fromJson(value)).toList());
         });
-        if (Platform.isAndroid) {
-          var i = 0;
-          while (i < games.length) {
-            if (games[i].categories.contains(ANDROID_GAMES_ID)) {
-              games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
-              i++;
-            } else {
-              games.removeAt(i);
-            }
-          }
-        } else if (Platform.isIOS) {
-          var i = 0;
-          while (i < games.length) {
-            if (games[i].categories.contains(IOS_GAMES_ID)) {
-              games[i].mediaUrl = await games[i].fetchMedia(games[i].mediaUrl);
-              i++;
-            } else {
-              games.removeAt(i);
-            }
+        var i = 0;
+        while (i < searched.length) {
+          if (searched[i].type == "series") {
+            searched.removeAt(i);
+          } else {
+            i++;
           }
         }
-        return games;
+        return searched;
       }
     } on DioError catch (e) {
       if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
@@ -122,7 +94,9 @@ class _GamesCardListState extends State<GamesCardList> {
       } else if (DioErrorType.RESPONSE == e.type) {
         /// If request was badly formed.
         if (e.response.statusCode == 400) {
-          print("error status 400");
+          setState(() {
+            _continueLoadingPages = false;
+          });
 
           /// Otherwise.
         } else {
@@ -139,20 +113,60 @@ class _GamesCardListState extends State<GamesCardList> {
         throw (ERROR_MESSAGE[ErrorTypes.UNKNOWN]);
       }
     }
-    return games;
+
+    return searched;
+  }
+
+  /// play sounds
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
+  /// Listener for scroll changes.
+  ///
+  /// Loads the next page (per page) for searched videos if the scroll is
+  /// finished.
+  _scrollControllerListener() {
+    if (!this.mounted) return;
+
+    /// reach bottom
+    if (_controller.offset >= _controller.position.maxScrollExtent &&
+        !_controller.position.outOfRange) {
+      setState(() {
+        currentPage += 1;
+        _futureSearch = fetchSearchList(currentPage, widget.search);
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_controller.position.isScrollingNotifier.value) {
+        if (!beginScrolling) {
+          playSound("sounds/beam/beam.mp3");
+          beginScrolling = true;
+        }
+      } else {
+        beginScrolling = false;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    /// Get size of the current context widget.
+    Size size = MediaQuery.of(context).size;
+
+    if (widget.isMinimized) {
+      size = new Size(size.width, 0.66 * size.height);
+    }
 
     return FutureBuilder<List<dynamic>>(
-      future: _futureGames,
+      future: _futureSearch,
       builder: (context, snapshot) {
         /// If snapshot has values.
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0)
-            return Container(child: Center(child: Text("Loading...")));
+          if (snapshot.data.length == 0) return Container();
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,18 +175,34 @@ class _GamesCardListState extends State<GamesCardList> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxHeight: 0.6 * size.height),
                   child: ListView.builder(
+                    /// TODO: Fix max scroll indicator being cut.
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data.length + 1,
                     shrinkWrap: true,
                     controller: _controller,
                     itemBuilder: (context, index) {
+                      /// [itemCount] includes an extra item for the loading
+                      /// element.
+
+                      /// TODO: Fix bad scrolling when moving backwards.
+
+                      /// If currently viewing video items.
                       if (index != snapshot.data.length) {
-                        return GameCard(
-                          juego: snapshot.data[index],
+                        return VideoCard(
+                          video: snapshot.data[index],
+                          heroId: snapshot.data[index].id.toString() +
+                              new Random().nextInt(10000).toString(),
+                          isMinimized: widget.isMinimized,
                         );
+
+                        /// Otherwise, it's the loading widget.
                       } else if (_continueLoadingPages) {
+                        /// If scroll controller cant get dimensions, it means
+                        /// that the loading element is visible and should load
+                        /// more pages.
                         if (!_controller.position.haveDimensions) {
-                          _futureGames = fetchGames(++currentPage);
+                          _futureSearch =
+                              fetchSearchList(++currentPage, widget.search);
                         }
 
                         /// TODO: Check if widget is visible, if so then load pages.
@@ -185,6 +215,8 @@ class _GamesCardListState extends State<GamesCardList> {
                                 size: 60.0,
                                 color: Colors.white));
                       }
+
+                      /// Otherwise show nothing at the end.
                       return Container();
                     },
                   ),

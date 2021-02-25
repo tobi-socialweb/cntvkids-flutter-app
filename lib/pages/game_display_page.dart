@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:async';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
 /// Shows video widgets that have 'Games' category.

@@ -4,7 +4,6 @@ import 'package:cntvkids_app/models/games_model.dart';
 import 'package:cntvkids_app/pages/game_display_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
 /// Card widget used to display a clickable game.

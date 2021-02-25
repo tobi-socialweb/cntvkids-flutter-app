@@ -8,6 +8,7 @@ class Video {
   final String chapter;
   final String extra;
   final List<int> categories;
+  final String type;
 
   Video(
       {this.id,
@@ -18,7 +19,8 @@ class Video {
       this.season,
       this.chapter,
       this.extra,
-      this.categories});
+      this.categories,
+      this.type});
 
   /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json) {
@@ -31,7 +33,7 @@ class Video {
     String season = "";
     String chapter = "";
     String extra = "";
-
+    String type = "";
     List<int> categories = [];
 
     /// TODO: Check if values can be null or empty.
@@ -46,6 +48,7 @@ class Video {
     season = json["wpcf-season"].toString();
     chapter = json["wpcf-chapter"].toString();
     extra = "T${season}E$chapter";
+    type = (json["type"] != null) ? json["type"].toString() : "";
 
     for (int i = 0; i < json["categories"].length; i++) {
       categories.add(json["categories"][i]);
@@ -59,6 +62,7 @@ class Video {
       series: series,
       extra: extra,
       categories: categories,
+      type: type,
     );
   }
 
@@ -69,7 +73,8 @@ class Video {
       videoUrl: data["videoUrl"],
       series: data["series"],
       extra: data["extra"],
-      categories: data["categories"]);
+      categories: data["categories"],
+      type: data["type"]);
 
   Map<String, dynamic> toDatabaseJson() => {
         "id": this.id,
@@ -78,6 +83,7 @@ class Video {
         "videoUrl": this.videoUrl,
         "series": this.series,
         "extra": this.extra,
-        "categories": this.categories
+        "categories": this.categories,
+        "type": this.type,
       };
 }

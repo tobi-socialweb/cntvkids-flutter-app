@@ -5,7 +5,6 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/series_model.dart';
 import 'package:cntvkids_app/pages/menu/series_detail_page.dart';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:flutter/material.dart';
 
 class SeriesCard extends StatefulWidget {

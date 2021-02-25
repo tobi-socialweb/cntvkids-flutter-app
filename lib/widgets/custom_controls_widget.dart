@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/r.g.dart';
 
 /// The controls for managing the videos state.
 class CustomPlayerControls extends StatefulWidget {

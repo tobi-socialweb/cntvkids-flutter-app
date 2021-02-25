@@ -5,7 +5,6 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/models/lists_model.dart';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 import 'package:flutter/material.dart';
 

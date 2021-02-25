@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/r.g.dart';
 import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
