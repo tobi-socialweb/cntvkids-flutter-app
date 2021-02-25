@@ -10,6 +10,7 @@ class Video {
   final String chapter;
   final String extra;
   final List<int> categories;
+  final String type;
 
   Video(
       {this.id,
@@ -20,7 +21,8 @@ class Video {
       this.season,
       this.chapter,
       this.extra,
-      this.categories});
+      this.categories,
+      this.type});
 
   /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,8 @@ class Video {
     String _extra = (_season != "" ? "T$_season" : "") +
         (_chapter != "" ? "E$_chapter" : "");
 
+    String _type = has<String>(json["type"], value: "", comp: [""]);
+
     List<int> _categories = new List<int>();
     has<List<dynamic>>(json["categories"], then: (object) {
       for (int i = 0; i < object.length; i++) {
@@ -63,6 +67,7 @@ class Video {
       series: _series,
       extra: _extra,
       categories: _categories,
+      type: _type,
     );
   }
 
@@ -73,7 +78,8 @@ class Video {
       videoUrl: data["videoUrl"],
       series: data["series"],
       extra: data["extra"],
-      categories: data["categories"]);
+      categories: data["categories"],
+      type: data["type"]);
 
   Map<String, dynamic> toDatabaseJson() => {
         "id": this.id,
@@ -82,7 +88,8 @@ class Video {
         "videoUrl": this.videoUrl,
         "series": this.series,
         "extra": this.extra,
-        "categories": this.categories
+        "categories": this.categories,
+        "type": this.type,
       };
 
   /// Compare object to null and to the elements in `comp`, if any. Returns

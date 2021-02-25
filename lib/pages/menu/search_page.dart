@@ -1,13 +1,3 @@
-/// Menu pages
-import 'package:cntvkids_app/pages/menu/lists_page.dart';
-import 'package:cntvkids_app/pages/menu/series_page.dart';
-import 'package:cntvkids_app/pages/menu/games_page.dart';
-import 'package:cntvkids_app/pages/menu/featured_page.dart';
-import 'package:cntvkids_app/pages/menu/search_page.dart';
-
-/// Widget
-import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
-
 /// General plugins
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
@@ -23,27 +13,19 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:focus_detector/focus_detector.dart';
 
 /// The first page to be shown when starting the app.
-class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+class SearchPage extends StatefulWidget {
+  const SearchPage({Key key}) : super(key: key);
   @override
-  _HomePageState createState() => _HomePageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
-class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
+class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
   /// Currently selected index for navigation bar.
-  int _selectedIndex = 0;
   static AudioCache cache = new AudioCache();
   static AudioPlayer player = new AudioPlayer();
   bool musicOn;
   bool visibility;
-
-  /// All options from the navigation bar
-  final List<Widget> _widgetOptions = [
-    FeaturedCardList(),
-    SeriesCardList(),
-    ListsCardList(),
-    GamesCardList(),
-  ];
+  bool hide;
 
   @override
   void initState() {
@@ -52,6 +34,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _startOneSignal();
     loopMusic();
     visibility = true;
+    hide = true;
   }
 
   // Dispose funtions
@@ -142,75 +125,65 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 /// The colored curved blob in the background (white, yellow, etc.).
-                BottomColoredBlob(
-                  size: size,
-                  currentSelectedIndex: _selectedIndex,
-                  colors: [
-                    Colors.white,
-                    Colors.cyan,
-                    Colors.yellow,
-                    Theme.of(context).accentColor,
-                    Colors.white
-                  ],
-                  getCurrentSelectedIndex: getCurrentSelectedIndex,
+                CustomPaint(
+                  painter: BottomColoredBlobPainter(
+                    size: size,
+                    color: Colors.white,
+                  ),
                 ),
 
-                /// Top Navigation Bar.
+                /// Top Bar.
                 Container(
-                    width: size.width,
+                    constraints: BoxConstraints(
+                        maxHeight: navHeight, maxWidth: size.width),
                     height: navHeight,
+                    width: size.width,
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: TopNavigationBar(
-                      getSelectedIndex: getCurrentSelectedIndex,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      defaultIconSizes: 0.125 * size.height,
-                      defaultOnPressed: _onNavButtonTapped,
-                      defaultTextScaleFactor: 0.0025 * size.height,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        NavigationBarButton(
-                          icon: SvgAsset.logo_icon,
-                          size: 0.25 * size.height,
-                          resetCount: true,
+                        /// Back button.
+                        SvgButton(
+                          asset: SvgAsset.back_icon,
+                          size: 0.5 * navHeight,
+                          padding: EdgeInsets.fromLTRB(
+                              0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
+                          onTap: () => Navigator.of(context).pop(),
                         ),
-                        NavigationBarButton(
-                          icon: SvgAsset.videos_icon,
-                          activeIcon: SvgAsset.videos_active_icon,
-                          text: "Destacados",
+
+                        /// search container
+                        Container(
+                          width: 0.2 * size.width,
+                          child: TextField(
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Enter a search term'),
+                          ),
                         ),
-                        NavigationBarButton(
-                          icon: SvgAsset.series_icon,
-                          activeIcon: SvgAsset.series_active_icon,
-                          text: "Series",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.lists_icon,
-                          activeIcon: SvgAsset.lists_active_icon,
-                          text: "Listas",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.games_icon,
-                          activeIcon: SvgAsset.games_active_icon,
-                          text: "Juegos",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.search_icon,
-                          text: "Buscar",
-                          onPressed: (index) {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return SearchPage();
-                            }));
+
+                        /// Search button
+                        SvgButton(
+                          asset: SvgAsset.search_icon,
+                          size: 0.5 * navHeight,
+                          padding: EdgeInsets.fromLTRB(
+                              0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
+                          onTap: () {
+                            setState(() {
+                              hide = false;
+                            });
                           },
                         ),
                       ],
                     )),
+                if (!hide)
 
-                /// Video & Game Cards' List.
-                Expanded(
-                  child: Center(
-                    child: _widgetOptions.elementAt(_selectedIndex),
+                  /// results
+                  Center(
+                    child: Text(
+                      'Resultados',
+                      style: TextStyle(fontSize: 24),
+                    ),
                   ),
-                ),
 
                 /// Space filler to keep things kinda centered.
                 Container(
@@ -226,63 +199,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
     return cache.playBytes(bytes);
-  }
-
-  /// Change the selected index when button is tapped.
-  void _onNavButtonTapped(int index) {
-    playSound("sounds/click/click.mp3");
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  int getCurrentSelectedIndex() {
-    return _selectedIndex;
-  }
-}
-
-/// Custom painter for the colored bottom blob.
-class BottomColoredBlob extends StatefulWidget {
-  final Size size;
-  final int currentSelectedIndex;
-  final List<Color> colors;
-  final int Function() getCurrentSelectedIndex;
-
-  BottomColoredBlob(
-      {this.size,
-      this.currentSelectedIndex,
-      this.colors,
-      this.getCurrentSelectedIndex});
-
-  @override
-  _BottomColoredBlobState createState() => _BottomColoredBlobState();
-}
-
-class _BottomColoredBlobState extends State<BottomColoredBlob> {
-  int currentSelectedIndex;
-
-  @override
-  void initState() {
-    currentSelectedIndex = widget.getCurrentSelectedIndex();
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    updateSelectedIndex();
-    return CustomPaint(
-      painter: BottomColoredBlobPainter(
-        size: widget.size,
-        color: widget.colors[currentSelectedIndex],
-      ),
-    );
-  }
-
-  void updateSelectedIndex() {
-    setState(() {
-      currentSelectedIndex = widget.getCurrentSelectedIndex();
-    });
   }
 }
 

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 /// Splash screen page
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
@@ -12,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'common/helpers.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

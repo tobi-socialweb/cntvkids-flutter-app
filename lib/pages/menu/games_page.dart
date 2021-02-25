@@ -1,22 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
-
-import 'package:http/http.dart' as http;
-
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
-
-import 'package:loading/loading.dart';
-import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
-    show BallSpinFadeLoaderIndicator;
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/cards/card_list.dart';
