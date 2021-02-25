@@ -85,14 +85,10 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<dynamic> _futureSplash() {
-    return completer.future;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _futureSplash(),
+      future: completer.future,
       // ignore: missing_return
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData && !end) {
