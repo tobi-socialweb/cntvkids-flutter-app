@@ -131,6 +131,7 @@ abstract class CardListState<T extends StatefulWidget> extends State<T> {
       });
     }
 
+    /// TODO: fix scroll sound efects
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (controller.position.isScrollingNotifier.value) {
         if (!startedScrolling) {
