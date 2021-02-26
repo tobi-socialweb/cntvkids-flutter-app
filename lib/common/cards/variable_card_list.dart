@@ -152,7 +152,7 @@ abstract class CardListState<T extends StatefulWidget> extends State<T> {
     try {
       String requestUrl = categoryId != null
           ? "$modelUrl&categories[]=$categoryId&page=$page&per_page=$cardsPerPage"
-          : "$modelUrl";
+          : "$modelUrl&page=$page&per_page=$cardsPerPage";
       Response response = await customDio.get(
         requestUrl,
         options:

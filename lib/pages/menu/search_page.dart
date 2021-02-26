@@ -1,3 +1,7 @@
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+
 /// General plugins
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
@@ -7,11 +11,6 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Audio plugins
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:focus_detector/focus_detector.dart';
-
 /// The first page to be shown when starting the app.
 class SearchPage extends StatefulWidget {
   const SearchPage({Key key}) : super(key: key);
@@ -19,67 +18,15 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
+class _SearchPageState extends State<SearchPage> {
   /// Currently selected index for navigation bar.
-  static AudioCache cache = new AudioCache();
-  static AudioPlayer player = new AudioPlayer();
-  bool musicOn;
-  bool visibility;
-  bool hide;
-
+  bool hide = true;
+  SearchCardList lista;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _startOneSignal();
-    loopMusic();
-    visibility = true;
-    hide = true;
-  }
-
-  // Dispose funtions
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  /// Stop/play background music in agreement with de application state
-  Future<AudioPlayer> loopMusic() async {
-    player =
-        await cache.loop('sounds/background/background_1.mp3', volume: 0.7);
-    musicOn = true;
-    return player;
-  }
-
-  Future<AudioPlayer> stopMusic() async {
-    player?.stop();
-    musicOn = false;
-    return player;
-  }
-
-  Future<AudioPlayer> resumeMusic() async {
-    player?.resume();
-    musicOn = true;
-    return player;
-  }
-
-  Future<AudioPlayer> pauseMusic() async {
-    player?.pause();
-    musicOn = false;
-    return player;
-  }
-
-  // Change background sound in agreement of app state
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if ((state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached ||
-        state == AppLifecycleState.inactive && musicOn)) {
-      pauseMusic();
-    } else if (state == AppLifecycleState.resumed && !musicOn & visibility) {
-      resumeMusic();
-    }
+    lista = SearchCardList();
   }
 
   _startOneSignal() async {
@@ -106,36 +53,30 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return FocusDetector(
-        onVisibilityLost: () {
-          visibility = false;
-          stopMusic();
-        },
-        onVisibilityGained: () {
-          visibility = true;
-          if (musicOn != null && !musicOn) {
-            cache.clearCache();
-            loopMusic();
-          }
-        },
-        child: Scaffold(
-            backgroundColor: Theme.of(context).primaryColor,
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                /// The colored curved blob in the background (white, yellow, etc.).
-                CustomPaint(
-                  painter: BottomColoredBlobPainter(
-                    size: size,
-                    color: Colors.white,
-                  ),
-                ),
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            /// The colored curved blob in the background (white, yellow, etc.).
+            CustomPaint(
+              painter: BottomColoredBlobPainter(
+                size: size,
+                color: Colors.white,
+              ),
+            ),
 
-                /// Top Bar.
+            /// Top Bar.
+            Stack(
+              children: [
                 Container(
                     constraints: BoxConstraints(
-                        maxHeight: navHeight, maxWidth: size.width),
+                        maxHeight: navHeight,
+                        maxWidth: size.width,
+                        minWidth: size.width,
+                        minHeight: navHeight),
                     height: navHeight,
                     width: size.width,
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -153,20 +94,51 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
 
                         /// search container
                         Container(
-                          width: 0.2 * size.width,
-                          child: TextField(
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Enter a search term'),
-                          ),
-                        ),
+                            margin: EdgeInsets.only(bottom: 0.25 * navHeight),
+                            decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(navHeight)),
+                            width: 0.5 * size.width,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: size.width * 0.05),
+                              child: TextField(
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontFamily: "FredokaOne"),
+                                onTap: () {
+                                  setState(() {
+                                    hide = true;
+                                  });
+                                },
+                                onSubmitted: (string) {
+                                  print(string);
+                                  setState(() {
+                                    hide = false;
+                                    lista = SearchCardList(search: string);
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Buscar aquí',
+                                    hintStyle: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                        fontFamily: "FredokaOne")),
+                              ),
+                            )),
 
                         /// Search button
                         SvgButton(
                           asset: SvgAsset.search_icon,
                           size: 0.5 * navHeight,
                           padding: EdgeInsets.fromLTRB(
-                              0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
+                            0.125 * navHeight,
+                            0.0,
+                            0.0,
+                            0.25 * navHeight,
+                          ),
                           onTap: () {
                             setState(() {
                               hide = false;
@@ -176,22 +148,14 @@ class _SearchPageState extends State<SearchPage> with WidgetsBindingObserver {
                       ],
                     )),
                 if (!hide)
-
-                  /// results
-                  Center(
-                    child: Text(
-                      'Resultados',
-                      style: TextStyle(fontSize: 24),
-                    ),
+                  Container(
+                    margin: EdgeInsets.only(top: navHeight),
+                    child: lista,
                   ),
-
-                /// Space filler to keep things kinda centered.
-                Container(
-                  width: size.width,
-                  height: navHeight / 2,
-                ),
               ],
-            )));
+            )
+          ],
+        ));
   }
 
   /// Play sounds efects
