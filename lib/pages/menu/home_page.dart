@@ -4,6 +4,7 @@ import 'package:cntvkids_app/pages/menu/series_page.dart';
 import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/pages/menu/search_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
@@ -20,7 +21,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Audio plugins
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:focus_detector/focus_detector.dart';
 
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
@@ -32,10 +32,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Currently selected index for navigation bar.
   int _selectedIndex = 0;
-  static AudioCache cache = new AudioCache();
-  static AudioPlayer player = new AudioPlayer();
-  bool musicOn;
-  bool visibility;
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
@@ -48,55 +44,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+
     _startOneSignal();
-    loopMusic();
-    visibility = true;
-  }
-
-  // Dispose funtions
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  /// Stop/play background music in agreement with de application state
-  Future<AudioPlayer> loopMusic() async {
-    player =
-        await cache.loop('sounds/background/background_1.mp3', volume: 0.7);
-    musicOn = true;
-    return player;
-  }
-
-  Future<AudioPlayer> stopMusic() async {
-    player?.stop();
-    musicOn = false;
-    return player;
-  }
-
-  Future<AudioPlayer> resumeMusic() async {
-    player?.resume();
-    musicOn = true;
-    return player;
-  }
-
-  Future<AudioPlayer> pauseMusic() async {
-    player?.pause();
-    musicOn = false;
-    return player;
-  }
-
-  // Change background sound in agreement of app state
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if ((state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached ||
-        state == AppLifecycleState.inactive && musicOn)) {
-      pauseMusic();
-    } else if (state == AppLifecycleState.resumed && !musicOn & visibility) {
-      resumeMusic();
-    }
   }
 
   _startOneSignal() async {
@@ -123,102 +72,92 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return FocusDetector(
-        onVisibilityLost: () {
-          visibility = false;
-          stopMusic();
-        },
-        onVisibilityGained: () {
-          visibility = true;
-          if (musicOn != null && !musicOn) {
-            cache.clearCache();
-            loopMusic();
-          }
-        },
-        child: Scaffold(
-            backgroundColor: Theme.of(context).primaryColor,
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                /// The colored curved blob in the background (white, yellow, etc.).
-                BottomColoredBlob(
-                  size: size,
-                  currentSelectedIndex: _selectedIndex,
-                  colors: [
-                    Colors.white,
-                    Colors.cyan,
-                    Colors.yellow,
-                    Theme.of(context).accentColor,
-                    Colors.white
-                  ],
-                  getCurrentSelectedIndex: getCurrentSelectedIndex,
-                ),
+    return BackgroundMusic(
+      child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              /// The colored curved blob in the background (white, yellow, etc.).
+              BottomColoredBlob(
+                size: size,
+                currentSelectedIndex: _selectedIndex,
+                colors: [
+                  Colors.white,
+                  Colors.cyan,
+                  Colors.yellow,
+                  Theme.of(context).accentColor,
+                  Colors.white
+                ],
+                getCurrentSelectedIndex: getCurrentSelectedIndex,
+              ),
 
-                /// Top Navigation Bar.
-                Container(
-                    width: size.width,
-                    height: navHeight,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: TopNavigationBar(
-                      getSelectedIndex: getCurrentSelectedIndex,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      defaultIconSizes: 0.125 * size.height,
-                      defaultOnPressed: _onNavButtonTapped,
-                      defaultTextScaleFactor: 0.0025 * size.height,
-                      children: [
-                        NavigationBarButton(
-                          icon: SvgAsset.logo_icon,
-                          size: 0.25 * size.height,
-                          resetCount: true,
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.videos_icon,
-                          activeIcon: SvgAsset.videos_active_icon,
-                          text: "Destacados",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.series_icon,
-                          activeIcon: SvgAsset.series_active_icon,
-                          text: "Series",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.lists_icon,
-                          activeIcon: SvgAsset.lists_active_icon,
-                          text: "Listas",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.games_icon,
-                          activeIcon: SvgAsset.games_active_icon,
-                          text: "Juegos",
-                        ),
-                        NavigationBarButton(
-                          icon: SvgAsset.search_icon,
-                          text: "Buscar",
-                          onPressed: (index) {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return SearchPage();
-                            }));
-                          },
-                        ),
-                      ],
-                    )),
-
-                /// Video & Game Cards' List.
-                Expanded(
-                  child: Center(
-                    child: _widgetOptions.elementAt(_selectedIndex),
-                  ),
-                ),
-
-                /// Space filler to keep things kinda centered.
-                Container(
+              /// Top Navigation Bar.
+              Container(
                   width: size.width,
-                  height: navHeight / 2,
+                  height: navHeight,
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: TopNavigationBar(
+                    getSelectedIndex: getCurrentSelectedIndex,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    defaultIconSizes: 0.125 * size.height,
+                    defaultOnPressed: _onNavButtonTapped,
+                    defaultTextScaleFactor: 0.0025 * size.height,
+                    children: [
+                      NavigationBarButton(
+                        icon: SvgAsset.logo_icon,
+                        size: 0.25 * size.height,
+                        resetCount: true,
+                      ),
+                      NavigationBarButton(
+                        icon: SvgAsset.videos_icon,
+                        activeIcon: SvgAsset.videos_active_icon,
+                        text: "Destacados",
+                      ),
+                      NavigationBarButton(
+                        icon: SvgAsset.series_icon,
+                        activeIcon: SvgAsset.series_active_icon,
+                        text: "Series",
+                      ),
+                      NavigationBarButton(
+                        icon: SvgAsset.lists_icon,
+                        activeIcon: SvgAsset.lists_active_icon,
+                        text: "Listas",
+                      ),
+                      NavigationBarButton(
+                        icon: SvgAsset.games_icon,
+                        activeIcon: SvgAsset.games_active_icon,
+                        text: "Juegos",
+                      ),
+                      NavigationBarButton(
+                        icon: SvgAsset.search_icon,
+                        text: "Buscar",
+                        onPressed: (index) {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return SearchPage();
+                          }));
+                        },
+                      ),
+                    ],
+                  )),
+
+              /// Video & Game Cards' List.
+              Expanded(
+                child: Center(
+                  child: _widgetOptions.elementAt(_selectedIndex),
                 ),
-              ],
-            )));
+              ),
+
+              /// Space filler to keep things kinda centered.
+              Container(
+                width: size.width,
+                height: navHeight / 2,
+              ),
+            ],
+          )),
+    );
   }
 
   /// Play sounds efects

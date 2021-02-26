@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/cards/card_list.dart';
+import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/models/games_model.dart';
 import 'package:cntvkids_app/widgets/cards/game_card_widget.dart';
 

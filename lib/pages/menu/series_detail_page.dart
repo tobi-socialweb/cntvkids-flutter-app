@@ -9,8 +9,12 @@ class SeriesCardDetail extends StatefulWidget {
   final String heroId;
   final ImageProvider imgProvider;
 
-  const SeriesCardDetail({Key key, this.imgProvider, this.series, this.heroId})
-      : super(key: key);
+  const SeriesCardDetail({
+    Key key,
+    this.imgProvider,
+    this.series,
+    this.heroId,
+  }) : super(key: key);
 
   _SeriesCardDetailState createState() => _SeriesCardDetailState();
 }
@@ -41,4 +45,7 @@ class _SeriesCardDetailState extends StaticCardListState<SeriesCardDetail> {
 
   @override
   String get title => widget.series.title;
+
+  @override
+  void setPlayerEffects() {}
 }
