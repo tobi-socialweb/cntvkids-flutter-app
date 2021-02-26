@@ -8,8 +8,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
-abstract class StaticCardListState<T extends StatefulWidget> extends State<T> {
+abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
+    with WidgetsBindingObserver {
   /// Controller for the `ListView` scrolling.
   ScrollController controller;
 
@@ -40,6 +42,8 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T> {
   /// Determined on initState of card list has description.
   bool hasDescription;
 
+  void setPlayerEffects();
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +53,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T> {
     controller.addListener(_scrollControllerListener);
 
     hasDescription = description != null && description != "";
+
+    WidgetsBinding.instance.addObserver(this);
+
+    setPlayerEffects();
   }
 
   /// Play sounds.
@@ -96,136 +104,141 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T> {
     final Size size = MediaQuery.of(context).size;
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            /// The colored curved blob in the background (white, yellow, etc.).
-            CustomPaint(
-              painter: BottomColoredBlobPainter(color: Colors.cyan, size: size),
-            ),
+    return BackgroundMusic(
+        child: Scaffold(
+            backgroundColor: Theme.of(context).primaryColor,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                /// The colored curved blob in the background (white, yellow, etc.).
+                CustomPaint(
+                  painter:
+                      BottomColoredBlobPainter(color: Colors.cyan, size: size),
+                ),
 
-            /// Top Bar.
-            Container(
-                constraints: BoxConstraints(
-                    maxHeight: topBarHeight, maxWidth: size.width),
-                height: topBarHeight,
-                width: size.width,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    /// Back button.
-                    SvgButton(
-                      asset: SvgAsset.back_icon,
-                      size: 0.5 * topBarHeight,
-                      padding: EdgeInsets.fromLTRB(
-                          0.125 * topBarHeight, 0.0, 0.0, 0.25 * topBarHeight),
-                      onTap: () => Navigator.of(context).pop(),
-                    ),
+                /// Top Bar.
+                Container(
+                    constraints: BoxConstraints(
+                        maxHeight: topBarHeight, maxWidth: size.width),
+                    height: topBarHeight,
+                    width: size.width,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        /// Back button.
+                        SvgButton(
+                          asset: SvgAsset.back_icon,
+                          size: 0.5 * topBarHeight,
+                          padding: EdgeInsets.fromLTRB(0.125 * topBarHeight,
+                              0.0, 0.0, 0.25 * topBarHeight),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
 
-                    /// Series thumbnail avatar.
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 0.025 * size.width),
-                      child: Hero(
-                          tag: avatarHeroId,
-                          child: CircleAvatar(
-                            /// diameter: 0.75 * topBarHeight
-                            radius: 0.375 * topBarHeight,
-                            backgroundImage: avatarImgProvider,
-                          )),
-                    ),
+                        /// Series thumbnail avatar.
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 0.025 * size.width),
+                          child: Hero(
+                              tag: avatarHeroId,
+                              child: CircleAvatar(
+                                /// diameter: 0.75 * topBarHeight
+                                radius: 0.375 * topBarHeight,
+                                backgroundImage: avatarImgProvider,
+                              )),
+                        ),
 
-                    /// Series title & description.
-                    Container(
-                        margin: EdgeInsets.only(top: 0.1 * topBarHeight),
-                        width: 0.9 * size.width - 1.375 * topBarHeight,
-                        child: Column(
-                          mainAxisAlignment: hasDescription
-                              ? MainAxisAlignment.spaceBetween
-                              : MainAxisAlignment.center,
-                          crossAxisAlignment: hasDescription
-                              ? CrossAxisAlignment.start
-                              : CrossAxisAlignment.center,
-                          children: [
-                            /// Title
-                            Text(
-                              title,
-                              style: TextStyle(
-                                fontSize: hasDescription
-                                    ? 0.15 * topBarHeight
-                                    : 0.2 * topBarHeight,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: "FredokaOne",
-                                height: 1.0,
-                              ),
-                            ),
-
-                            /// Description
-                            if (hasDescription)
-                              Expanded(
-                                child: ListView(
-                                  primary: false,
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  children: [
-                                    Container(
-                                      height: 0.05 * topBarHeight,
-                                    ),
-                                    Text(
-                                      clean(description),
-                                      style: TextStyle(
-                                        fontSize: 0.125 * topBarHeight,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                        /// Series title & description.
+                        Container(
+                            margin: EdgeInsets.only(top: 0.1 * topBarHeight),
+                            width: 0.9 * size.width - 1.375 * topBarHeight,
+                            child: Column(
+                              mainAxisAlignment: hasDescription
+                                  ? MainAxisAlignment.spaceBetween
+                                  : MainAxisAlignment.center,
+                              crossAxisAlignment: hasDescription
+                                  ? CrossAxisAlignment.start
+                                  : CrossAxisAlignment.center,
+                              children: [
+                                /// Title
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontSize: hasDescription
+                                        ? 0.15 * topBarHeight
+                                        : 0.2 * topBarHeight,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: "FredokaOne",
+                                    height: 1.0,
+                                  ),
                                 ),
-                              )
-                          ],
-                        )),
-                  ],
-                )),
 
-            /// The card list.
-            Expanded(
-              child: Center(
-                  child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          maxHeight: size.height * (1 - NAVBAR_HEIGHT_PROP)),
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: cards.length,
-                        shrinkWrap: false,
-                        controller: controller,
-                        itemBuilder: (context, index) {
-                          return cardWidget(
-                              cards[index],
-                              cards[index].id.toString() +
-                                  new Random().nextInt(10000).toString());
-                        },
+                                /// Description
+                                if (hasDescription)
+                                  Expanded(
+                                    child: ListView(
+                                      primary: false,
+                                      shrinkWrap: true,
+                                      physics: BouncingScrollPhysics(),
+                                      children: [
+                                        Container(
+                                          height: 0.05 * topBarHeight,
+                                        ),
+                                        Text(
+                                          clean(description),
+                                          style: TextStyle(
+                                            fontSize: 0.125 * topBarHeight,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                              ],
+                            )),
+                      ],
+                    )),
+
+                /// The card list.
+                Expanded(
+                  child: Center(
+                      child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              maxHeight:
+                                  size.height * (1 - NAVBAR_HEIGHT_PROP)),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: cards.length,
+                            shrinkWrap: false,
+                            controller: controller,
+                            itemBuilder: (context, index) {
+                              return cardWidget(
+                                  cards[index],
+                                  cards[index].id.toString() +
+                                      new Random().nextInt(10000).toString());
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              )),
-            ),
+                    ],
+                  )),
+                ),
 
-            /// Space filler to keep things kinda centered.
-            Container(
-              width: size.width,
-              height: topBarHeight / 2,
-            ),
-          ],
-        ));
+                /// Space filler to keep things kinda centered.
+                Container(
+                  width: size.width,
+                  height: topBarHeight / 2,
+                ),
+              ],
+            )));
   }
 }

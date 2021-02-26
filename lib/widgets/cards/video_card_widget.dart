@@ -5,6 +5,7 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/video_display_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
 /// Card widget used to display a clickable video.
 class VideoCard extends StatefulWidget {
@@ -39,6 +40,8 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
 
   @override
   void onTap() {
+    BackgroundMusicManager.instance.music.stopMusic();
+
     /// When tapped, open video.
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return VideoDisplay(

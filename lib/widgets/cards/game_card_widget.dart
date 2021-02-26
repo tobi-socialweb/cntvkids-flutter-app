@@ -5,6 +5,7 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/games_model.dart';
 import 'package:cntvkids_app/pages/game_display_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
 /// Card widget used to display a clickable game.
 class GameCard extends StatefulWidget {
@@ -29,6 +30,8 @@ class _GameCardState extends ClickableCardState<GameCard> {
 
   @override
   void onTap() {
+    BackgroundMusicManager.instance.music.stopMusic();
+
     Navigator.push(
         context,
         MaterialPageRoute(

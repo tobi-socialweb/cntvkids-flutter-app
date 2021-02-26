@@ -1,5 +1,5 @@
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/cards/card_list.dart';
+import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 

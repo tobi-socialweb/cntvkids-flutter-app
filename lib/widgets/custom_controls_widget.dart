@@ -510,8 +510,8 @@ class _DisplayTimeState extends State<_DisplayTime> {
 
       /// If the error goes beyond the error range, then fix.
       if (error.abs() >= timeOffset * errorRange) {
-        print(
-            "DEBUG: fixing passedTime from ($passedTime)->(${error > 0 ? passedTime + timeOffset * errorRange : passedTime - timeOffset * errorRange}), because the error (abs(error) = abs($error) = ${error.abs()}) is greater or equal than\nDEBUG:\t-> timeOffset * errorRange = $timeOffset * $errorRange = ${timeOffset * errorRange}\nDEBUG:");
+        /*print(
+            "DEBUG: fixing passedTime from ($passedTime)->(${error > 0 ? passedTime + timeOffset * errorRange : passedTime - timeOffset * errorRange}), because the error (abs(error) = abs($error) = ${error.abs()}) is greater or equal than\nDEBUG:\t-> timeOffset * errorRange = $timeOffset * $errorRange = ${timeOffset * errorRange}\nDEBUG:");*/
 
         passedTime +=
             (error > 0 ? timeOffset * errorRange : -timeOffset * errorRange)
