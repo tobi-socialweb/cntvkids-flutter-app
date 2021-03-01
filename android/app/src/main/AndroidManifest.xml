@@ -7,7 +7,12 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+     <!-- <queries>
+    <intent>
+        <action android:name="android.speech.RecognitionService" />
+    </intent>
+    </queries> -->
     <application
         android:label="CNTV Kids"
         android:icon="@mipmap/launcher_icon">

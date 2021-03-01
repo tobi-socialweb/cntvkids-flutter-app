@@ -22,6 +22,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+///
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -32,6 +35,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Currently selected index for navigation bar.
   int _selectedIndex = 0;
+  stt.SpeechToText speech;
+  String word;
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
@@ -44,8 +49,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
     _startOneSignal();
+
+    speech = stt.SpeechToText();
+    initSpeechState();
+  }
+
+  Future<void> initSpeechState() async {
+    await speech.initialize();
   }
 
   _startOneSignal() async {
@@ -154,7 +165,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         onPressed: (index) {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return SearchPage();
+                            return SearchPage(
+                              speech: speech,
+                            );
                           }));
                         },
                       ),

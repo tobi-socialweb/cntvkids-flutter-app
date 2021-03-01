@@ -37,6 +37,7 @@ class _SearchCardListState extends CardListState<SearchCardList> {
 
   @override
   String get modelUrl => "$VIDEOS_URL&search=${widget.search}";
+
   @override
   Future<void> optionalCardManagement() async {
     for (int i = 0; i < cards.length; i++) {

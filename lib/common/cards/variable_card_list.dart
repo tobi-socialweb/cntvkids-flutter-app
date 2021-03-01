@@ -237,10 +237,17 @@ abstract class CardListState<T extends StatefulWidget> extends State<T> {
 
                       /// If currently viewing video items.
                       if (index != snapshot.data.length) {
-                        return cardWidget(
-                            snapshot.data[index],
-                            snapshot.data[index].id.toString() +
-                                new Random().nextInt(10000).toString());
+                        if (snapshot.data.length > 0) {
+                          return cardWidget(
+                              snapshot.data[index],
+                              snapshot.data[index].id.toString() +
+                                  new Random().nextInt(10000).toString());
+                        } else {
+                          return Container(
+                              height: 300,
+                              alignment: Alignment.center,
+                              child: Text("No se pudo encontrar resultados."));
+                        }
 
                         /// Otherwise, it's the loading widget.
                       } else if (continueLoadingPages) {

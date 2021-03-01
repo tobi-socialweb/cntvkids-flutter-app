@@ -10,23 +10,41 @@ import 'package:cntvkids_app/common/helpers.dart';
 /// Signals
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+
+///
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// The first page to be shown when starting the app.
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key key}) : super(key: key);
+  final stt.SpeechToText speech;
+
+  const SearchPage({Key key, this.speech}) : super(key: key);
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
   /// Currently selected index for navigation bar.
-  bool hide = true;
+  bool hide;
   SearchCardList lista;
+
+  TextEditingController controller;
+  String _textToSpeech = 'Buscar aquí';
+
+  bool hasSpeech;
+
   @override
   void initState() {
     super.initState();
     _startOneSignal();
+
     lista = SearchCardList();
+    controller = TextEditingController();
+    hide = true;
+
+    hasSpeech = widget.speech.isAvailable;
   }
 
   _startOneSignal() async {
@@ -47,11 +65,48 @@ class _SearchPageState extends State<SearchPage> {
     await enableNotification(context, value == 1);
   }
 
+  void submit(String string) {
+    if (!this.mounted) return;
+
+    print("DEBUG: searching for string=$string");
+
+    setState(() {
+      hide = false;
+      lista = SearchCardList(search: string);
+    });
+  }
+
+  void startListening() {
+    widget.speech.listen(
+      onResult: resultListener,
+      partialResults: false,
+      cancelOnError: true,
+    );
+
+    if (!this.mounted) return;
+
+    setState(() {
+      hide = true;
+    });
+  }
+
+  void resultListener(SpeechRecognitionResult result) {
+    setState(() {
+      _textToSpeech = result.recognizedWords;
+      controller.text = _textToSpeech;
+
+      if (widget.speech.isNotListening) submit(_textToSpeech);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
+    final double iconSize = 0.35 * navHeight;
+    final EdgeInsets padding = EdgeInsets.fromLTRB(
+        0.00625 * navHeight, 0.0, 0.00625 * navHeight, 0.25 * navHeight);
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -86,64 +141,63 @@ class _SearchPageState extends State<SearchPage> {
                         /// Back button.
                         SvgButton(
                           asset: SvgAsset.back_icon,
-                          size: 0.5 * navHeight,
-                          padding: EdgeInsets.fromLTRB(
-                              0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
+                          size: iconSize,
+                          padding: padding,
                           onPressed: () => Navigator.of(context).pop(),
                         ),
 
                         /// search container
-                        Container(
-                            margin: EdgeInsets.only(bottom: 0.25 * navHeight),
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(navHeight)),
-                            width: 0.5 * size.width,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: size.width * 0.05),
-                              child: TextField(
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontFamily: "FredokaOne"),
-                                onTap: () {
-                                  setState(() {
-                                    hide = true;
-                                  });
-                                },
-                                onSubmitted: (string) {
-                                  print(string);
-                                  setState(() {
-                                    hide = false;
-                                    lista = SearchCardList(search: string);
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Buscar aquí',
-                                    hintStyle: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
-                                        fontFamily: "FredokaOne")),
-                              ),
-                            )),
+                        Expanded(
+                          child: Container(
+                              margin: EdgeInsets.only(bottom: 0.25 * navHeight),
+                              decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius:
+                                      BorderRadius.circular(navHeight)),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: size.width * 0.05),
+                                child: TextField(
+                                  controller: controller,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontFamily: "FredokaOne"),
+                                  onTap: () {
+                                    setState(() {
+                                      hide = true;
+                                    });
+                                  },
+                                  onSubmitted: (string) => submit(string),
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: _textToSpeech,
+                                      hintStyle: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontFamily: "FredokaOne")),
+                                ),
+                              )),
+                        ),
 
                         /// Search button
                         SvgButton(
                           asset: SvgAsset.search_icon,
-                          size: 0.5 * navHeight,
-                          padding: EdgeInsets.fromLTRB(
-                            0.125 * navHeight,
-                            0.0,
-                            0.0,
-                            0.25 * navHeight,
-                          ),
+                          size: iconSize,
+                          padding: padding,
                           onPressed: () {
                             setState(() {
                               hide = false;
                             });
                           },
+                        ),
+
+                        /// TODO: Fix button not glowing when used
+                        SvgButton(
+                          asset: SvgAsset.record_icon,
+                          size: iconSize,
+                          onPressed: startListening,
+                          padding: padding,
                         ),
                       ],
                     )),
