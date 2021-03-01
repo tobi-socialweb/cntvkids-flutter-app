@@ -49,7 +49,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                             SvgButton(
                               asset: SvgAsset.back_icon,
                               size: iconSize,
-                              onTap: () {
+                              onPressed: () {
                                 Navigator.of(context).pop();
                               },
                             )

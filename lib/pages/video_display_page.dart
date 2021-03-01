@@ -195,7 +195,9 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     return WillPopScope(
         child: Material(
           color: Theme.of(context).accentColor,
-          child: InkWell(
+          child: FlatButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             child: LimitedBox(
 
                 /// TODO: fix
@@ -219,7 +221,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                               SvgButton(
                                 asset: SvgAsset.back_icon,
                                 size: iconSize,
-                                onTap: () {
+                                onPressed: () {
                                   widget.betterPlayerController.dispose();
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
@@ -280,7 +282,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                     /// FeaturedCardList(isMinimized: true),
                   ],
                 )),
-            onTap: () {
+            onPressed: () {
               Navigator.of(context).pop();
             },
           ),

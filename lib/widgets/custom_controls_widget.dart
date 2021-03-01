@@ -88,7 +88,7 @@ class _VideoControlsBarState extends State<VideoControlsBar> {
                     : SvgAsset.player_play_icon,
                 size: 0.25 * size.height,
                 padding: EdgeInsets.only(left: 0.005 * size.height),
-                onTap: () {
+                onPressed: () {
                   setState(() {
                     if (widget.controller.isPlaying())
                       widget.controller.pause();

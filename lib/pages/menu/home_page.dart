@@ -75,6 +75,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return BackgroundMusic(
       child: Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
+          drawer: Row(
+            children: [
+              Drawer(
+                child: ListView(
+                  children: [
+                    DrawerHeader(child: Text("test")),
+                    ListTile(
+                      title: Text("title"),
+                    ),
+                  ],
+                ),
+              ),
+              SvgIcon(
+                asset: SvgAsset.back_icon,
+                size: 50.0,
+              )
+            ],
+          ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,

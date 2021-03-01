@@ -133,7 +133,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                           size: 0.5 * topBarHeight,
                           padding: EdgeInsets.fromLTRB(0.125 * topBarHeight,
                               0.0, 0.0, 0.25 * topBarHeight),
-                          onTap: () {
+                          onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),

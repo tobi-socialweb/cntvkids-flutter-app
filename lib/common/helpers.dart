@@ -78,14 +78,14 @@ class SvgIcon extends StatelessWidget {
 }
 
 class SvgButton extends StatelessWidget {
-  final void Function() onTap;
+  final void Function() onPressed;
   final String asset;
   final double size;
   final EdgeInsets padding;
 
   const SvgButton(
       {Key key,
-      this.onTap,
+      this.onPressed,
       this.asset,
       this.size,
       this.padding = EdgeInsets.zero})
@@ -93,15 +93,14 @@ class SvgButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: SvgIcon(
-          asset: asset,
-          size: size,
-          padding: padding,
-        ),
+    return FlatButton(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onPressed: onPressed,
+      child: SvgIcon(
+        asset: asset,
+        size: size,
+        padding: padding,
       ),
     );
   }

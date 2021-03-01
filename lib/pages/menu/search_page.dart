@@ -89,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
                           size: 0.5 * navHeight,
                           padding: EdgeInsets.fromLTRB(
                               0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
-                          onTap: () => Navigator.of(context).pop(),
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
 
                         /// search container
@@ -139,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
                             0.0,
                             0.25 * navHeight,
                           ),
-                          onTap: () {
+                          onPressed: () {
                             setState(() {
                               hide = false;
                             });

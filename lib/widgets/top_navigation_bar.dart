@@ -171,16 +171,12 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-          splashColor: Colors.transparent,
+        SvgButton(
           padding: widget.padding,
-          alignment: Alignment.center,
-          iconSize: widget.size,
-          icon: SvgIcon(
-              asset: (isPressed && widget.activeIcon != null)
-                  ? widget.activeIcon
-                  : widget.icon,
-              size: widget.size),
+          size: widget.size,
+          asset: (isPressed && widget.activeIcon != null)
+              ? widget.activeIcon
+              : widget.icon,
           onPressed: _onPressed,
         ),
         (widget.text != null && widget.text != "")
