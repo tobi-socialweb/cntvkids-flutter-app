@@ -1,5 +1,6 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 
 /// General plugins
@@ -10,6 +11,9 @@ import 'package:cntvkids_app/common/helpers.dart';
 /// Signals
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+///
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// The first page to be shown when starting the app.
 class SearchPage extends StatefulWidget {
@@ -22,11 +26,34 @@ class _SearchPageState extends State<SearchPage> {
   /// Currently selected index for navigation bar.
   bool hide = true;
   SearchCardList lista;
+
+  stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _textToSpeech = 'Press the buttom to start';
+
+  void onListen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+          onStatus: (val) => print('OnStatus: $val'),
+          onError: (val) => print('OnError: $val'));
+      if (available) {
+        setState(() {
+          _isListening = true;
+        });
+        _speech.listen(
+            onResult: (val) => setState(() {
+                  _textToSpeech = val.recognizedWords;
+                }));
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _startOneSignal();
     lista = SearchCardList();
+    _speech = stt.SpeechToText();
   }
 
   _startOneSignal() async {
@@ -52,6 +79,7 @@ class _SearchPageState extends State<SearchPage> {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
+    final double iconSize = 0.5 * navHeight;
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -86,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                         /// Back button.
                         SvgButton(
                           asset: SvgAsset.back_icon,
-                          size: 0.5 * navHeight,
+                          size: iconSize,
                           padding: EdgeInsets.fromLTRB(
                               0.125 * navHeight, 0.0, 0.0, 0.25 * navHeight),
                           onTap: () => Navigator.of(context).pop(),
@@ -130,20 +158,41 @@ class _SearchPageState extends State<SearchPage> {
                             )),
 
                         /// Search button
-                        SvgButton(
-                          asset: SvgAsset.search_icon,
-                          size: 0.5 * navHeight,
-                          padding: EdgeInsets.fromLTRB(
-                            0.125 * navHeight,
-                            0.0,
-                            0.0,
-                            0.25 * navHeight,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              hide = false;
-                            });
-                          },
+
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            /*SvgButton(
+                              asset: SvgAsset.search_icon,
+                              size: 0.5 * navHeight,
+                              padding: EdgeInsets.fromLTRB(
+                                0.125 * navHeight,
+                                0.0,
+                                0.0,
+                                0.0,
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  hide = false;
+                                });
+                              },
+                            ),*/
+                            AvatarGlow(
+                              animate: _isListening,
+                              glowColor: Theme.of(context).primaryColor,
+                              endRadius: iconSize,
+                              duration: Duration(microseconds: 2000),
+                              repeatPauseDuration: Duration(microseconds: 100),
+                              repeat: true,
+                              child: FloatingActionButton(
+                                child: SvgIcon(
+                                  size: 0.9 * iconSize,
+                                  asset: SvgAsset.record_icon,
+                                ),
+                                onPressed: onListen,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     )),
@@ -152,6 +201,12 @@ class _SearchPageState extends State<SearchPage> {
                     margin: EdgeInsets.only(top: navHeight),
                     child: lista,
                   ),
+                Container(
+                  margin: EdgeInsets.only(top: navHeight),
+                  child: Text(
+                    _textToSpeech,
+                  ),
+                ),
               ],
             )
           ],

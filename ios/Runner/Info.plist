@@ -47,5 +47,9 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Recognition use and display input</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Detect speech input</string>
 </dict>
 </plist>

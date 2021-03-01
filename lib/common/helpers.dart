@@ -95,6 +95,7 @@ class SvgButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      shadowColor: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         child: SvgIcon(
