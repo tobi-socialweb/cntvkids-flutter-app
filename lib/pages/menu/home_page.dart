@@ -130,15 +130,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   child: TopNavigationBar(
                     getSelectedIndex: getCurrentSelectedIndex,
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    defaultIconSizes: 0.125 * size.height,
+                    defaultIconSizes: 0.5 * navHeight,
                     defaultOnPressed: _onNavButtonTapped,
                     defaultTextScaleFactor: 0.0025 * size.height,
                     children: [
                       NavigationBarButton(
-                        icon: SvgAsset.logo_icon,
-                        size: 0.25 * size.height,
-                        resetCount: true,
-                      ),
+                          icon: SvgAsset.logo_icon,
+                          resetCount: true,
+                          text: " "),
                       NavigationBarButton(
                         icon: SvgAsset.videos_icon,
                         activeIcon: SvgAsset.videos_active_icon,

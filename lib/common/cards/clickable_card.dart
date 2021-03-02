@@ -139,7 +139,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
                             cardText,
                             textAlign: TextAlign.left,
                             softWrap: true,
-                            textScaleFactor: 0.005 * size.height * heightFactor,
+                            textScaleFactor: 0.007 * height,
                             style: TextStyle(
                                 color: hasTextDecoration
                                     ? Colors.white

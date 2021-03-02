@@ -68,8 +68,6 @@ class _SearchPageState extends State<SearchPage> {
   void submit(String string) {
     if (!this.mounted) return;
 
-    print("DEBUG: searching for string=$string");
-
     setState(() {
       hide = false;
       lista = SearchCardList(search: string);
@@ -78,10 +76,9 @@ class _SearchPageState extends State<SearchPage> {
 
   void startListening() {
     widget.speech.listen(
-      onResult: resultListener,
-      partialResults: false,
-      cancelOnError: true,
-    );
+        onResult: resultListener,
+        cancelOnError: true,
+        listenMode: stt.ListenMode.dictation);
 
     if (!this.mounted) return;
 
@@ -92,6 +89,7 @@ class _SearchPageState extends State<SearchPage> {
 
   void resultListener(SpeechRecognitionResult result) {
     setState(() {
+      print("DEBUG: calling resultListener");
       _textToSpeech = result.recognizedWords;
       controller.text = _textToSpeech;
 
@@ -104,7 +102,7 @@ class _SearchPageState extends State<SearchPage> {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
-    final double iconSize = 0.35 * navHeight;
+    final double iconSize = 0.5 * navHeight;
     final EdgeInsets padding = EdgeInsets.fromLTRB(
         0.00625 * navHeight, 0.0, 0.00625 * navHeight, 0.25 * navHeight);
 
@@ -149,34 +147,38 @@ class _SearchPageState extends State<SearchPage> {
                         /// search container
                         Expanded(
                           child: Container(
+                              height: 0.35 * navHeight,
                               margin: EdgeInsets.only(bottom: 0.25 * navHeight),
                               decoration: BoxDecoration(
                                   color: Colors.black,
                                   borderRadius:
-                                      BorderRadius.circular(navHeight)),
+                                      BorderRadius.circular(navHeight / 10)),
                               child: Container(
                                 margin: EdgeInsets.symmetric(
-                                    horizontal: size.width * 0.05),
+                                    horizontal: size.width * 0.025),
                                 child: TextField(
-                                  controller: controller,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontFamily: "FredokaOne"),
-                                  onTap: () {
-                                    setState(() {
-                                      hide = true;
-                                    });
-                                  },
-                                  onSubmitted: (string) => submit(string),
-                                  decoration: InputDecoration(
+                                    controller: controller,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    style: TextStyle(
+                                        fontSize: 12 * 0.003 * size.height,
+                                        height: 1.5,
+                                        color: Colors.white,
+                                        fontFamily: "FredokaOne"),
+                                    onTap: () {
+                                      setState(() {
+                                        hide = true;
+                                      });
+                                    },
+                                    onSubmitted: (string) => submit(string),
+                                    decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText: _textToSpeech,
                                       hintStyle: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 12 * 0.003 * size.height,
+                                          height: 1.5,
                                           color: Colors.white,
-                                          fontFamily: "FredokaOne")),
-                                ),
+                                          fontFamily: "FredokaOne"),
+                                    )),
                               )),
                         ),
 

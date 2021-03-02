@@ -392,6 +392,7 @@ class _DisplayTime extends StatefulWidget {
               offset: Offset(diagonalOffset, diagonalOffset))
         ],
         color: color,
+        fontFamily: "FredokaOne",
       ),
       textScaleFactor: textScaleFactor,
     );
