@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Menu pages
 import 'package:cntvkids_app/pages/menu/lists_page.dart';
 import 'package:cntvkids_app/pages/menu/series_page.dart';
@@ -86,104 +88,100 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return BackgroundMusic(
       child: Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
-          drawer: Row(
+          drawerEdgeDragWidth: 25 + 0.075 * size.height,
+          drawerScrimColor: Colors.transparent,
+          //drawer: ,
+          body: Stack(
             children: [
-              Drawer(
-                child: ListView(
-                  children: [
-                    DrawerHeader(child: Text("test")),
-                    ListTile(
-                      title: Text("title"),
-                    ),
-                  ],
-                ),
-              ),
-              SvgIcon(
-                asset: SvgAsset.back_icon,
-                size: 50.0,
-              )
-            ],
-          ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              /// The colored curved blob in the background (white, yellow, etc.).
-              BottomColoredBlob(
-                size: size,
-                currentSelectedIndex: _selectedIndex,
-                colors: [
-                  Colors.white,
-                  Colors.cyan,
-                  Colors.yellow,
-                  Theme.of(context).accentColor,
-                  Colors.white
-                ],
-                getCurrentSelectedIndex: getCurrentSelectedIndex,
-              ),
-
-              /// Top Navigation Bar.
-              Container(
-                  width: size.width,
-                  height: navHeight,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: TopNavigationBar(
-                    getSelectedIndex: getCurrentSelectedIndex,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    defaultIconSizes: 0.5 * navHeight,
-                    defaultOnPressed: _onNavButtonTapped,
-                    defaultTextScaleFactor: 0.0025 * size.height,
-                    children: [
-                      NavigationBarButton(
-                          icon: SvgAsset.logo_icon,
-                          resetCount: true,
-                          text: " "),
-                      NavigationBarButton(
-                        icon: SvgAsset.videos_icon,
-                        activeIcon: SvgAsset.videos_active_icon,
-                        text: "Destacados",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.series_icon,
-                        activeIcon: SvgAsset.series_active_icon,
-                        text: "Series",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.lists_icon,
-                        activeIcon: SvgAsset.lists_active_icon,
-                        text: "Listas",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.games_icon,
-                        activeIcon: SvgAsset.games_active_icon,
-                        text: "Juegos",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.search_icon,
-                        text: "Buscar",
-                        onPressed: (index) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return SearchPage(
-                              speech: speech,
-                            );
-                          }));
-                        },
-                      ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  /// The colored curved blob in the background (white, yellow, etc.).
+                  BottomColoredBlob(
+                    size: size,
+                    currentSelectedIndex: _selectedIndex,
+                    colors: [
+                      Colors.white,
+                      Colors.cyan,
+                      Colors.yellow,
+                      Theme.of(context).accentColor,
+                      Colors.white
                     ],
-                  )),
+                    getCurrentSelectedIndex: getCurrentSelectedIndex,
+                  ),
 
-              /// Video & Game Cards' List.
-              Expanded(
-                child: Center(
-                  child: _widgetOptions.elementAt(_selectedIndex),
-                ),
+                  /// Top Navigation Bar.
+                  Container(
+                      width: size.width,
+                      height: navHeight,
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: TopNavigationBar(
+                        getSelectedIndex: getCurrentSelectedIndex,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        defaultIconSizes: 0.5 * navHeight,
+                        defaultOnPressed: _onNavButtonTapped,
+                        defaultTextScaleFactor: 0.0025 * size.height,
+                        children: [
+                          NavigationBarButton(
+                              icon: SvgAsset.logo_icon,
+                              resetCount: true,
+                              text: " "),
+                          NavigationBarButton(
+                            icon: SvgAsset.videos_icon,
+                            activeIcon: SvgAsset.videos_active_icon,
+                            text: "Destacados",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.series_icon,
+                            activeIcon: SvgAsset.series_active_icon,
+                            text: "Series",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.lists_icon,
+                            activeIcon: SvgAsset.lists_active_icon,
+                            text: "Listas",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.games_icon,
+                            activeIcon: SvgAsset.games_active_icon,
+                            text: "Juegos",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.search_icon,
+                            text: "Buscar",
+                            onPressed: (index) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return SearchPage(
+                                  speech: speech,
+                                );
+                              }));
+                            },
+                          ),
+                        ],
+                      )),
+
+                  /// Video & Game Cards' List.
+                  Expanded(
+                    child: Center(
+                      child: _widgetOptions.elementAt(_selectedIndex),
+                    ),
+                  ),
+
+                  /// Space filler to keep things kinda centered.
+                  Container(
+                    width: size.width,
+                    height: navHeight / 2,
+                  ),
+                ],
               ),
-
-              /// Space filler to keep things kinda centered.
-              Container(
-                width: size.width,
-                height: navHeight / 2,
+              PullableDrawerBlob(
+                size: size,
+                color: Theme.of(context).accentColor,
+                length: 25,
+                innerRadius: 0.01 * size.height,
+                outerRadius: 0.075 * size.height,
               ),
             ],
           )),
@@ -241,7 +239,7 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   Widget build(BuildContext context) {
     updateSelectedIndex();
     return CustomPaint(
-      painter: BottomColoredBlobPainter(
+      foregroundPainter: BottomColoredBlobPainter(
         size: widget.size,
         color: widget.colors[currentSelectedIndex],
       ),
@@ -274,6 +272,90 @@ class BottomColoredBlobPainter extends CustomPainter {
     path.lineTo(0.5 * size.width, size.height);
     path.lineTo(-0.5 * size.width, size.height);
     path.close();
+
+    canvas.drawPath(path, p);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class PullableDrawerBlob extends StatelessWidget {
+  final Size size;
+  final Color color;
+  final double length;
+  final double innerRadius;
+  final double outerRadius;
+
+  const PullableDrawerBlob(
+      {Key key,
+      this.size,
+      this.color,
+      this.length,
+      this.innerRadius,
+      this.outerRadius})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        CustomPaint(
+          painter: PullableDrawerBlobPainter(
+            size: size,
+            color: color,
+            length: length,
+            innerRadius: innerRadius,
+            outerRadius: outerRadius,
+          ),
+        ),
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: SvgIcon(
+                  asset: SvgAsset.back_icon,
+                  size: 54,
+                ),
+              )
+            ])
+      ],
+    );
+  }
+}
+
+class PullableDrawerBlobPainter extends CustomPainter {
+  final Size size;
+  final Color color;
+  final double length;
+  final double innerRadius;
+  final double outerRadius;
+
+  PullableDrawerBlobPainter(
+      {this.color, this.length, this.innerRadius, this.outerRadius, this.size});
+
+  @override
+  void paint(Canvas canvas, Size _) {
+    Paint p = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+        Offset(length + innerRadius, 0.5 * size.height), outerRadius, p);
+    canvas.drawRect(Rect.fromLTWH(0.0, 0.0, length, size.height), p);
+
+    Path path = Path()
+      ..moveTo(length - 5.0, 0.5 * size.height - outerRadius - innerRadius)
+      ..relativeLineTo(5.0, 0.0)
+      ..relativeQuadraticBezierTo(0.0, innerRadius, innerRadius, innerRadius)
+      ..relativeLineTo(0.0, outerRadius * 2)
+      ..relativeQuadraticBezierTo(-innerRadius, 0.0, -innerRadius, innerRadius)
+      ..relativeLineTo(-5.0, 0.0)
+      ..close();
 
     canvas.drawPath(path, p);
   }
