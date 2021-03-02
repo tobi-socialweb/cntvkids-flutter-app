@@ -131,8 +131,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                         SvgButton(
                           asset: SvgAsset.back_icon,
                           size: 0.5 * topBarHeight,
-                          padding: EdgeInsets.fromLTRB(0.125 * topBarHeight,
-                              0.0, 0.0, 0.25 * topBarHeight),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
@@ -140,8 +138,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
                         /// Series thumbnail avatar.
                         Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 0.025 * size.width),
+                          margin: EdgeInsets.only(right: 0.15 * topBarHeight),
                           child: Hero(
                               tag: avatarHeroId,
                               child: CircleAvatar(
@@ -157,7 +154,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                             width: 0.9 * size.width - 1.375 * topBarHeight,
                             child: Column(
                               mainAxisAlignment: hasDescription
-                                  ? MainAxisAlignment.spaceBetween
+                                  ? MainAxisAlignment.start
                                   : MainAxisAlignment.center,
                               crossAxisAlignment: hasDescription
                                   ? CrossAxisAlignment.start
@@ -179,24 +176,26 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
                                 /// Description
                                 if (hasDescription)
-                                  Expanded(
-                                    child: ListView(
-                                      primary: false,
-                                      shrinkWrap: true,
-                                      physics: BouncingScrollPhysics(),
-                                      children: [
-                                        Container(
-                                          height: 0.05 * topBarHeight,
-                                        ),
-                                        Text(
-                                          clean(description),
-                                          style: TextStyle(
-                                            fontSize: 0.125 * topBarHeight,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.white,
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                        top: 0.05 * topBarHeight),
+                                    height: 0.6 * topBarHeight,
+                                    child: Expanded(
+                                      child: ListView(
+                                        primary: false,
+                                        shrinkWrap: true,
+                                        physics: BouncingScrollPhysics(),
+                                        children: [
+                                          Text(
+                                            clean(description),
+                                            style: TextStyle(
+                                              fontSize: 0.125 * topBarHeight,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   )
                               ],

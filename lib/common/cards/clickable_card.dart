@@ -66,7 +66,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
         shadowColor: Colors.transparent,
         color: Colors.transparent,
         borderOnForeground: false,
-        margin: EdgeInsets.symmetric(horizontal: 0.025 * size.width),
+        margin: margin,
         child: FutureBuilder(
           future: completer.future,
           builder: (context, snapshot) {

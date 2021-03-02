@@ -21,7 +21,8 @@ import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
-abstract class CardListState<T extends StatefulWidget> extends State<T> {
+abstract class VariableCardListState<T extends StatefulWidget>
+    extends State<T> {
   /// Currently shown cards.
   List<dynamic> cards = [];
 

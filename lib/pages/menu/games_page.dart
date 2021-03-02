@@ -15,7 +15,7 @@ class GamesCardList extends StatefulWidget {
   _GamesCardListState createState() => _GamesCardListState();
 }
 
-class _GamesCardListState extends CardListState<GamesCardList> {
+class _GamesCardListState extends VariableCardListState<GamesCardList> {
   @override
   Widget cardWidget(object, heroId) {
     return GameCard(
