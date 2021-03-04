@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -48,8 +46,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   void initState() {
     super.initState();
 
-    controller =
-        ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+    controller = ScrollController(
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true,
+    );
     controller.addListener(_scrollControllerListener);
 
     hasDescription = description != null && description != "";
@@ -150,8 +150,8 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
                         /// Series title & description.
                         Container(
-                            margin: EdgeInsets.only(top: 0.1 * topBarHeight),
-                            width: 0.9 * size.width - 1.375 * topBarHeight,
+                            margin: EdgeInsets.only(top: 0.05 * topBarHeight),
+                            width: 0.8 * size.width - 1.375 * topBarHeight,
                             child: Column(
                               mainAxisAlignment: hasDescription
                                   ? MainAxisAlignment.start
@@ -205,32 +205,15 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
                 /// The card list.
                 Expanded(
-                  child: Center(
-                      child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                              maxHeight:
-                                  size.height * (1 - NAVBAR_HEIGHT_PROP)),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: cards.length,
-                            shrinkWrap: false,
-                            controller: controller,
-                            itemBuilder: (context, index) {
-                              return cardWidget(
-                                  cards[index],
-                                  cards[index].id.toString() +
-                                      new Random().nextInt(10000).toString());
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-                ),
+                    child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  controller: controller,
+                  itemCount: cards.length,
+                  itemBuilder: (context, index) {
+                    return cardWidget(cards[index], cards[index].id.toString());
+                  },
+                )),
 
                 /// Space filler to keep things kinda centered.
                 Container(

@@ -6,6 +6,7 @@ import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
+import 'package:flutter/services.dart';
 
 /// Signals
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -76,9 +77,14 @@ class _SearchPageState extends State<SearchPage> {
 
   void startListening() {
     widget.speech.listen(
-        onResult: resultListener,
-        cancelOnError: true,
-        listenMode: stt.ListenMode.dictation);
+      onResult: resultListener,
+      cancelOnError: true,
+      listenMode: stt.ListenMode.dictation,
+
+      ///TODO: fix listen time duration
+      listenFor: Duration(seconds: 5),
+      pauseFor: Duration(seconds: 5),
+    );
 
     if (!this.mounted) return;
 
@@ -152,7 +158,7 @@ class _SearchPageState extends State<SearchPage> {
                               decoration: BoxDecoration(
                                   color: Colors.black,
                                   borderRadius:
-                                      BorderRadius.circular(navHeight / 10)),
+                                      BorderRadius.circular(navHeight * 0.1)),
                               child: Container(
                                 margin: EdgeInsets.symmetric(
                                     horizontal: size.width * 0.025),
@@ -167,6 +173,11 @@ class _SearchPageState extends State<SearchPage> {
                                     onTap: () {
                                       setState(() {
                                         hide = true;
+                                      });
+                                    },
+                                    onChanged: (string) {
+                                      setState(() {
+                                        _textToSpeech = string;
                                       });
                                     },
                                     onSubmitted: (string) => submit(string),
@@ -188,9 +199,9 @@ class _SearchPageState extends State<SearchPage> {
                           size: iconSize,
                           padding: padding,
                           onPressed: () {
-                            setState(() {
-                              hide = false;
-                            });
+                            SystemChannels.textInput
+                                .invokeMethod('TextInput.hide');
+                            submit(_textToSpeech);
                           },
                         ),
 
@@ -205,6 +216,8 @@ class _SearchPageState extends State<SearchPage> {
                     )),
                 if (!hide)
                   Container(
+                    height: size.height - navHeight,
+                    width: size.width,
                     margin: EdgeInsets.only(top: navHeight),
                     child: lista,
                   ),
