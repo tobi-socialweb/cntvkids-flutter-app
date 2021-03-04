@@ -5,9 +5,11 @@ import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/pages/menu/search_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -86,24 +88,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return BackgroundMusic(
       child: Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
-          drawer: Row(
-            children: [
-              Drawer(
-                child: ListView(
-                  children: [
-                    DrawerHeader(child: Text("test")),
-                    ListTile(
-                      title: Text("title"),
-                    ),
-                  ],
-                ),
-              ),
-              SvgIcon(
-                asset: SvgAsset.back_icon,
-                size: 50.0,
-              )
-            ],
-          ),
+          drawerScrimColor: Colors.transparent,
+          drawer: MenuDrawer(),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,

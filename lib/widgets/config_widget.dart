@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 /// Enumerator for the types of filters that can be used in the app.
 enum VisualFilter { normal, inverted, grayscale }
 
-/// A settings class for storing values and sending to the [ConfigWidget].
+/// A settings class for storing values and sending to the [Config].
 class ConfigSettings {
   VisualFilter filter;
 
@@ -12,17 +12,17 @@ class ConfigSettings {
 }
 
 /// An InheritedWidget in charge of storing global app configurations.
-class ConfigWidget extends InheritedWidget {
+class Config extends InheritedWidget {
   final ConfigSettings configSettings;
   final Widget child;
 
-  ConfigWidget({this.configSettings, this.child});
+  Config({this.configSettings, this.child});
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
 
-  static ConfigWidget of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<ConfigWidget>();
+  static Config of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<Config>();
 }
 
 /// Works the same way [MaterialPageRoute] does, adding the option of sending
@@ -39,12 +39,12 @@ class ConfigPageRoute extends MaterialPageRoute {
 
   @override
   Widget buildContent(BuildContext context) {
-    /// If [settings] is not null, then add ConfigWidget to the build.
+    /// If [settings] is not null, then add Config to the build.
     if (settings != null) {
       Widget child = builder(context);
 
       Widget Function(BuildContext context) newBuilder = (context) {
-        return ConfigWidget(
+        return Config(
           configSettings: configSettings,
           child: child,
         );

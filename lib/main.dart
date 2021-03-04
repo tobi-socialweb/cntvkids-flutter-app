@@ -1,17 +1,13 @@
-/// Splash screen page
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
-
-/// Home page
 import 'package:cntvkids_app/pages/menu/home_page.dart';
-
-/// General plugins
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'common/helpers.dart';
 import 'dart:async';
 
+/// Main function called at app start.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,6 +21,7 @@ void main() async {
   /// a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
+  /// Theming and stuff probably related to OneSignal.
   runApp(ChangeNotifierProvider<AppStateNotifier>(
       create: (context) => AppStateNotifier(),
       child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
