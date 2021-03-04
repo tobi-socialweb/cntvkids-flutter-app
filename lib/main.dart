@@ -37,14 +37,15 @@ void main() async {
                 canvasColor: Color(0xFFE3E3E3),
                 textTheme: TextTheme(
                   bodyText1: TextStyle(
-                      fontSize: 12,
-                      height: 1.5,
-                      color: Colors.black87,
-                      fontFamily: "FredokaOne"),
+                    fontSize: 12,
+                    height: 1.5,
+                    color: Colors.black,
+                    fontFamily: "FredokaOne",
+                  ),
                   bodyText2: TextStyle(
                       fontSize: 12,
                       height: 1.5,
-                      color: Colors.black87,
+                      color: Colors.black,
                       fontFamily: "FredokaOne"),
                 ),
                 backgroundColor: Colors.white,

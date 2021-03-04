@@ -40,6 +40,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   stt.SpeechToText speech;
   String word;
 
+  bool grayscaleFilterValue = false;
+
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
     FeaturedCardList(),
@@ -79,6 +81,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await enableNotification(context, value == 1);
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          grayscaleFilterValue = value;
+        });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
@@ -89,7 +102,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       child: Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
           drawerScrimColor: Colors.transparent,
-          drawer: MenuDrawer(),
+          drawer: MenuDrawer(
+            children: [
+              Switch(
+                value: grayscaleFilterValue,
+                onChanged: (value) {
+                  setState(() {
+                    grayscaleFilterValue = value;
+                  });
+                },
+              )
+            ],
+          ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,9 +145,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     defaultTextScaleFactor: 0.0025 * size.height,
                     children: [
                       NavigationBarButton(
-                          icon: SvgAsset.logo_icon,
-                          resetCount: true,
-                          text: " "),
+                        icon: SvgAsset.logo_icon,
+                        resetCount: true,
+                        text: " ",
+                        size: 0.65 * navHeight,
+                      ),
                       NavigationBarButton(
                         icon: SvgAsset.videos_icon,
                         activeIcon: SvgAsset.videos_active_icon,
@@ -164,12 +190,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: Center(
                   child: _widgetOptions.elementAt(_selectedIndex),
                 ),
-              ),
-
-              /// Space filler to keep things kinda centered.
-              Container(
-                width: size.width,
-                height: navHeight / 2,
               ),
             ],
           )),
