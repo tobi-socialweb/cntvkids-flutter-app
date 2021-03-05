@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -190,7 +191,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     Size size = MediaQuery.of(context).size;
 
     final double iconSize = 0.15 * size.height;
-    final double miniVideoSize = 0.5 * size.height;
+    final double miniVideoSize = 0.6 * size.height;
 
     return WillPopScope(
         child: Material(
@@ -280,6 +281,24 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                     ),
 
                     /// FeaturedCardList(isMinimized: true),
+                    Expanded(
+                      child: Container(
+                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                        padding: EdgeInsets.symmetric(
+                            vertical: (size.height -
+                                    0.25 * size.height -
+                                    0.1 * size.height -
+                                    miniVideoSize) /
+                                2),
+                        child: SearchCardList(
+                          search: widget.video.series == ''
+                              ? widget.video.title
+                              : widget.video.series,
+                          isMinimized: true,
+                          id: widget.video.id,
+                        ),
+                      ),
+                    ),
                   ],
                 )),
             onPressed: () {

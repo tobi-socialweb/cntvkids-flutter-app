@@ -1,5 +1,3 @@
-import 'dart:math';
-
 /// Menu pages
 import 'package:cntvkids_app/pages/menu/lists_page.dart';
 import 'package:cntvkids_app/pages/menu/series_page.dart';
@@ -7,9 +5,11 @@ import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/pages/menu/search_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -39,6 +39,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   stt.SpeechToText speech;
   String word;
+
+  bool grayscaleFilterValue = false;
 
   /// All options from the navigation bar
   final List<Widget> _widgetOptions = [
@@ -79,6 +81,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await enableNotification(context, value == 1);
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          grayscaleFilterValue = value;
+        });
+        break;
+
+      default:
+        print("");
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
@@ -86,106 +104,102 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
-      child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          drawerEdgeDragWidth: 25 + 0.075 * size.height,
-          drawerScrimColor: Colors.transparent,
-          //drawer: ,
-          body: Stack(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  /// The colored curved blob in the background (white, yellow, etc.).
-                  BottomColoredBlob(
-                    size: size,
-                    currentSelectedIndex: _selectedIndex,
-                    colors: [
-                      Colors.white,
-                      Colors.cyan,
-                      Colors.yellow,
-                      Theme.of(context).accentColor,
-                      Colors.white
-                    ],
-                    getCurrentSelectedIndex: getCurrentSelectedIndex,
-                  ),
-
-                  /// Top Navigation Bar.
-                  Container(
-                      width: size.width,
-                      height: navHeight,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: TopNavigationBar(
-                        getSelectedIndex: getCurrentSelectedIndex,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        defaultIconSizes: 0.5 * navHeight,
-                        defaultOnPressed: _onNavButtonTapped,
-                        defaultTextScaleFactor: 0.0025 * size.height,
-                        children: [
-                          NavigationBarButton(
-                              icon: SvgAsset.logo_icon,
-                              resetCount: true,
-                              text: " "),
-                          NavigationBarButton(
-                            icon: SvgAsset.videos_icon,
-                            activeIcon: SvgAsset.videos_active_icon,
-                            text: "Destacados",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.series_icon,
-                            activeIcon: SvgAsset.series_active_icon,
-                            text: "Series",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.lists_icon,
-                            activeIcon: SvgAsset.lists_active_icon,
-                            text: "Listas",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.games_icon,
-                            activeIcon: SvgAsset.games_active_icon,
-                            text: "Juegos",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.search_icon,
-                            text: "Buscar",
-                            onPressed: (index) {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SearchPage(
-                                  speech: speech,
-                                );
-                              }));
-                            },
-                          ),
-                        ],
-                      )),
-
-                  /// Video & Game Cards' List.
-                  Expanded(
-                    child: Center(
-                      child: _widgetOptions.elementAt(_selectedIndex),
-                    ),
-                  ),
-
-                  /// Space filler to keep things kinda centered.
-                  Container(
-                    width: size.width,
-                    height: navHeight / 2,
-                  ),
-                ],
-              ),
-              PullableDrawerBlob(
-                size: size,
-                color: Theme.of(context).accentColor,
-                length: 25,
-                innerRadius: 0.01 * size.height,
-                outerRadius: 0.075 * size.height,
-              ),
+        child: Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      drawerScrimColor: Colors.transparent,
+      drawer: MenuDrawer(
+        children: [
+          Switch(
+            value: grayscaleFilterValue,
+            onChanged: (value) {
+              setState(() {
+                grayscaleFilterValue = value;
+              });
+            },
+          )
+        ],
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          /// The colored curved blob in the background (white, yellow, etc.).
+          BottomColoredBlob(
+            size: size,
+            currentSelectedIndex: _selectedIndex,
+            colors: [
+              Colors.white,
+              Colors.cyan,
+              Colors.yellow,
+              Theme.of(context).accentColor,
+              Colors.white
             ],
-          )),
-    );
+            getCurrentSelectedIndex: getCurrentSelectedIndex,
+          ),
+
+          /// Top Navigation Bar.
+          Container(
+            width: size.width,
+            height: navHeight,
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: TopNavigationBar(
+              getSelectedIndex: getCurrentSelectedIndex,
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              defaultIconSizes: 0.5 * navHeight,
+              defaultOnPressed: _onNavButtonTapped,
+              defaultTextScaleFactor: 0.0025 * size.height,
+              children: [
+                NavigationBarButton(
+                  icon: SvgAsset.logo_icon,
+                  resetCount: true,
+                  text: " ",
+                  size: 0.65 * navHeight,
+                ),
+                NavigationBarButton(
+                  icon: SvgAsset.videos_icon,
+                  activeIcon: SvgAsset.videos_active_icon,
+                  text: "Destacados",
+                ),
+                NavigationBarButton(
+                  icon: SvgAsset.series_icon,
+                  activeIcon: SvgAsset.series_active_icon,
+                  text: "Series",
+                ),
+                NavigationBarButton(
+                  icon: SvgAsset.lists_icon,
+                  activeIcon: SvgAsset.lists_active_icon,
+                  text: "Listas",
+                ),
+                NavigationBarButton(
+                  icon: SvgAsset.games_icon,
+                  activeIcon: SvgAsset.games_active_icon,
+                  text: "Juegos",
+                ),
+                NavigationBarButton(
+                  icon: SvgAsset.search_icon,
+                  text: "Buscar",
+                  onPressed: (index) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return SearchPage(
+                        speech: speech,
+                      );
+                    }));
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          /// Video & Game Cards' List.
+          Expanded(
+            child: Center(
+              child: _widgetOptions.elementAt(_selectedIndex),
+            ),
+          ),
+        ],
+      ),
+    ));
   }
 
   /// Play sounds efects

@@ -25,7 +25,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
   /// The height percentage the image will take, considering 1.0 to be the space
   /// available between the nav bar and the bottom.
-  double get heightFactor => 0.675;
+  double get heightFactor => 0.75;
 
   /// The void function to be called when tapping on the card.
   void onTap();
@@ -62,106 +62,88 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
     final double width = height * 16 / 9;
     final double iconSize = 0.45 * height;
 
-    return Card(
-        shadowColor: Colors.transparent,
-        color: Colors.transparent,
-        borderOnForeground: false,
-        margin: EdgeInsets.symmetric(horizontal: 0.025 * size.width),
-        child: FutureBuilder(
-          future: completer.future,
-          builder: (context, snapshot) {
-            /// If image was loaded.
-            if (snapshot.hasData) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(0.15 * height),
-                    child: Stack(
-                      children: [
-                        /// Series card thumbnail.
-                        Hero(
-                          tag: heroId,
-                          child: Image(
-                            image: imgProvider,
-                            height: height,
-                            width: width,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.medium,
-                          ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+            height: height,
+            width: width,
+            margin: EdgeInsets.symmetric(horizontal: 0.025 * width),
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(0.15 * height),
+                  child: Stack(
+                    children: [
+                      Hero(
+                        tag: heroId,
+                        child: Image(
+                          image: imgProvider,
+                          width: width,
+                          height: height,
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.medium,
                         ),
-
-                        /// Play icon on top of the thumbnail.
-                        Positioned(
-                            right:
-                                height * diagonalIconDstFactor - iconSize / 2,
-                            bottom:
-                                height * diagonalIconDstFactor - iconSize / 2,
-                            child: Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                SvgIcon(
-                                  asset: badge,
-                                  size: iconSize,
-                                ),
-                              ],
-                            )),
-
-                        /// Full screen video "on demand".
-                        Positioned.fill(
-                            child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: onTap,
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                  if (cardText != null && cardText != "")
-                    Container(
-                        width: hasTextDecoration ? 0.95 * width : width,
-                        decoration: hasTextDecoration
-                            ? BoxDecoration(
-                                color: Colors.purple[900],
-                                borderRadius:
-                                    BorderRadius.circular(0.1 * height),
-                              )
-                            : null,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: hasTextDecoration
-                                  ? 0.05 * width
-                                  : 0.025 * width,
-                              vertical: 0.025 * height),
-                          child: Text(
-                            cardText,
-                            textAlign: TextAlign.left,
-                            softWrap: true,
-                            textScaleFactor: 0.007 * height,
-                            style: TextStyle(
-                                color: hasTextDecoration
-                                    ? Colors.white
-                                    : Colors.black),
-                          ),
-                        ))
-                ],
-              );
-
-              /// If there is an error while loading the image.
-            } else if (snapshot.hasError) {
-              return Center(
+                      ),
+                      Positioned(
+                        right: height * diagonalIconDstFactor - iconSize / 2,
+                        bottom: height * diagonalIconDstFactor - iconSize / 2,
+                        child: SvgIcon(
+                          asset: badge,
+                          size: iconSize,
+                        ),
+                      ),
+                      Positioned.fill(
+                          child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: onTap,
+                        ),
+                      ))
+                    ],
+                  )),
+            )),
+        if (cardText != null && cardText != '')
+          if (hasTextDecoration)
+            Container(
+              width: 0.95 * width,
+              decoration: BoxDecoration(
+                color: Colors.purple[900],
+                borderRadius: BorderRadius.circular(0.1 * height),
+              ),
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                    horizontal: 0.05 * width, vertical: 0.025 * height),
                 child: Text(
-                  "No se pudo cargar la imagen.",
+                  cardText,
+                  textAlign: TextAlign.left,
+                  softWrap: true,
+                  textScaleFactor: 0.006 * height,
                   style: TextStyle(
-                      backgroundColor: Colors.black54, color: Colors.white),
+                    color: Colors.white,
+                  ),
                 ),
-              );
-            } else {
-              return Container();
-            }
-          },
-        ));
+              ),
+            )
+          else
+            Container(
+              width: width,
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                    horizontal: 0.025 * width, vertical: 0.025 * height),
+                child: Text(
+                  cardText,
+                  textAlign: TextAlign.left,
+                  softWrap: true,
+                  textScaleFactor: 0.006 * height,
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            )
+      ],
+    );
   }
 }

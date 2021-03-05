@@ -15,7 +15,7 @@ class FeaturedCardList extends StatefulWidget {
   _FeaturedCardListState createState() => _FeaturedCardListState();
 }
 
-class _FeaturedCardListState extends CardListState<FeaturedCardList> {
+class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
   Widget cardWidget(object, heroId) {
     return VideoCard(

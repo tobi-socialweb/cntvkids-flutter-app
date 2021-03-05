@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,8 @@ import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
-abstract class CardListState<T extends StatefulWidget> extends State<T> {
+abstract class VariableCardListState<T extends StatefulWidget>
+    extends State<T> {
   /// Currently shown cards.
   List<dynamic> cards = [];
 
@@ -217,63 +217,15 @@ abstract class CardListState<T extends StatefulWidget> extends State<T> {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) return Container();
 
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 0.6 * size.height),
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data.length + 1,
-                    shrinkWrap: true,
-                    controller: controller,
-                    physics: BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      /// [itemCount] includes an extra item for the loading
-                      /// element.
-
-                      /// TODO: Fix bad scrolling when moving backwards.
-
-                      /// If currently viewing video items.
-                      if (index != snapshot.data.length) {
-                        if (snapshot.data.length > 0) {
-                          return cardWidget(
-                              snapshot.data[index],
-                              snapshot.data[index].id.toString() +
-                                  new Random().nextInt(10000).toString());
-                        } else {
-                          return Container(
-                              height: 300,
-                              alignment: Alignment.center,
-                              child: Text("No se pudo encontrar resultados."));
-                        }
-
-                        /// Otherwise, it's the loading widget.
-                      } else if (continueLoadingPages) {
-                        /// If scroll controller cant get dimensions, it means
-                        /// that the loading element is visible and should load
-                        /// more pages.
-                        if (!controller.position.haveDimensions) {
-                          futureCards = fetchCards(++currentPage);
-                        }
-
-                        /// Show the loading widget at the end.
-                        return Container(
-                            alignment: Alignment.center,
-                            child: Loading(
-                                indicator: BallSpinFadeLoaderIndicator(),
-                                size: 0.2 * size.height,
-                                color: Colors.white));
-                      }
-
-                      /// Otherwise show nothing at the end.
-                      return Container();
-                    },
-                  ),
-                ),
-              ),
-            ],
+          return ListView.builder(
+            physics: BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            controller: controller,
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, index) {
+              return cardWidget(
+                  snapshot.data[index], snapshot.data[index].id.toString());
+            },
           );
         } else if (snapshot.hasError) {
           return Container(
