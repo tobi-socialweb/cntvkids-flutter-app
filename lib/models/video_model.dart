@@ -1,4 +1,8 @@
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/models/lists_model.dart';
+import 'package:cntvkids_app/models/series_model.dart';
+
+enum ModelType { video, serie, lista }
 
 class Video {
   final int id;
@@ -11,21 +15,31 @@ class Video {
   final String extra;
   final List<int> categories;
   final String type;
+  final ModelType originModelType;
+  Series originSeries;
+  Lists originList;
 
-  Video(
-      {this.id,
-      this.title,
-      this.thumbnailUrl,
-      this.videoUrl,
-      this.series,
-      this.season,
-      this.chapter,
-      this.extra,
-      this.categories,
-      this.type});
+  Video({
+    this.id,
+    this.title,
+    this.thumbnailUrl,
+    this.videoUrl,
+    this.series,
+    this.season,
+    this.chapter,
+    this.extra,
+    this.categories,
+    this.type,
+    this.originModelType,
+    this.originSeries,
+    this.originList,
+  });
 
   /// Get `Video` from JSON object.
-  factory Video.fromJson(Map<String, dynamic> json) {
+  factory Video.fromJson(Map<String, dynamic> json,
+      {ModelType originModelType = ModelType.video,
+      Series originSeries,
+      Lists originList}) {
     /// Default values
     int _id = has<int>(json["id"], value: -1);
 
@@ -38,8 +52,7 @@ class Video {
     String _videoUrl =
         has<String>(json["wpcf-vimeo-player-dl"], value: "", comp: [""]);
 
-    String _series =
-        has<String>(json["serie_info"]["title"], value: "", comp: [""]);
+    String _series = has<String>(json["serie_info"]["title"], comp: [""]);
 
     String _season =
         has<String>(json["wpcf-season"].toString(), value: "", comp: [""]);
@@ -68,6 +81,9 @@ class Video {
       extra: _extra,
       categories: _categories,
       type: _type,
+      originModelType: originModelType,
+      originList: originList,
+      originSeries: originSeries,
     );
   }
 

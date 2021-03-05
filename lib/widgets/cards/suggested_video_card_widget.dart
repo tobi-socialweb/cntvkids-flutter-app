@@ -54,10 +54,13 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
 
   @override
   double get heightFactor => 0.25;
+
   @override
   Size get size => MediaQuery.of(context).size;
+
   @override
   String get cardText => null;
+
   @override
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.005 * size.width);
 }

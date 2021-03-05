@@ -10,21 +10,22 @@ class Series {
   final String thumbnailUrl;
   final List<Video> videos;
 
-  Series(
-      {this.id,
-      this.title,
-      this.shortDescription,
-      this.longDescription,
-      this.thumbnailUrl,
-      this.videos});
+  Series({
+    this.id,
+    this.title,
+    this.shortDescription,
+    this.longDescription,
+    this.thumbnailUrl,
+    this.videos,
+  });
 
   /// Get `Series` from JSON object.
-  factory Series.fromJson(Map<String, dynamic> json) {
+  factory Series.fromJson(Map<String, dynamic> json,
+      {ModelType originModelType = ModelType.serie}) {
     /// Get values from the json object.
     int _id = has<int>(json["id"], value: -1);
 
-    String _title =
-        has<String>(json["title"]["rendered"], value: "Serie", comp: [""]);
+    String _title = has<String>(json["title"]["rendered"], comp: [""]);
 
     String _shortDesc =
         has<String>(json["excerpt"]["rendered"], value: "", comp: [""]);
@@ -49,19 +50,21 @@ class Series {
             (_chapter != "" ? "E$_chapter" : "");
 
         _videos.add(Video(
-            id: has<int>(object[i]["id"], value: -1),
-            title: has<String>(object[i]["title"], value: "", comp: [""]),
-            thumbnailUrl: has<String>(object[i]["image"],
-                value: MISSING_IMAGE_URL, comp: [""]),
-            videoUrl: has<String>(object[i]["dl"], comp: [""]),
-            series: "",
-            season: _season,
-            chapter: _chapter,
-            extra: _extra));
+          id: has<int>(object[i]["id"], value: -1),
+          title: has<String>(object[i]["title"], value: "", comp: [""]),
+          thumbnailUrl: has<String>(object[i]["image"],
+              value: MISSING_IMAGE_URL, comp: [""]),
+          videoUrl: has<String>(object[i]["dl"], comp: [""]),
+          series: _title,
+          season: _season,
+          chapter: _chapter,
+          extra: _extra,
+          originModelType: originModelType,
+        ));
       }
     });
 
-    return Series(
+    Series obj = Series(
       id: _id,
       title: _title,
       shortDescription: _shortDesc,
@@ -69,6 +72,12 @@ class Series {
       thumbnailUrl: _thumbnailUrl,
       videos: _videos,
     );
+
+    for (int i = 0; i < obj.videos.length; i++) {
+      obj.videos[i].originSeries = obj;
+    }
+
+    return obj;
   }
 
   /// Compare object to null and to the elements in `comp`, if any. Returns

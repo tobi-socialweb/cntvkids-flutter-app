@@ -11,10 +11,16 @@ import 'package:flutter/material.dart';
 
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
-  final bool isMinimized;
   final String search;
-  final int id;
-  SearchCardList({this.isMinimized = false, this.search, this.id});
+  final bool isMinimized;
+  final Video video;
+  final double leftMargin;
+
+  SearchCardList(
+      {this.search,
+      this.isMinimized = false,
+      this.video,
+      this.leftMargin = 0.0});
 
   @override
   _SearchCardListState createState() => _SearchCardListState();
@@ -37,15 +43,27 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
   }
 
   @override
+  String get modelUrl => "$VIDEOS_URL&search=${widget.search ?? '3524'}";
+
+  @override
   int get categoryId => null;
 
   @override
-  List dataToCardList(data) {
-    return data.map((value) => Video.fromJson(value)).toList();
+  List<dynamic> dataToCardList(data) {
+    if (widget.video == null ||
+        widget.video.originModelType == ModelType.video) {
+      return data
+          .map((value) => Video.fromJson(value,
+              originModelType: widget.video.originModelType))
+          .toList();
+    } else {
+      return (widget.video.originSeries != null)
+          ? widget.video.originSeries.videos
+          : (widget.video.originList != null
+              ? widget.video.originList.videos
+              : "hola");
+    }
   }
-
-  @override
-  String get modelUrl => "$VIDEOS_URL&search=${widget.search}";
 
   @override
   Future<void> optionalCardManagement() async {
@@ -53,10 +71,13 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
       if (cards[i].type == "series") {
         cards.removeAt(i);
       }
-      if (widget.isMinimized && cards[i].id == widget.id) {
+      if (widget.isMinimized && cards[i].id == widget.video.id) {
         cards.removeAt(i);
       }
     }
     return cards;
   }
+
+  @override
+  double get leftMargin => widget.leftMargin;
 }

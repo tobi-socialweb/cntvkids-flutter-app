@@ -64,6 +64,8 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// optional management of which cards to keep or any other use.
   Future<void> optionalCardManagement() => Future<void>.value();
 
+  double get leftMargin;
+
   @override
   void initState() {
     super.initState();
@@ -221,10 +223,31 @@ abstract class VariableCardListState<T extends StatefulWidget>
             physics: BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             controller: controller,
-            itemCount: snapshot.data.length,
+            itemCount: snapshot.data.length + 1,
             itemBuilder: (context, index) {
-              return cardWidget(
-                  snapshot.data[index], snapshot.data[index].id.toString());
+              if (index == 0) {
+                return Padding(
+                    padding: EdgeInsets.only(left: leftMargin),
+                    child: cardWidget(snapshot.data[index],
+                        snapshot.data[index].id.toString()));
+              } else if (index < snapshot.data.length) {
+                return cardWidget(
+                    snapshot.data[index], snapshot.data[index].id.toString());
+              } else {
+                /// TODO: use clickable card's size instead of whole height.
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 0.15 * size.height),
+                      child: Loading(
+                          indicator: BallSpinFadeLoaderIndicator(),
+                          size: 0.2 * size.height,
+                          color: Colors.white),
+                    )
+                  ],
+                );
+              }
             },
           );
         } else if (snapshot.hasError) {

@@ -8,6 +8,10 @@ import 'package:cntvkids_app/widgets/cards/series_card_widget.dart';
 
 /// Shows video widgets that have 'lists' category.
 class SeriesCardList extends StatefulWidget {
+  final double leftMargin;
+
+  const SeriesCardList({Key key, this.leftMargin = 0.0}) : super(key: key);
+
   @override
   _SeriesCardListState createState() => _SeriesCardListState();
 }
@@ -32,4 +36,7 @@ class _SeriesCardListState extends VariableCardListState<SeriesCardList> {
   List dataToCardList(data) {
     return data.map((value) => Series.fromJson(value)).toList();
   }
+
+  @override
+  double get leftMargin => widget.leftMargin;
 }

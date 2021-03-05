@@ -40,15 +40,25 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   stt.SpeechToText speech;
   String word;
 
-  bool grayscaleFilterValue = false;
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  // ignore: non_constant_identifier_names
+  final ColorFilter NORMAL_FILTER =
+      const ColorFilter.mode(Colors.transparent, BlendMode.color);
+  // ignore: non_constant_identifier_names
+  final ColorFilter GRAYSCALE_FILTER =
+      const ColorFilter.mode(Colors.grey, BlendMode.saturation);
+  // ignore: non_constant_identifier_names
+  final ColorFilter INVERTED_FILTER =
+      const ColorFilter.mode(Colors.white, BlendMode.difference);
+
+  final double length = 25.0;
+  final double innerRadius = 5.0;
+  final double outerRadius = 40.0;
 
   /// All options from the navigation bar
-  final List<Widget> _widgetOptions = [
-    FeaturedCardList(),
-    SeriesCardList(),
-    ListsCardList(),
-    GamesCardList(),
-  ];
+  List<Widget> _widgetOptions;
 
   @override
   void initState() {
@@ -57,6 +67,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     speech = stt.SpeechToText();
     initSpeechState();
+
+    colorFilter = NORMAL_FILTER;
+    currentVisualFilter = VisualFilter.normal;
+
+    _widgetOptions = [
+      FeaturedCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      SeriesCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      ListsCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      GamesCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+    ];
   }
 
   Future<void> initSpeechState() async {
@@ -81,18 +109,36 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await enableNotification(context, value == 1);
   }
 
+  bool getCurrentVisualFilter(VisualFilter filter) {
+    return filter == currentVisualFilter;
+  }
+
   void updateVisualFilter(bool value, VisualFilter filter) {
     if (!this.mounted) return;
 
     switch (filter) {
       case VisualFilter.grayscale:
         setState(() {
-          grayscaleFilterValue = value;
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
         });
         break;
 
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
       default:
-        print("");
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
         break;
     }
   }
@@ -104,101 +150,152 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
-        child: Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      drawerScrimColor: Colors.transparent,
-      drawer: MenuDrawer(
-        children: [
-          Switch(
-            value: grayscaleFilterValue,
-            onChanged: (value) {
-              setState(() {
-                grayscaleFilterValue = value;
-              });
-            },
-          )
-        ],
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          /// The colored curved blob in the background (white, yellow, etc.).
-          BottomColoredBlob(
-            size: size,
-            currentSelectedIndex: _selectedIndex,
-            colors: [
-              Colors.white,
-              Colors.cyan,
-              Colors.yellow,
-              Theme.of(context).accentColor,
-              Colors.white
+        child: ColorFiltered(
+      colorFilter: colorFilter,
+      child: Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          drawerScrimColor: Colors.transparent,
+          drawer: MenuDrawer(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "GRAYSCALE",
+                    textScaleFactor: 2,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Switch(
+                    activeColor: Colors.white,
+                    value: currentVisualFilter == VisualFilter.grayscale,
+                    onChanged: (value) {
+                      setState(() {
+                        print(
+                            "DEBUG: $value, in grayscale, ${currentVisualFilter.toString()}");
+                        updateVisualFilter(value, VisualFilter.grayscale);
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "INVERTED",
+                    textScaleFactor: 2,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Switch(
+                    activeColor: Colors.white,
+                    value: currentVisualFilter == VisualFilter.inverted,
+                    onChanged: (value) {
+                      setState(() {
+                        print(
+                            "DEBUG: $value, in inverted, ${currentVisualFilter.toString()}");
+                        updateVisualFilter(value, VisualFilter.inverted);
+                      });
+                    },
+                  ),
+                ],
+              )
             ],
-            getCurrentSelectedIndex: getCurrentSelectedIndex,
           ),
+          body: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: length),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /// The colored curved blob in the background (white, yellow, etc.).
+                    BottomColoredBlob(
+                      size: size,
+                      currentSelectedIndex: _selectedIndex,
+                      colors: [
+                        Colors.white,
+                        Colors.cyan,
+                        Colors.yellow,
+                        Theme.of(context).accentColor,
+                        Colors.white
+                      ],
+                      getCurrentSelectedIndex: getCurrentSelectedIndex,
+                    ),
 
-          /// Top Navigation Bar.
-          Container(
-            width: size.width,
-            height: navHeight,
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: TopNavigationBar(
-              getSelectedIndex: getCurrentSelectedIndex,
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              defaultIconSizes: 0.5 * navHeight,
-              defaultOnPressed: _onNavButtonTapped,
-              defaultTextScaleFactor: 0.0025 * size.height,
-              children: [
-                NavigationBarButton(
-                  icon: SvgAsset.logo_icon,
-                  resetCount: true,
-                  text: " ",
-                  size: 0.65 * navHeight,
-                ),
-                NavigationBarButton(
-                  icon: SvgAsset.videos_icon,
-                  activeIcon: SvgAsset.videos_active_icon,
-                  text: "Destacados",
-                ),
-                NavigationBarButton(
-                  icon: SvgAsset.series_icon,
-                  activeIcon: SvgAsset.series_active_icon,
-                  text: "Series",
-                ),
-                NavigationBarButton(
-                  icon: SvgAsset.lists_icon,
-                  activeIcon: SvgAsset.lists_active_icon,
-                  text: "Listas",
-                ),
-                NavigationBarButton(
-                  icon: SvgAsset.games_icon,
-                  activeIcon: SvgAsset.games_active_icon,
-                  text: "Juegos",
-                ),
-                NavigationBarButton(
-                  icon: SvgAsset.search_icon,
-                  text: "Buscar",
-                  onPressed: (index) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return SearchPage(
-                        speech: speech,
-                      );
-                    }));
-                  },
-                ),
-              ],
-            ),
-          ),
+                    /// Top Navigation Bar.
+                    Container(
+                      width: size.width,
+                      height: navHeight,
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: TopNavigationBar(
+                        getSelectedIndex: getCurrentSelectedIndex,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        defaultIconSizes: 0.5 * navHeight,
+                        defaultOnPressed: _onNavButtonTapped,
+                        defaultTextScaleFactor: 0.0025 * size.height,
+                        children: [
+                          NavigationBarButton(
+                            icon: SvgAsset.logo_icon,
+                            resetCount: true,
+                            text: " ",
+                            size: 0.65 * navHeight,
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.videos_icon,
+                            activeIcon: SvgAsset.videos_active_icon,
+                            text: "Destacados",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.series_icon,
+                            activeIcon: SvgAsset.series_active_icon,
+                            text: "Series",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.lists_icon,
+                            activeIcon: SvgAsset.lists_active_icon,
+                            text: "Listas",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.games_icon,
+                            activeIcon: SvgAsset.games_active_icon,
+                            text: "Juegos",
+                          ),
+                          NavigationBarButton(
+                            icon: SvgAsset.search_icon,
+                            text: "Buscar",
+                            onPressed: (index) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return SearchPage(
+                                  speech: speech,
+                                );
+                              }));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
 
-          /// Video & Game Cards' List.
-          Expanded(
-            child: Center(
-              child: _widgetOptions.elementAt(_selectedIndex),
-            ),
-          ),
-        ],
-      ),
+                    /// Video & Game Cards' List.
+                    Expanded(
+                      child: Center(
+                        child: _widgetOptions.elementAt(_selectedIndex),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PullableDrawerBlob(
+                size: size,
+                color: Theme.of(context).accentColor,
+                length: length,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
+                iconSizePercentage: 0.65,
+              ),
+            ],
+          )),
     ));
   }
 
@@ -302,6 +399,7 @@ class PullableDrawerBlob extends StatelessWidget {
   final double length;
   final double innerRadius;
   final double outerRadius;
+  final double iconSizePercentage;
 
   const PullableDrawerBlob(
       {Key key,
@@ -309,11 +407,17 @@ class PullableDrawerBlob extends StatelessWidget {
       this.color,
       this.length,
       this.innerRadius,
-      this.outerRadius})
+      this.outerRadius,
+      this.iconSizePercentage = 0.8})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final double iconSize = (outerRadius * 2 * iconSizePercentage);
+    final double iconPos = length +
+        (innerRadius - outerRadius) +
+        (1 - iconSizePercentage) * outerRadius;
+
     return Stack(
       children: [
         CustomPaint(
@@ -330,10 +434,10 @@ class PullableDrawerBlob extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.only(left: iconPos > 0 ? iconPos : 0.0),
                 child: SvgIcon(
                   asset: SvgAsset.back_icon,
-                  size: 54,
+                  size: iconSize,
                 ),
               )
             ])

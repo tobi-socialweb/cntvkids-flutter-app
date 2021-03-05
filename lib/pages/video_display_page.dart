@@ -190,8 +190,12 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    final double iconSize = 0.15 * size.height;
+    /// TODO: make centered video expand and the rest with fixed size.
+    final double iconSize = 0.1 * size.height;
     final double miniVideoSize = 0.6 * size.height;
+
+    final bool hasSeries =
+        widget.video.series != null || widget.video.series != "";
 
     return WillPopScope(
         child: Material(
@@ -291,11 +295,11 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                                     miniVideoSize) /
                                 2),
                         child: SearchCardList(
-                          search: widget.video.series == ''
-                              ? widget.video.title
-                              : widget.video.series,
+                          search: hasSeries
+                              ? widget.video.series
+                              : widget.video.title,
+                          video: widget.video,
                           isMinimized: true,
-                          id: widget.video.id,
                         ),
                       ),
                     ),
