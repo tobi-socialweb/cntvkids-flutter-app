@@ -2,6 +2,10 @@ import 'dart:async';
 import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/common/constants.dart';
 
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
+    show BallSpinFadeLoaderIndicator;
+
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/widgets/cards/suggested_video_card_widget.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
@@ -29,21 +33,19 @@ class SearchCardList extends StatefulWidget {
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
   @override
   Widget cardWidget(object, String heroId) {
-    if (widget.isMinimized == false) {
-      return VideoCard(
-        video: object,
-        heroId: heroId,
-      );
-    } else {
-      return SuggestedVideoCard(
-        video: object,
-        heroId: heroId,
-      );
-    }
+    return widget.isMinimized == false
+        ? VideoCard(
+            video: object,
+            heroId: heroId,
+          )
+        : SuggestedVideoCard(
+            video: object,
+            heroId: heroId,
+          );
   }
 
   @override
-  String get modelUrl => "$VIDEOS_URL&search=${widget.search ?? '3524'}";
+  String get modelUrl => "$VIDEOS_URL&search=${widget.search ?? '@'}";
 
   @override
   int get categoryId => null;
@@ -80,4 +82,15 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
 
   @override
   double get leftMargin => widget.leftMargin;
+
+  @override
+  Widget loadingWidget(size) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 0.05 * size.height),
+      child: Loading(
+          indicator: BallSpinFadeLoaderIndicator(),
+          size: 0.225 * size.height,
+          color: Colors.white),
+    );
+  }
 }

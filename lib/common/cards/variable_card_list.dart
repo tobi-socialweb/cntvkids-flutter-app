@@ -64,6 +64,25 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// optional management of which cards to keep or any other use.
   Future<void> optionalCardManagement() => Future<void>.value();
 
+  Widget loadingWidget(Size size) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Center(
+            child: Loading(
+                indicator: BallSpinFadeLoaderIndicator(),
+                size: 0.25 * size.height,
+                color: Colors.white),
+          ),
+        ),
+        Container(
+          height: size.height * NAVBAR_HEIGHT_PROP,
+        ),
+      ],
+    );
+  }
+
   double get leftMargin;
 
   @override
@@ -97,6 +116,8 @@ abstract class VariableCardListState<T extends StatefulWidget>
       if (response.statusCode == 200) {
         if (json.decode(response.body)[0]["id"] != id) {
           customDioCacheManager.clearAll();
+
+          if (!this.mounted) return;
 
           setState(() {
             cards = [];
@@ -235,22 +256,11 @@ abstract class VariableCardListState<T extends StatefulWidget>
                     snapshot.data[index], snapshot.data[index].id.toString());
               } else {
                 /// TODO: use clickable card's size instead of whole height.
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 0.15 * size.height),
-                      child: Loading(
-                          indicator: BallSpinFadeLoaderIndicator(),
-                          size: 0.2 * size.height,
-                          color: Colors.white),
-                    )
-                  ],
-                );
+                return loadingWidget(size);
               }
             },
           );
-        } else if (snapshot.hasError) {
+        } else if (snapshot.hasError && snapshot.data != null) {
           return Container(
               height: 300,
               alignment: Alignment.center,

@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,10 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 class SuggestedVideoCard extends StatefulWidget {
   final Video video;
   final String heroId;
+  final double heightFactor;
 
-  const SuggestedVideoCard({Key key, this.video, this.heroId})
+  const SuggestedVideoCard(
+      {Key key, this.video, this.heroId, this.heightFactor = 0.25})
       : super(key: key);
 
   @override
@@ -41,19 +44,23 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return VideoDisplay(
-        video: widget.video,
-        heroId: widget.heroId,
-      );
-    }));
+    Navigator.push(
+        context,
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
+            builder: (context) {
+              return VideoDisplay(
+                video: widget.video,
+                heroId: widget.heroId,
+              );
+            }));
   }
 
   @override
   String get thumbnailUrl => widget.video.thumbnailUrl;
 
   @override
-  double get heightFactor => 0.25;
+  double get heightFactor => widget.heightFactor;
 
   @override
   Size get size => MediaQuery.of(context).size;

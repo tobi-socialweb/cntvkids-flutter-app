@@ -25,7 +25,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
   /// The height percentage the image will take, considering 1.0 to be the space
   /// available between the nav bar and the bottom.
-  double get heightFactor => 0.75;
+  double get heightFactor;
 
   /// The void function to be called when tapping on the card.
   void onTap();

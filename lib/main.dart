@@ -63,6 +63,9 @@ class _MyAppState extends State<MyApp> {
   Completer completer = new Completer();
   BetterPlayer videoSplashScreen;
   bool end = false;
+
+  /// TODO: implement timer to test if video could not load and show
+  /// error message. (and some retry attempts).
   void initState() {
     super.initState();
     videoSplashScreen = BetterPlayer.network(
@@ -95,6 +98,11 @@ class _MyAppState extends State<MyApp> {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData && !end) {
           return SplashScreen(videoSplashScreen: videoSplashScreen);
+        } else if (snapshot.hasError) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return HomePage();
+          }));
         } else {
           return Container(color: Colors.black);
         }

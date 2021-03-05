@@ -43,15 +43,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   ColorFilter colorFilter;
   VisualFilter currentVisualFilter;
 
-  // ignore: non_constant_identifier_names
-  final ColorFilter NORMAL_FILTER =
-      const ColorFilter.mode(Colors.transparent, BlendMode.color);
-  // ignore: non_constant_identifier_names
-  final ColorFilter GRAYSCALE_FILTER =
-      const ColorFilter.mode(Colors.grey, BlendMode.saturation);
-  // ignore: non_constant_identifier_names
-  final ColorFilter INVERTED_FILTER =
-      const ColorFilter.mode(Colors.white, BlendMode.difference);
+  Config globalConfig;
 
   final double length = 25.0;
   final double innerRadius = 5.0;
@@ -109,10 +101,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await enableNotification(context, value == 1);
   }
 
-  bool getCurrentVisualFilter(VisualFilter filter) {
-    return filter == currentVisualFilter;
-  }
-
   void updateVisualFilter(bool value, VisualFilter filter) {
     if (!this.mounted) return;
 
@@ -150,152 +138,159 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
-        child: ColorFiltered(
-      colorFilter: colorFilter,
-      child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          drawerScrimColor: Colors.transparent,
-          drawer: MenuDrawer(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "GRAYSCALE",
-                    textScaleFactor: 2,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Switch(
-                    activeColor: Colors.white,
-                    value: currentVisualFilter == VisualFilter.grayscale,
-                    onChanged: (value) {
-                      setState(() {
-                        print(
-                            "DEBUG: $value, in grayscale, ${currentVisualFilter.toString()}");
-                        updateVisualFilter(value, VisualFilter.grayscale);
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "INVERTED",
-                    textScaleFactor: 2,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Switch(
-                    activeColor: Colors.white,
-                    value: currentVisualFilter == VisualFilter.inverted,
-                    onChanged: (value) {
-                      setState(() {
-                        print(
-                            "DEBUG: $value, in inverted, ${currentVisualFilter.toString()}");
-                        updateVisualFilter(value, VisualFilter.inverted);
-                      });
-                    },
-                  ),
-                ],
-              )
-            ],
-          ),
-          body: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: length),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+        child: Config(
+      configSettings: ConfigSettings(filter: currentVisualFilter),
+      child: ColorFiltered(
+        colorFilter: colorFilter,
+        child: Scaffold(
+            backgroundColor: Theme.of(context).primaryColor,
+            drawerScrimColor: Colors.transparent,
+            drawer: MenuDrawer(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    /// The colored curved blob in the background (white, yellow, etc.).
-                    BottomColoredBlob(
-                      size: size,
-                      currentSelectedIndex: _selectedIndex,
-                      colors: [
-                        Colors.white,
-                        Colors.cyan,
-                        Colors.yellow,
-                        Theme.of(context).accentColor,
-                        Colors.white
-                      ],
-                      getCurrentSelectedIndex: getCurrentSelectedIndex,
+                    Text(
+                      "GRAYSCALE",
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.white),
                     ),
-
-                    /// Top Navigation Bar.
-                    Container(
-                      width: size.width,
-                      height: navHeight,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: TopNavigationBar(
-                        getSelectedIndex: getCurrentSelectedIndex,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        defaultIconSizes: 0.5 * navHeight,
-                        defaultOnPressed: _onNavButtonTapped,
-                        defaultTextScaleFactor: 0.0025 * size.height,
-                        children: [
-                          NavigationBarButton(
-                            icon: SvgAsset.logo_icon,
-                            resetCount: true,
-                            text: " ",
-                            size: 0.65 * navHeight,
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.videos_icon,
-                            activeIcon: SvgAsset.videos_active_icon,
-                            text: "Destacados",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.series_icon,
-                            activeIcon: SvgAsset.series_active_icon,
-                            text: "Series",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.lists_icon,
-                            activeIcon: SvgAsset.lists_active_icon,
-                            text: "Listas",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.games_icon,
-                            activeIcon: SvgAsset.games_active_icon,
-                            text: "Juegos",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.search_icon,
-                            text: "Buscar",
-                            onPressed: (index) {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SearchPage(
-                                  speech: speech,
-                                );
-                              }));
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// Video & Game Cards' List.
-                    Expanded(
-                      child: Center(
-                        child: _widgetOptions.elementAt(_selectedIndex),
-                      ),
+                    Switch(
+                      activeColor: Colors.white,
+                      value: currentVisualFilter == VisualFilter.grayscale,
+                      onChanged: (value) {
+                        setState(() {
+                          print(
+                              "DEBUG: $value, in grayscale, ${currentVisualFilter.toString()}");
+                          updateVisualFilter(value, VisualFilter.grayscale);
+                        });
+                      },
                     ),
                   ],
                 ),
-              ),
-              PullableDrawerBlob(
-                size: size,
-                color: Theme.of(context).accentColor,
-                length: length,
-                innerRadius: innerRadius,
-                outerRadius: outerRadius,
-                iconSizePercentage: 0.65,
-              ),
-            ],
-          )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "INVERTED",
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Switch(
+                      activeColor: Colors.white,
+                      value: currentVisualFilter == VisualFilter.inverted,
+                      onChanged: (value) {
+                        setState(() {
+                          print(
+                              "DEBUG: $value, in inverted, ${currentVisualFilter.toString()}");
+                          updateVisualFilter(value, VisualFilter.inverted);
+                        });
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+            body: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: length),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// The colored curved blob in the background (white, yellow, etc.).
+                      BottomColoredBlob(
+                        size: size,
+                        currentSelectedIndex: _selectedIndex,
+                        colors: [
+                          Colors.white,
+                          Colors.cyan,
+                          Colors.yellow,
+                          Theme.of(context).accentColor,
+                          Colors.white
+                        ],
+                        getCurrentSelectedIndex: getCurrentSelectedIndex,
+                      ),
+
+                      /// Top Navigation Bar.
+                      Container(
+                        width: size.width,
+                        height: navHeight,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: TopNavigationBar(
+                          getSelectedIndex: getCurrentSelectedIndex,
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          defaultIconSizes: 0.5 * navHeight,
+                          defaultOnPressed: _onNavButtonTapped,
+                          defaultTextScaleFactor: 0.00275 * size.height,
+                          children: [
+                            NavigationBarButton(
+                              icon: SvgAsset.logo_icon,
+                              resetCount: true,
+                              text: " ",
+                              size: 0.65 * navHeight,
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.videos_icon,
+                              activeIcon: SvgAsset.videos_active_icon,
+                              text: "Destacados",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.series_icon,
+                              activeIcon: SvgAsset.series_active_icon,
+                              text: "Series",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.lists_icon,
+                              activeIcon: SvgAsset.lists_active_icon,
+                              text: "Listas",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.games_icon,
+                              activeIcon: SvgAsset.games_active_icon,
+                              text: "Juegos",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.search_icon,
+                              text: "Buscar",
+                              onPressed: (index) {
+                                Navigator.push(
+                                    context,
+                                    ConfigPageRoute(
+                                        configSettings: ConfigSettings(
+                                            filter: currentVisualFilter),
+                                        builder: (context) {
+                                          return SearchPage(
+                                            speech: speech,
+                                          );
+                                        }));
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Video & Game Cards' List.
+                      Expanded(
+                        child: Center(
+                          child: _widgetOptions.elementAt(_selectedIndex),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PullableDrawerBlob(
+                  size: size,
+                  color: Theme.of(context).accentColor,
+                  length: length,
+                  innerRadius: innerRadius,
+                  outerRadius: outerRadius,
+                  iconSizePercentage: 0.65,
+                ),
+              ],
+            )),
+      ),
     ));
   }
 

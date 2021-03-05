@@ -43,8 +43,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
   @override
   void dispose() {
-    print("DEBUG: last");
-
     super.dispose();
   }
 }

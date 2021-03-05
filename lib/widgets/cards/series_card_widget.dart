@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +10,11 @@ import 'package:cntvkids_app/pages/menu/series_detail_page.dart';
 class SeriesCard extends StatefulWidget {
   final Series series;
   final String heroId;
+  final double heightFactor;
 
-  const SeriesCard({Key key, this.series, this.heroId}) : super(key: key);
+  const SeriesCard(
+      {Key key, this.series, this.heroId, this.heightFactor = 0.75})
+      : super(key: key);
 
   _SeriesCardState createState() => _SeriesCardState();
 }
@@ -24,12 +28,16 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
 
   @override
   void onTap() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return SeriesCardDetail(
-          series: widget.series,
-          heroId: widget.heroId,
-          imgProvider: imgProvider);
-    }));
+    Navigator.push(
+        context,
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
+            builder: (context) {
+              return SeriesCardDetail(
+                  series: widget.series,
+                  heroId: widget.heroId,
+                  imgProvider: imgProvider);
+            }));
   }
 
   @override
@@ -43,4 +51,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
 
   @override
   bool get hasTextDecoration => true;
+
+  @override
+  double get heightFactor => widget.heightFactor;
 }
