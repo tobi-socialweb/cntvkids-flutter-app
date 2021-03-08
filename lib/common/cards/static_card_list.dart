@@ -74,7 +74,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     if (!this.mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value) {
+      if (controller.position.isScrollingNotifier.value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
@@ -199,26 +199,23 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                                     ),
                                   )
                               ],
-                            )),
+                            ))
                       ],
                     )),
 
                 /// The card list.
                 Expanded(
-                    child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  controller: controller,
-                  itemCount: cards.length,
-                  itemBuilder: (context, index) {
-                    return cardWidget(cards[index], cards[index].id.toString());
-                  },
-                )),
-
-                /// Space filler to keep things kinda centered.
-                Container(
-                  width: size.width,
-                  height: topBarHeight / 2,
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    controller: controller,
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) {
+                      return cardWidget(
+                          cards[index], cards[index].id.toString());
+                    },
+                  ),
                 ),
               ],
             )));

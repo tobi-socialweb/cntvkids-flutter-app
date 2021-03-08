@@ -52,7 +52,7 @@ class Video {
 
     String _type = has<String>(json["type"], value: "", comp: [""]);
 
-    List<int> _categories = new List<int>();
+    List<int> _categories = [];
     has<List<dynamic>>(json["categories"], then: (object) {
       for (int i = 0; i < object.length; i++) {
         _categories.add(object[i]);

@@ -133,7 +133,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
     /// TODO: fix scroll sound efects
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value) {
+      if (controller.position.isScrollingNotifier.value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
@@ -167,7 +167,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
           if (cards.length % cardsPerPage != 0) continueLoadingPages = false;
         });
-
         await optionalCardManagement();
 
         if (page == 1) _checkForForceUpdate(cards[0].id);
@@ -182,6 +181,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       } else if (DioErrorType.RESPONSE == e.type) {
         /// If request was badly formed.
         if (e.response.statusCode == 400) {
+          print("reponse 400");
           setState(() {
             continueLoadingPages = false;
           });
@@ -223,6 +223,11 @@ abstract class VariableCardListState<T extends StatefulWidget>
             controller: controller,
             itemCount: snapshot.data.length,
             itemBuilder: (context, index) {
+              print("--------------------\n\n");
+              print(index);
+              print(snapshot.data[index]);
+              print("\n\n--------------------");
+
               return cardWidget(
                   snapshot.data[index], snapshot.data[index].id.toString());
             },
@@ -231,7 +236,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
           return Container(
               height: 300,
               alignment: Alignment.center,
-              child: Text("${snapshot.error}"));
+              child: Text("HOLAAA  ${snapshot.error}"));
         }
         return Container(
             alignment: Alignment.center,

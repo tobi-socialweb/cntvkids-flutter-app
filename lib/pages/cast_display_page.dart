@@ -150,6 +150,7 @@ class _RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return RaisedButton(
         child: Icon(icon, color: Colors.white),
         padding: EdgeInsets.all(16.0),

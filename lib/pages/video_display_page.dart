@@ -61,7 +61,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void initState() {
     super.initState();
-
+    print("serie:" + widget.video.series);
+    print("titulo: " + widget.video.title);
     if (widget.betterPlayerController != null) {
       _betterPlayerController = widget.betterPlayerController;
       return;
@@ -283,7 +284,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                     /// FeaturedCardList(isMinimized: true),
                     Expanded(
                       child: Container(
-                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                        /// 0.25 = hight factor of suggested video, 0.1 = padding of video center
                         padding: EdgeInsets.symmetric(
                             vertical: (size.height -
                                     0.25 * size.height -

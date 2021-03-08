@@ -9,12 +9,16 @@ import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+enum modelType { video, serie, lista }
+
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
   final bool isMinimized;
   final String search;
   final int id;
-  SearchCardList({this.isMinimized = false, this.search, this.id});
+  final modelType type;
+
+  SearchCardList({this.isMinimized = false, this.search, this.id, this.type});
 
   @override
   _SearchCardListState createState() => _SearchCardListState();
@@ -52,8 +56,7 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
     for (int i = 0; i < cards.length; i++) {
       if (cards[i].type == "series") {
         cards.removeAt(i);
-      }
-      if (widget.isMinimized && cards[i].id == widget.id) {
+      } else if (widget.isMinimized && cards[i].id == widget.id) {
         cards.removeAt(i);
       }
     }

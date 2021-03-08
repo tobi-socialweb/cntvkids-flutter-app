@@ -35,7 +35,7 @@ class Series {
     String _thumbnailUrl =
         has<String>(json["fimg_url"], value: MISSING_IMAGE_URL, comp: [""]);
 
-    List<Video> _videos = new List<Video>();
+    List<Video> _videos = [];
     has<List<dynamic>>(json["serie_childs"], then: (object) {
       String _season;
       String _chapter;
@@ -54,7 +54,7 @@ class Series {
             thumbnailUrl: has<String>(object[i]["image"],
                 value: MISSING_IMAGE_URL, comp: [""]),
             videoUrl: has<String>(object[i]["dl"], comp: [""]),
-            series: "",
+            series: _title,
             season: _season,
             chapter: _chapter,
             extra: _extra));
