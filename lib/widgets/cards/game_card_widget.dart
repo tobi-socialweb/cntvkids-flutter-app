@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/games_model.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:cntvkids_app/pages/game_display_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 
@@ -11,8 +12,10 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 class GameCard extends StatefulWidget {
   final Game game;
   final String heroId;
+  final double heightFactor;
 
-  const GameCard({Key key, this.game, this.heroId}) : super(key: key);
+  const GameCard({Key key, this.game, this.heroId, this.heightFactor = 0.75})
+      : super(key: key);
 
   @override
   _GameCardState createState() => _GameCardState();
@@ -30,11 +33,12 @@ class _GameCardState extends ClickableCardState<GameCard> {
 
   @override
   void onTap() {
+    playSound("sounds/click/click.mp3");
     BackgroundMusicManager.instance.music.stopMusic();
-
     Navigator.push(
         context,
-        MaterialPageRoute(
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
             builder: (context) => WebViewPage(url: widget.game.gameUrl)));
   }
 
@@ -43,4 +47,7 @@ class _GameCardState extends ClickableCardState<GameCard> {
 
   @override
   bool get hasTextDecoration => true;
+
+  @override
+  double get heightFactor => widget.heightFactor;
 }

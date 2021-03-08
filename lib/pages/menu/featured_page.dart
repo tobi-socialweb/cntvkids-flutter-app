@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 /// Shows video widgets that have 'featured' category.
 class FeaturedCardList extends StatefulWidget {
   final bool isMinimized;
-  FeaturedCardList({this.isMinimized = false});
+  final double leftMargin;
+  FeaturedCardList({this.isMinimized = false, this.leftMargin = 0.0});
 
   @override
   _FeaturedCardListState createState() => _FeaturedCardListState();
@@ -17,7 +18,7 @@ class FeaturedCardList extends StatefulWidget {
 
 class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
-  Widget cardWidget(object, heroId) {
+  Widget cardWidget(object, heroId, index) {
     return VideoCard(
       video: object,
       heroId: heroId,
@@ -33,6 +34,11 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
 
   @override
   List dataToCardList(data) {
-    return data.map((value) => Video.fromJson(value)).toList();
+    return data
+        .map((value) => Video.fromJson(value, originModelType: ModelType.video))
+        .toList();
   }
+
+  @override
+  double get leftMargin => widget.leftMargin;
 }

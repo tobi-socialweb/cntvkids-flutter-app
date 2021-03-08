@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,11 +19,22 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  bool hasSetFilter = false;
+
   //WebViewController controller;
 
   final Completer<WebViewController> _controllerCompleter =
       Completer<WebViewController>();
 
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
   // web view controls
 
   _backButton() {
@@ -33,6 +48,7 @@ class _WebViewPageState extends State<WebViewPage> {
           return FloatingActionButton(
             backgroundColor: Colors.transparent,
             onPressed: () async {
+              playSound("sounds/go_back/go_back.aif");
               Navigator.of(context).pop();
             },
             child: SvgIcon(
@@ -46,21 +62,72 @@ class _WebViewPageState extends State<WebViewPage> {
     );
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
   Widget build(BuildContext context) {
+    if (!hasSetFilter) {
+      hasSetFilter = true;
+
+      currentVisualFilter = Config.of(context).configSettings.filter;
+
+      switch (currentVisualFilter) {
+        case VisualFilter.grayscale:
+          colorFilter = GRAYSCALE_FILTER;
+          break;
+
+        case VisualFilter.inverted:
+          colorFilter = INVERTED_FILTER;
+          break;
+
+        default:
+          colorFilter = NORMAL_FILTER;
+      }
+    }
     final Size size = MediaQuery.of(context).size;
-    return Scaffold(
-        backgroundColor: Colors.black,
-        body: Container(
-          margin: EdgeInsets.symmetric(vertical: size.height * 0.05),
-          child: WebView(
-            initialUrl: widget.url,
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController c) {
-              _controllerCompleter.complete(c);
-            },
+    return ColorFiltered(
+      colorFilter: colorFilter,
+      child: Scaffold(
+          backgroundColor: Colors.black,
+          body: Container(
+            margin: EdgeInsets.symmetric(vertical: size.height * 0.05),
+            child: WebView(
+              initialUrl: widget.url,
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController c) {
+                _controllerCompleter.complete(c);
+              },
+            ),
           ),
-        ),
-        floatingActionButton: _backButton(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop);
+          floatingActionButton: _backButton(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop),
+    );
   }
 }

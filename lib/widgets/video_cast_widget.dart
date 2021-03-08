@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_cast/flutter_video_cast.dart';
 import 'package:cntvkids_app/models/video_model.dart';
@@ -41,11 +42,15 @@ class _ChromeCastState extends State<ChromeCast> {
 
   Future<void> _onSessionStarted() async {
     _controller.loadMedia(widget.video.videoUrl);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ChromeCastView(
-          video: widget.video,
-          iconSize: widget.iconSize,
-          controlador: _controller);
-    }));
+    Navigator.push(
+        context,
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
+            builder: (context) {
+              return ChromeCastView(
+                  video: widget.video,
+                  iconSize: widget.iconSize,
+                  controlador: _controller);
+            }));
   }
 }

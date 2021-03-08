@@ -9,16 +9,21 @@ class Lists {
   final String thumbnailUrl;
   final List<Video> videos;
 
-  Lists(
-      {this.id, this.title, this.description, this.thumbnailUrl, this.videos});
+  Lists({
+    this.id,
+    this.title,
+    this.description,
+    this.thumbnailUrl,
+    this.videos,
+  });
 
   /// Get `Lists` from JSON object.
-  factory Lists.fromJson(Map<String, dynamic> json) {
+  factory Lists.fromJson(Map<String, dynamic> json,
+      {ModelType originModelType = ModelType.lista}) {
     /// Default values.
     int _id = has<int>(json["id"], value: -1);
 
-    String _title =
-        has<String>(json["title"]["rendered"], value: "Serie", comp: [""]);
+    String _title = has<String>(json["title"]["rendered"], comp: [""]);
 
     String _description =
         has<String>(json["content"]["rendered"], value: "", comp: [""]);
@@ -40,25 +45,33 @@ class Lists {
             (_chapter != "" ? "E$_chapter" : "");
 
         _videos.add(Video(
-            id: has<int>(object[i]["id"], value: -1),
-            title: has<String>(object[i]["title"], value: "", comp: [""]),
-            thumbnailUrl: has<String>(object[i]["image"],
-                value: MISSING_IMAGE_URL, comp: [""]),
-            videoUrl: has<String>(object[i]["dl"], comp: [""]),
-            series: "",
-            season: _season,
-            chapter: _chapter,
-            extra: _extra));
+          id: has<int>(object[i]["id"], value: -1),
+          title: has<String>(object[i]["title"], value: "", comp: [""]),
+          thumbnailUrl: has<String>(object[i]["image"],
+              value: MISSING_IMAGE_URL, comp: [""]),
+          videoUrl: has<String>(object[i]["dl"], comp: [""]),
+          series: "",
+          season: _season,
+          chapter: _chapter,
+          extra: _extra,
+          originModelType: originModelType,
+        ));
       }
     });
 
-    return Lists(
+    Lists obj = Lists(
       id: _id,
       title: _title,
       description: _description,
       thumbnailUrl: _thumbnailUrl,
       videos: _videos,
     );
+
+    for (int i = 0; i < obj.videos.length; i++) {
+      obj.videos[i].originList = obj;
+    }
+
+    return obj;
   }
 
   /// Compare object to null and to the elements in `comp`, if any. Returns

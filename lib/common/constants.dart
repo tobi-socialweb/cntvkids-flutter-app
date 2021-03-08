@@ -1,5 +1,8 @@
 library constants;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
 /// The wordpress site url.
 const String WORDPRESS_URL = "https://cntvinfantil.cl";
 
@@ -52,3 +55,13 @@ const double NAVBAR_HEIGHT_PROP = 0.275;
 const String ONE_SIGNAL_APP_ID = "45e71839-7d7b-445a-b325-b9009d92171e";
 
 const bool ENABLE_DYNAMIC_LINK = false;
+
+// ignore: non_constant_identifier_names
+final ColorFilter NORMAL_FILTER =
+    const ColorFilter.mode(Colors.transparent, BlendMode.color);
+// ignore: non_constant_identifier_names
+final ColorFilter GRAYSCALE_FILTER =
+    const ColorFilter.mode(Colors.grey, BlendMode.saturation);
+// ignore: non_constant_identifier_names
+final ColorFilter INVERTED_FILTER =
+    const ColorFilter.mode(Colors.white, BlendMode.difference);

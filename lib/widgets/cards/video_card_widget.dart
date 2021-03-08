@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,10 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 class VideoCard extends StatefulWidget {
   final Video video;
   final String heroId;
+  final double heightFactor;
 
-  const VideoCard({Key key, this.video, this.heroId}) : super(key: key);
+  const VideoCard({Key key, this.video, this.heroId, this.heightFactor = 0.75})
+      : super(key: key);
 
   @override
   _VideoCardState createState() => _VideoCardState();
@@ -40,17 +43,25 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
 
   @override
   void onTap() {
+    playSound("sounds/click/click.mp3");
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return VideoDisplay(
-        video: widget.video,
-        heroId: widget.heroId,
-      );
-    }));
+    Navigator.push(
+        context,
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
+            builder: (context) {
+              return VideoDisplay(
+                video: widget.video,
+                heroId: widget.heroId,
+              );
+            }));
   }
 
   @override
   String get thumbnailUrl => widget.video.thumbnailUrl;
+
+  @override
+  double get heightFactor => widget.heightFactor;
 }

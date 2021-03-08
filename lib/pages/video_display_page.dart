@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,6 +61,11 @@ class _VideoDisplayState extends State<VideoDisplay> {
   /// Video player controller and data source.
   BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource _betterPlayerDataSource;
+
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  bool hasSetFilter = false;
 
   @override
   void initState() {
@@ -117,49 +126,114 @@ class _VideoDisplayState extends State<VideoDisplay> {
     return completer.future;
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return InheritedVideoDisplay(
-      context: context,
-      isMinimized: false,
-      toggleDisplay: toggleDisplay,
-      child: FutureBuilder(
-          future: _getFutureVideo(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return WillPopScope(
-                  child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Hero(
-                        tag: widget.heroId,
-                        child: snapshot.data,
-                      )),
+    if (!hasSetFilter) {
+      hasSetFilter = true;
 
-                  /// When using the 'back' button, toggle minimize.
-                  onWillPop: () {
-                    return Future<bool>.value(true);
-                  });
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error);
-            } else {
-              return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              );
-            }
-          }),
+      currentVisualFilter = Config.of(context).configSettings.filter;
+
+      switch (currentVisualFilter) {
+        case VisualFilter.grayscale:
+          colorFilter = GRAYSCALE_FILTER;
+          break;
+
+        case VisualFilter.inverted:
+          colorFilter = INVERTED_FILTER;
+          break;
+
+        default:
+          colorFilter = NORMAL_FILTER;
+      }
+    }
+
+    return ColorFiltered(
+      colorFilter: colorFilter,
+      child: InheritedVideoDisplay(
+        context: context,
+        isMinimized: false,
+        toggleDisplay: toggleDisplay,
+        child: FutureBuilder(
+            future: _getFutureVideo(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return WillPopScope(
+                    child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Hero(
+                          tag: widget.heroId,
+                          child: snapshot.data,
+                        )),
+
+                    /// When using the 'back' button, toggle minimize.
+                    onWillPop: () {
+                      playSound("sounds/go_back/go_back.mp3");
+                      return Future<bool>.value(true);
+                    });
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error);
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                );
+              }
+            }),
+      ),
     );
   }
 
   void toggleDisplay() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return MinimizedVideoDisplay(
-        video: widget.video,
-        heroId: widget.heroId,
-        betterPlayerController: _betterPlayerController,
-      );
-    }));
+    playSound("sounds/go_back/go_back.mp3");
+    Navigator.push(
+        context,
+        ConfigPageRoute(
+            configSettings: Config.of(context).configSettings,
+            builder: (context) {
+              return MinimizedVideoDisplay(
+                video: widget.video,
+                heroId: widget.heroId,
+                betterPlayerController: _betterPlayerController,
+              );
+            }));
   }
 
   @override
@@ -182,26 +256,92 @@ class MinimizedVideoDisplay extends StatefulWidget {
 }
 
 class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  bool hasSetFilter = false;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    final double iconSize = 0.15 * size.height;
+    /// TODO: make centered video expand and the rest with fixed size.
+    final double iconSize = 0.1 * size.height;
     final double miniVideoSize = 0.6 * size.height;
 
-    return WillPopScope(
-        child: Material(
-          color: Theme.of(context).accentColor,
-          child: FlatButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: LimitedBox(
+    final bool hasSeries =
+        widget.video.series != null || widget.video.series != "";
 
+    if (!hasSetFilter) {
+      hasSetFilter = true;
+
+      currentVisualFilter = Config.of(context).configSettings.filter;
+
+      switch (currentVisualFilter) {
+        case VisualFilter.grayscale:
+          colorFilter = GRAYSCALE_FILTER;
+          break;
+
+        case VisualFilter.inverted:
+          colorFilter = INVERTED_FILTER;
+          break;
+
+        default:
+          colorFilter = NORMAL_FILTER;
+      }
+    }
+
+    return ColorFiltered(
+      colorFilter: colorFilter,
+      child: WillPopScope(
+          child: Material(
+            color: Theme.of(context).accentColor,
+            child: FlatButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: LimitedBox(
                 /// TODO: fix
                 maxWidth: 0.85 * size.width,
                 child: Column(
@@ -224,6 +364,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                                 asset: SvgAsset.back_icon,
                                 size: iconSize,
                                 onPressed: () {
+                                  playSound("sounds/go_back/go_back.mp3");
                                   widget.betterPlayerController.dispose();
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
@@ -284,7 +425,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                     /// FeaturedCardList(isMinimized: true),
                     Expanded(
                       child: Container(
-                        /// 0.25 = hight factor of suggested video, 0.1 = padding of video center
+                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
                         padding: EdgeInsets.symmetric(
                             vertical: (size.height -
                                     0.25 * size.height -
@@ -292,29 +433,34 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                                     miniVideoSize) /
                                 2),
                         child: SearchCardList(
-                          search: widget.video.series == ''
-                              ? widget.video.title
-                              : widget.video.series,
+                          search: hasSeries
+                              ? widget.video.series
+                              : widget.video.title,
+                          video: widget.video,
                           isMinimized: true,
-                          id: widget.video.id,
                         ),
                       ),
-                    ),
+                    )
                   ],
-                )),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+                ),
+              ),
+              onPressed: () {
+                playSound("sounds/click/click.mp3");
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-        onWillPop: () {
-          widget.betterPlayerController.dispose();
-          Navigator.of(context).pop();
-          return Future<bool>.value(true);
-        });
+          onWillPop: () {
+            widget.betterPlayerController.dispose();
+            playSound("sounds/go_back/go_back.mp3");
+            Navigator.of(context).pop();
+            return Future<bool>.value(true);
+          }),
+    );
   }
 
   void toggleDisplay() {
+    playSound("sounds/go_back/go_back.mp3");
     Navigator.of(context).pop();
   }
 }

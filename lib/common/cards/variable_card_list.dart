@@ -58,12 +58,32 @@ abstract class VariableCardListState<T extends StatefulWidget>
   List<dynamic> dataToCardList(dynamic data);
 
   /// Returns the specific card widget corresponding to each model (with object).
-  Widget cardWidget(dynamic object, String heroId);
+  Widget cardWidget(dynamic object, String heroId, int index);
 
   /// Gets called after successfully fetching cards, and allows for further
   /// optional management of which cards to keep or any other use.
   Future<void> optionalCardManagement() => Future<void>.value();
 
+  Widget loadingWidget(Size size) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Center(
+            child: Loading(
+                indicator: BallSpinFadeLoaderIndicator(),
+                size: 0.25 * size.height,
+                color: Colors.white),
+          ),
+        ),
+        Container(
+          height: size.height * NAVBAR_HEIGHT_PROP,
+        ),
+      ],
+    );
+  }
+
+  double get leftMargin;
   @override
   void initState() {
     super.initState();
@@ -96,6 +116,8 @@ abstract class VariableCardListState<T extends StatefulWidget>
         if (json.decode(response.body)[0]["id"] != id) {
           customDioCacheManager.clearAll();
 
+          if (!this.mounted) return;
+
           setState(() {
             cards = [];
             currentPage = 1;
@@ -116,9 +138,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   }
 
   /// Listener for scroll changes.
-  ///
-  /// Loads the next page (per page) for cards videos if the scroll is
-  /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
 
@@ -131,15 +150,13 @@ abstract class VariableCardListState<T extends StatefulWidget>
       });
     }
 
-    /// TODO: fix scroll sound efects
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value != null) {
+      var value = controller.position.isScrollingNotifier.value;
+      if (value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
         }
-      } else {
-        startedScrolling = false;
       }
     });
   }
@@ -164,7 +181,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         setState(() {
           cards.addAll(dataToCardList(response.data));
-
+          print("Se agrego ${cards.length}");
           if (cards.length % cardsPerPage != 0) continueLoadingPages = false;
         });
         await optionalCardManagement();
@@ -213,37 +230,59 @@ abstract class VariableCardListState<T extends StatefulWidget>
     return FutureBuilder<List<dynamic>>(
       future: futureCards,
       builder: (context, snapshot) {
+        print(snapshot.hasData);
+
         /// If snapshot has values.
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0) return Container();
-
-          return ListView.builder(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            controller: controller,
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, index) {
-              print("--------------------\n\n");
-              print(index);
-              print(snapshot.data[index]);
-              print("\n\n--------------------");
-
-              return cardWidget(
-                  snapshot.data[index], snapshot.data[index].id.toString());
+          if (snapshot.data.length == 0) {
+            return Container();
+          }
+          return NotificationListener(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              controller: controller,
+              itemCount: snapshot.data.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Padding(
+                      padding: EdgeInsets.only(left: leftMargin),
+                      child: cardWidget(snapshot.data[index],
+                          snapshot.data[index].id.toString(), index));
+                } else if (index < snapshot.data.length) {
+                  return cardWidget(snapshot.data[index],
+                      snapshot.data[index].id.toString(), index);
+                } else {
+                  /// TODO: use clickable card's size instead of whole height.
+                  if (!controller.position.haveDimensions) {
+                    futureCards = fetchCards(++currentPage);
+                  }
+                  return loadingWidget(size);
+                }
+              },
+            ),
+            // ignore: missing_return
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification) {
+                setState(() {
+                  startedScrolling = false;
+                });
+              }
             },
           );
-        } else if (snapshot.hasError) {
+        } else if (snapshot.hasError && snapshot.data != null) {
           return Container(
               height: 300,
               alignment: Alignment.center,
-              child: Text("HOLAAA  ${snapshot.error}"));
+              child: Text("${snapshot.error}"));
+        } else {
+          return Container(
+              alignment: Alignment.center,
+              child: Loading(
+                  indicator: BallSpinFadeLoaderIndicator(),
+                  size: 0.2 * size.height,
+                  color: Colors.white));
         }
-        return Container(
-            alignment: Alignment.center,
-            child: Loading(
-                indicator: BallSpinFadeLoaderIndicator(),
-                size: 0.2 * size.height,
-                color: Colors.white));
       },
     );
   }

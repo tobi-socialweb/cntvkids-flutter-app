@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +27,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
   /// The height percentage the image will take, considering 1.0 to be the space
   /// available between the nav bar and the bottom.
-  double get heightFactor => 0.75;
+  double get heightFactor;
 
   /// The void function to be called when tapping on the card.
   void onTap();
@@ -55,7 +57,13 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
     super.initState();
   }
-
+  
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
   @override
   Widget build(BuildContext context) {
     final double height = size.height * heightFactor;

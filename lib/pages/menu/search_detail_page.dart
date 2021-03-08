@@ -2,6 +2,10 @@ import 'dart:async';
 import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/common/constants.dart';
 
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
+    show BallSpinFadeLoaderIndicator;
+
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/widgets/cards/suggested_video_card_widget.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
@@ -13,12 +17,16 @@ enum modelType { video, serie, lista }
 
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
-  final bool isMinimized;
   final String search;
-  final int id;
-  final modelType type;
+  final bool isMinimized;
+  final Video video;
+  final double leftMargin;
 
-  SearchCardList({this.isMinimized = false, this.search, this.id, this.type});
+  SearchCardList(
+      {this.search,
+      this.isMinimized = false,
+      this.video,
+      this.leftMargin = 0.0});
 
   @override
   _SearchCardListState createState() => _SearchCardListState();
@@ -26,40 +34,63 @@ class SearchCardList extends StatefulWidget {
 
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
   @override
-  Widget cardWidget(object, String heroId) {
-    if (widget.isMinimized == false) {
-      return VideoCard(
-        video: object,
-        heroId: heroId,
-      );
-    } else {
-      return SuggestedVideoCard(
-        video: object,
-        heroId: heroId,
-      );
-    }
-  }
-
-  @override
-  int get categoryId => null;
-
-  @override
-  List dataToCardList(data) {
-    return data.map((value) => Video.fromJson(value)).toList();
+  Widget cardWidget(object, String heroId, index) {
+    return widget.isMinimized == false
+        ? VideoCard(
+            video: object,
+            heroId: heroId,
+          )
+        : SuggestedVideoCard(
+            video: object,
+            heroId: heroId,
+          );
   }
 
   @override
   String get modelUrl => "$VIDEOS_URL&search=${widget.search}";
 
   @override
+  int get categoryId => null;
+
+  @override
+  List<dynamic> dataToCardList(data) {
+    if (widget.video != null && widget.video.originList != null) {
+      return widget.video.originList.videos;
+    } else if (widget.video != null && widget.video.originSeries != null) {
+      return widget.video.originSeries.videos;
+    } else {
+      print(data.length);
+      return data
+          .map((value) => Video.fromJson(value,
+              originModelType: widget.video.originModelType))
+          .toList();
+    }
+  }
+
+  @override
   Future<void> optionalCardManagement() async {
     for (int i = 0; i < cards.length; i++) {
       if (cards[i].type == "series") {
         cards.removeAt(i);
-      } else if (widget.isMinimized && cards[i].id == widget.id) {
+      }
+      if (widget.isMinimized && cards[i].id == widget.video.id) {
         cards.removeAt(i);
       }
     }
     return cards;
+  }
+
+  @override
+  double get leftMargin => widget.leftMargin;
+
+  @override
+  Widget loadingWidget(size) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 0.05 * size.height),
+      child: Loading(
+          indicator: BallSpinFadeLoaderIndicator(),
+          size: 0.225 * size.height,
+          color: Colors.white),
+    );
   }
 }

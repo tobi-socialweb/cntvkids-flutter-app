@@ -5,9 +5,11 @@ import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/pages/menu/search_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -38,13 +40,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   stt.SpeechToText speech;
   String word;
 
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  Config globalConfig;
+
+  final double length = 15.0;
+  final double innerRadius = 5.0;
+  final double outerRadius = 30.0;
+
   /// All options from the navigation bar
-  final List<Widget> _widgetOptions = [
-    FeaturedCardList(),
-    SeriesCardList(),
-    ListsCardList(),
-    GamesCardList(),
-  ];
+  List<Widget> _widgetOptions;
 
   @override
   void initState() {
@@ -53,6 +59,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     speech = stt.SpeechToText();
     initSpeechState();
+
+    colorFilter = NORMAL_FILTER;
+    currentVisualFilter = VisualFilter.normal;
+
+    _widgetOptions = [
+      FeaturedCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      SeriesCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      ListsCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+      GamesCardList(
+        leftMargin: innerRadius + outerRadius,
+      ),
+    ];
   }
 
   Future<void> initSpeechState() async {
@@ -77,6 +101,36 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await enableNotification(context, value == 1);
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
@@ -84,117 +138,168 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
-      child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          drawer: Row(
-            children: [
-              Drawer(
-                child: ListView(
+        child: Config(
+      configSettings: ConfigSettings(filter: currentVisualFilter),
+      child: ColorFiltered(
+        colorFilter: colorFilter,
+        child: Scaffold(
+            backgroundColor: Theme.of(context).primaryColor,
+            drawerScrimColor: Colors.transparent,
+            drawer: MenuDrawer(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    DrawerHeader(child: Text("test")),
-                    ListTile(
-                      title: Text("title"),
+                    Text(
+                      "GRAYSCALE",
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Switch(
+                      activeColor: Colors.white,
+                      value: currentVisualFilter == VisualFilter.grayscale,
+                      onChanged: (value) {
+                        setState(() {
+                          print(
+                              "DEBUG: $value, in grayscale, ${currentVisualFilter.toString()}");
+                          updateVisualFilter(value, VisualFilter.grayscale);
+                        });
+                      },
                     ),
                   ],
                 ),
-              ),
-              SvgIcon(
-                asset: SvgAsset.back_icon,
-                size: 50.0,
-              )
-            ],
-          ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              /// The colored curved blob in the background (white, yellow, etc.).
-              BottomColoredBlob(
-                size: size,
-                currentSelectedIndex: _selectedIndex,
-                colors: [
-                  Colors.white,
-                  Colors.cyan,
-                  Colors.yellow,
-                  Theme.of(context).accentColor,
-                  Colors.white
-                ],
-                getCurrentSelectedIndex: getCurrentSelectedIndex,
-              ),
-
-              /// Top Navigation Bar.
-              Container(
-                  width: size.width,
-                  height: navHeight,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: TopNavigationBar(
-                    getSelectedIndex: getCurrentSelectedIndex,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    defaultIconSizes: 0.5 * navHeight,
-                    defaultOnPressed: _onNavButtonTapped,
-                    defaultTextScaleFactor: 0.0025 * size.height,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "INVERTED",
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Switch(
+                      activeColor: Colors.white,
+                      value: currentVisualFilter == VisualFilter.inverted,
+                      onChanged: (value) {
+                        setState(() {
+                          print(
+                              "DEBUG: $value, in inverted, ${currentVisualFilter.toString()}");
+                          updateVisualFilter(value, VisualFilter.inverted);
+                        });
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+            body: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: length),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      NavigationBarButton(
-                          icon: SvgAsset.logo_icon,
-                          resetCount: true,
-                          text: " "),
-                      NavigationBarButton(
-                        icon: SvgAsset.videos_icon,
-                        activeIcon: SvgAsset.videos_active_icon,
-                        text: "Destacados",
+                      /// The colored curved blob in the background (white, yellow, etc.).
+                      BottomColoredBlob(
+                        size: size,
+                        currentSelectedIndex: _selectedIndex,
+                        colors: [
+                          Colors.white,
+                          Colors.cyan,
+                          Colors.yellow,
+                          Theme.of(context).accentColor,
+                          Colors.white
+                        ],
+                        getCurrentSelectedIndex: getCurrentSelectedIndex,
                       ),
-                      NavigationBarButton(
-                        icon: SvgAsset.series_icon,
-                        activeIcon: SvgAsset.series_active_icon,
-                        text: "Series",
+
+                      /// Top Navigation Bar.
+                      Container(
+                        width: size.width,
+                        height: navHeight,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: TopNavigationBar(
+                          getSelectedIndex: getCurrentSelectedIndex,
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          defaultIconSizes: 0.35 * navHeight,
+                          defaultOnPressed: _onNavButtonTapped,
+                          defaultTextScaleFactor: 0.00275 * size.height,
+                          children: [
+                            NavigationBarButton(
+                              icon: SvgAsset.logo_icon,
+                              resetCount: true,
+                              text: " ",
+                              size: 0.4 * navHeight,
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.videos_icon,
+                              activeIcon: SvgAsset.videos_active_icon,
+                              text: "Destacados",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.series_icon,
+                              activeIcon: SvgAsset.series_active_icon,
+                              text: "Series",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.lists_icon,
+                              activeIcon: SvgAsset.lists_active_icon,
+                              text: "Listas",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.games_icon,
+                              activeIcon: SvgAsset.games_active_icon,
+                              text: "Juegos",
+                            ),
+                            NavigationBarButton(
+                              icon: SvgAsset.search_icon,
+                              text: "Buscar",
+                              onPressed: (index) {
+                                playSound("sounds/click/click.mp3");
+                                Navigator.push(
+                                    context,
+                                    ConfigPageRoute(
+                                        configSettings: ConfigSettings(
+                                            filter: currentVisualFilter),
+                                        builder: (context) {
+                                          return SearchPage(
+                                            speech: speech,
+                                          );
+                                        }));
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                      NavigationBarButton(
-                        icon: SvgAsset.lists_icon,
-                        activeIcon: SvgAsset.lists_active_icon,
-                        text: "Listas",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.games_icon,
-                        activeIcon: SvgAsset.games_active_icon,
-                        text: "Juegos",
-                      ),
-                      NavigationBarButton(
-                        icon: SvgAsset.search_icon,
-                        text: "Buscar",
-                        onPressed: (index) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return SearchPage(
-                              speech: speech,
-                            );
-                          }));
-                        },
+
+                      /// Video & Game Cards' List.
+                      Expanded(
+                        child: Center(
+                          child: _widgetOptions.elementAt(_selectedIndex),
+                        ),
                       ),
                     ],
-                  )),
-
-              /// Video & Game Cards' List.
-              Expanded(
-                child: Center(
-                  child: _widgetOptions.elementAt(_selectedIndex),
+                  ),
                 ),
-              ),
-
-              /// Space filler to keep things kinda centered.
-              Container(
-                width: size.width,
-                height: navHeight / 2,
-              ),
-            ],
-          )),
-    );
+                PullableDrawerBlob(
+                  size: size,
+                  color: Theme.of(context).accentColor,
+                  length: length,
+                  innerRadius: innerRadius,
+                  outerRadius: outerRadius,
+                  iconSizePercentage: 0.65,
+                ),
+              ],
+            )),
+      ),
+    ));
   }
 
   /// Play sounds efects
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
+    return cache.playBytes(bytes, volume: 10.0);
   }
 
   /// Change the selected index when button is tapped.
@@ -241,7 +346,7 @@ class _BottomColoredBlobState extends State<BottomColoredBlob> {
   Widget build(BuildContext context) {
     updateSelectedIndex();
     return CustomPaint(
-      painter: BottomColoredBlobPainter(
+      foregroundPainter: BottomColoredBlobPainter(
         size: widget.size,
         color: widget.colors[currentSelectedIndex],
       ),
@@ -274,6 +379,97 @@ class BottomColoredBlobPainter extends CustomPainter {
     path.lineTo(0.5 * size.width, size.height);
     path.lineTo(-0.5 * size.width, size.height);
     path.close();
+
+    canvas.drawPath(path, p);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class PullableDrawerBlob extends StatelessWidget {
+  final Size size;
+  final Color color;
+  final double length;
+  final double innerRadius;
+  final double outerRadius;
+  final double iconSizePercentage;
+
+  const PullableDrawerBlob(
+      {Key key,
+      this.size,
+      this.color,
+      this.length,
+      this.innerRadius,
+      this.outerRadius,
+      this.iconSizePercentage = 0.8})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final double iconSize = (outerRadius * 2 * iconSizePercentage);
+    final double iconPos = length +
+        (innerRadius - outerRadius) +
+        (1 - iconSizePercentage) * outerRadius;
+
+    return Stack(
+      children: [
+        CustomPaint(
+          painter: PullableDrawerBlobPainter(
+            size: size,
+            color: color,
+            length: length,
+            innerRadius: innerRadius,
+            outerRadius: outerRadius,
+          ),
+        ),
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: iconPos > 0 ? iconPos : 0.0),
+                child: SvgIcon(
+                  asset: SvgAsset.back_icon,
+                  size: iconSize,
+                ),
+              )
+            ])
+      ],
+    );
+  }
+}
+
+class PullableDrawerBlobPainter extends CustomPainter {
+  final Size size;
+  final Color color;
+  final double length;
+  final double innerRadius;
+  final double outerRadius;
+
+  PullableDrawerBlobPainter(
+      {this.color, this.length, this.innerRadius, this.outerRadius, this.size});
+
+  @override
+  void paint(Canvas canvas, Size _) {
+    Paint p = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+        Offset(length + innerRadius, 0.5 * size.height), outerRadius, p);
+    canvas.drawRect(Rect.fromLTWH(0.0, 0.0, length, size.height), p);
+
+    Path path = Path()
+      ..moveTo(length - 5.0, 0.5 * size.height - outerRadius - innerRadius)
+      ..relativeLineTo(5.0, 0.0)
+      ..relativeQuadraticBezierTo(0.0, innerRadius, innerRadius, innerRadius)
+      ..relativeLineTo(0.0, outerRadius * 2)
+      ..relativeQuadraticBezierTo(-innerRadius, 0.0, -innerRadius, innerRadius)
+      ..relativeLineTo(-5.0, 0.0)
+      ..close();
 
     canvas.drawPath(path, p);
   }

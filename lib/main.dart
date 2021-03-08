@@ -1,17 +1,13 @@
-/// Splash screen page
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
-
-/// Home page
 import 'package:cntvkids_app/pages/menu/home_page.dart';
-
-/// General plugins
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'common/helpers.dart';
 import 'dart:async';
 
+/// Main function called at app start.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -25,6 +21,7 @@ void main() async {
   /// a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
+  /// Theming and stuff probably related to OneSignal.
   runApp(ChangeNotifierProvider<AppStateNotifier>(
       create: (context) => AppStateNotifier(),
       child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
@@ -40,14 +37,15 @@ void main() async {
                 canvasColor: Color(0xFFE3E3E3),
                 textTheme: TextTheme(
                   bodyText1: TextStyle(
-                      fontSize: 12,
-                      height: 1.5,
-                      color: Colors.black87,
-                      fontFamily: "FredokaOne"),
+                    fontSize: 12,
+                    height: 1.5,
+                    color: Colors.black,
+                    fontFamily: "FredokaOne",
+                  ),
                   bodyText2: TextStyle(
                       fontSize: 12,
                       height: 1.5,
-                      color: Colors.black87,
+                      color: Colors.black,
                       fontFamily: "FredokaOne"),
                 ),
                 backgroundColor: Colors.white,
@@ -65,6 +63,9 @@ class _MyAppState extends State<MyApp> {
   Completer completer = new Completer();
   BetterPlayer videoSplashScreen;
   bool end = false;
+
+  /// TODO: implement timer to test if video could not load and show
+  /// error message. (and some retry attempts).
   void initState() {
     super.initState();
     videoSplashScreen = BetterPlayer.network(
@@ -97,6 +98,11 @@ class _MyAppState extends State<MyApp> {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData && !end) {
           return SplashScreen(videoSplashScreen: videoSplashScreen);
+        } else if (snapshot.hasError) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return HomePage();
+          }));
         } else {
           return Container(color: Colors.black);
         }

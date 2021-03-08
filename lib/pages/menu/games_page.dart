@@ -11,13 +11,16 @@ import 'package:cntvkids_app/widgets/cards/game_card_widget.dart';
 
 /// Shows video widgets that have 'Games' category.
 class GamesCardList extends StatefulWidget {
+  final double leftMargin;
+
+  const GamesCardList({Key key, this.leftMargin = 0.0}) : super(key: key);
   @override
   _GamesCardListState createState() => _GamesCardListState();
 }
 
 class _GamesCardListState extends VariableCardListState<GamesCardList> {
   @override
-  Widget cardWidget(object, heroId) {
+  Widget cardWidget(object, heroId, index) {
     return GameCard(
       game: object,
       heroId: heroId,
@@ -50,4 +53,7 @@ class _GamesCardListState extends VariableCardListState<GamesCardList> {
       }
     }
   }
+
+  @override
+  double get leftMargin => widget.leftMargin;
 }

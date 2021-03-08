@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -40,6 +41,11 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   /// Determined on initState of card list has description.
   bool hasDescription;
 
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  bool hasSetFilter = false;
+
   void setPlayerEffects();
 
   @override
@@ -57,6 +63,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     WidgetsBinding.instance.addObserver(this);
 
     setPlayerEffects();
+    startedScrolling = false;
   }
 
   /// Play sounds.
@@ -74,13 +81,12 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     if (!this.mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value != null) {
+      var value = controller.position.isScrollingNotifier.value;
+      if (value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
         }
-      } else {
-        startedScrolling = false;
       }
     });
   }
@@ -99,12 +105,64 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
         '');
   }
 
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
+    if (!hasSetFilter) {
+      hasSetFilter = true;
+
+      currentVisualFilter = Config.of(context).configSettings.filter;
+
+      switch (currentVisualFilter) {
+        case VisualFilter.grayscale:
+          colorFilter = GRAYSCALE_FILTER;
+          break;
+
+        case VisualFilter.inverted:
+          colorFilter = INVERTED_FILTER;
+          break;
+
+        default:
+          colorFilter = NORMAL_FILTER;
+      }
+    }
+
     return BackgroundMusic(
+        child: ColorFiltered(
+      colorFilter: colorFilter,
+      child: WillPopScope(
         child: Scaffold(
             backgroundColor: Theme.of(context).primaryColor,
             body: Column(
@@ -132,6 +190,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                           asset: SvgAsset.back_icon,
                           size: 0.5 * topBarHeight,
                           onPressed: () {
+                            playSound("sounds/go_back/go_back.mp3");
                             Navigator.of(context).pop();
                           },
                         ),
@@ -199,25 +258,46 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                                     ),
                                   )
                               ],
-                            ))
+                            )),
                       ],
                     )),
 
                 /// The card list.
                 Expanded(
-                  child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    controller: controller,
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) {
-                      return cardWidget(
-                          cards[index], cards[index].id.toString());
+                  child: NotificationListener(
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      controller: controller,
+                      itemCount: cards.length,
+                      itemBuilder: (context, index) {
+                        return cardWidget(
+                            cards[index], cards[index].id.toString());
+                      },
+                    ),
+                    // ignore: missing_return
+                    onNotification: (notification) {
+                      if (notification is ScrollEndNotification) {
+                        setState(() {
+                          startedScrolling = false;
+                        });
+                      }
                     },
                   ),
                 ),
+
+                /// Space filler to keep things kinda centered.
+                Container(
+                  width: size.width,
+                  height: topBarHeight / 2,
+                ),
               ],
-            )));
+            )),
+        onWillPop: () {
+          playSound("sounds/go_back/go_back.mp3");
+          return Future<bool>.value(true);
+        },
+      ),
+    ));
   }
 }
