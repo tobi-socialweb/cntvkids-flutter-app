@@ -155,9 +155,9 @@ flutter:
   - assets/sounds/go_back/go_back.mp3
   - assets/sounds/intro/intro.mp3
   - assets/sounds/notification/notification.mp3
+  - assets/sounds/results/resultados.aif
   - assets/sounds/unavailable_action/unavailable_action.aif
   - assets/sounds/wave/wave.mp3
-  - assets/sounds/results/resultados.aif
   fonts:
   - family: FredokaOne
     fonts:

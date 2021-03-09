@@ -61,8 +61,8 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
     } else {
       print(data.length);
       return data
-          .map((value) => Video.fromJson(value,
-              originModelType: widget.video.originModelType))
+          .map((value) =>
+              Video.fromJson(value, originModelType: ModelType.video))
           .toList();
     }
   }
