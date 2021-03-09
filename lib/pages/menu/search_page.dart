@@ -287,8 +287,8 @@ class _SearchPageState extends State<SearchPage> {
                       )),
                   if (!hide)
                     Container(
-                      height: 50,
-                      width: 200,
+                      height: size.height - navHeight,
+                      width: size.width,
                       margin: EdgeInsets.only(top: navHeight),
                       child: lista,
                     ),

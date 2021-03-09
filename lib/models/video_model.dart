@@ -9,6 +9,7 @@ class Video {
   final String title;
   final String thumbnailUrl;
   final String videoUrl;
+  final String signLangVideoUrl;
   final String series;
   final String season;
   final String chapter;
@@ -24,6 +25,7 @@ class Video {
     this.title,
     this.thumbnailUrl,
     this.videoUrl,
+    this.signLangVideoUrl,
     this.series,
     this.season,
     this.chapter,
@@ -52,7 +54,11 @@ class Video {
     String _videoUrl =
         has<String>(json["wpcf-vimeo-player-dl"], value: "", comp: [""]);
 
-    String _series = has<String>(json["serie_info"]["title"], comp: [""]);
+    String _signLang =
+        has<String>(json["wpcf-vimeo-senas-dl"], value: "", comp: [""]);
+
+    String _series =
+        has<String>(json["serie_info"]["title"], value: "", comp: [""]);
 
     String _season =
         has<String>(json["wpcf-season"].toString(), value: "", comp: [""]);
@@ -77,6 +83,7 @@ class Video {
       title: _title,
       thumbnailUrl: _thumbnailUrl,
       videoUrl: _videoUrl,
+      signLangVideoUrl: _signLang,
       series: _series,
       extra: _extra,
       categories: _categories,
@@ -86,27 +93,6 @@ class Video {
       originSeries: originSeries,
     );
   }
-
-  factory Video.fromDatabaseJson(Map<String, dynamic> data) => Video(
-      id: data["id"],
-      title: data["title"],
-      thumbnailUrl: data["thumbnailUrl"],
-      videoUrl: data["videoUrl"],
-      series: data["series"],
-      extra: data["extra"],
-      categories: data["categories"],
-      type: data["type"]);
-
-  Map<String, dynamic> toDatabaseJson() => {
-        "id": this.id,
-        "title": this.title,
-        "thumbnailUrl": this.thumbnailUrl,
-        "videoUrl": this.videoUrl,
-        "series": this.series,
-        "extra": this.extra,
-        "categories": this.categories,
-        "type": this.type,
-      };
 
   /// Compare object to null and to the elements in `comp`, if any. Returns
   /// `object` if it's not equal to any of those things; otherwise, return

@@ -54,16 +54,16 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
 
   @override
   List<dynamic> dataToCardList(data) {
-    if (widget.video != null && widget.video.originList != null) {
-      return widget.video.originList.videos;
-    } else if (widget.video != null && widget.video.originSeries != null) {
-      return widget.video.originSeries.videos;
-    } else {
-      print(data.length);
+    if (widget.video == null ||
+        widget.video.originModelType == ModelType.video) {
       return data
           .map((value) =>
               Video.fromJson(value, originModelType: ModelType.video))
           .toList();
+    } else {
+      return (widget.video.originSeries != null)
+          ? widget.video.originSeries.videos
+          : widget.video.originList.videos;
     }
   }
 

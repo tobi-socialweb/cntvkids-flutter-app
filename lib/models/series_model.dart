@@ -25,7 +25,8 @@ class Series {
     /// Get values from the json object.
     int _id = has<int>(json["id"], value: -1);
 
-    String _title = has<String>(json["title"]["rendered"], comp: [""]);
+    String _title =
+        has<String>(json["title"]["rendered"], value: "", comp: [""]);
 
     String _shortDesc =
         has<String>(json["excerpt"]["rendered"], value: "", comp: [""]);
