@@ -28,6 +28,7 @@ class _ListsCardState extends ClickableCardState<ListsCard> {
 
   @override
   void onTap() {
+    playSound("sounds/click/click.mp3");
     Navigator.push(
         context,
         ConfigPageRoute(

@@ -45,9 +45,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Config globalConfig;
 
-  final double length = 25.0;
+  final double length = 15.0;
   final double innerRadius = 5.0;
-  final double outerRadius = 40.0;
+  final double outerRadius = 30.0;
 
   /// All options from the navigation bar
   List<Widget> _widgetOptions;
@@ -221,7 +221,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         child: TopNavigationBar(
                           getSelectedIndex: getCurrentSelectedIndex,
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          defaultIconSizes: 0.5 * navHeight,
+                          defaultIconSizes: 0.35 * navHeight,
                           defaultOnPressed: _onNavButtonTapped,
                           defaultTextScaleFactor: 0.00275 * size.height,
                           children: [
@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               icon: SvgAsset.logo_icon,
                               resetCount: true,
                               text: " ",
-                              size: 0.65 * navHeight,
+                              size: 0.4 * navHeight,
                             ),
                             NavigationBarButton(
                               icon: SvgAsset.videos_icon,
@@ -255,6 +255,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               icon: SvgAsset.search_icon,
                               text: "Buscar",
                               onPressed: (index) {
+                                playSound("sounds/click/click.mp3");
                                 Navigator.push(
                                     context,
                                     ConfigPageRoute(
@@ -298,7 +299,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
+    return cache.playBytes(bytes, volume: 10.0);
   }
 
   /// Change the selected index when button is tapped.

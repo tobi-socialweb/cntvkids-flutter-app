@@ -58,7 +58,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
   List<dynamic> dataToCardList(dynamic data);
 
   /// Returns the specific card widget corresponding to each model (with object).
-  Widget cardWidget(dynamic object, String heroId);
+  Widget cardWidget(dynamic object, String heroId, int index);
 
   /// Gets called after successfully fetching cards, and allows for further
   /// optional management of which cards to keep or any other use.
@@ -84,7 +84,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   }
 
   double get leftMargin;
-
   @override
   void initState() {
     super.initState();
@@ -139,9 +138,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   }
 
   /// Listener for scroll changes.
-  ///
-  /// Loads the next page (per page) for cards videos if the scroll is
-  /// finished.
   _scrollControllerListener() {
     if (!this.mounted) return;
 
@@ -154,15 +150,13 @@ abstract class VariableCardListState<T extends StatefulWidget>
       });
     }
 
-    /// TODO: fix scroll sound efects
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value) {
+      var value = controller.position.isScrollingNotifier.value;
+      if (value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
         }
-      } else {
-        startedScrolling = false;
       }
     });
   }
@@ -187,10 +181,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         setState(() {
           cards.addAll(dataToCardList(response.data));
-
+          print("Se agrego ${cards.length}");
           if (cards.length % cardsPerPage != 0) continueLoadingPages = false;
         });
-
         await optionalCardManagement();
 
         if (page == 1) _checkForForceUpdate(cards[0].id);
@@ -205,6 +198,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       } else if (DioErrorType.RESPONSE == e.type) {
         /// If request was badly formed.
         if (e.response.statusCode == 400) {
+          print("reponse 400");
           setState(() {
             continueLoadingPages = false;
           });
@@ -236,27 +230,43 @@ abstract class VariableCardListState<T extends StatefulWidget>
     return FutureBuilder<List<dynamic>>(
       future: futureCards,
       builder: (context, snapshot) {
+        print(snapshot.hasData);
+
         /// If snapshot has values.
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0) return Container();
-
-          return ListView.builder(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            controller: controller,
-            itemCount: snapshot.data.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Padding(
-                    padding: EdgeInsets.only(left: leftMargin),
-                    child: cardWidget(snapshot.data[index],
-                        snapshot.data[index].id.toString()));
-              } else if (index < snapshot.data.length) {
-                return cardWidget(
-                    snapshot.data[index], snapshot.data[index].id.toString());
-              } else {
-                /// TODO: use clickable card's size instead of whole height.
-                return loadingWidget(size);
+          if (snapshot.data.length == 0) {
+            return Container();
+          }
+          return NotificationListener(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              controller: controller,
+              itemCount: snapshot.data.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Padding(
+                      padding: EdgeInsets.only(left: leftMargin),
+                      child: cardWidget(snapshot.data[index],
+                          snapshot.data[index].id.toString(), index));
+                } else if (index < snapshot.data.length) {
+                  return cardWidget(snapshot.data[index],
+                      snapshot.data[index].id.toString(), index);
+                } else {
+                  /// TODO: use clickable card's size instead of whole height.
+                  if (!controller.position.haveDimensions) {
+                    futureCards = fetchCards(++currentPage);
+                  }
+                  return loadingWidget(size);
+                }
+              },
+            ),
+            // ignore: missing_return
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification) {
+                setState(() {
+                  startedScrolling = false;
+                });
               }
             },
           );
@@ -265,13 +275,14 @@ abstract class VariableCardListState<T extends StatefulWidget>
               height: 300,
               alignment: Alignment.center,
               child: Text("${snapshot.error}"));
+        } else {
+          return Container(
+              alignment: Alignment.center,
+              child: Loading(
+                  indicator: BallSpinFadeLoaderIndicator(),
+                  size: 0.2 * size.height,
+                  color: Colors.white));
         }
-        return Container(
-            alignment: Alignment.center,
-            child: Loading(
-                indicator: BallSpinFadeLoaderIndicator(),
-                size: 0.2 * size.height,
-                color: Colors.white));
       },
     );
   }

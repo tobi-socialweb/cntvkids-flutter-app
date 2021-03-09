@@ -18,7 +18,7 @@ class FeaturedCardList extends StatefulWidget {
 
 class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
-  Widget cardWidget(object, heroId) {
+  Widget cardWidget(object, heroId, index) {
     return VideoCard(
       video: object,
       heroId: heroId,

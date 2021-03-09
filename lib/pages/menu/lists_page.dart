@@ -18,7 +18,7 @@ class ListsCardList extends StatefulWidget {
 
 class _ListsCardListState extends VariableCardListState<ListsCardList> {
   @override
-  Widget cardWidget(object, heroId) {
+  Widget cardWidget(object, heroId, index) {
     return ListsCard(
       list: object,
       heroId: heroId,

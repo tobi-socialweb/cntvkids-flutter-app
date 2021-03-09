@@ -13,6 +13,8 @@ import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+enum modelType { video, serie, lista }
+
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
   final String search;
@@ -32,7 +34,7 @@ class SearchCardList extends StatefulWidget {
 
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
   @override
-  Widget cardWidget(object, String heroId) {
+  Widget cardWidget(object, String heroId, index) {
     return widget.isMinimized == false
         ? VideoCard(
             video: object,
@@ -45,25 +47,23 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
   }
 
   @override
-  String get modelUrl => "$VIDEOS_URL&search=${widget.search ?? '@'}";
+  String get modelUrl => "$VIDEOS_URL&search=${widget.search}";
 
   @override
   int get categoryId => null;
 
   @override
   List<dynamic> dataToCardList(data) {
-    if (widget.video == null ||
-        widget.video.originModelType == ModelType.video) {
+    if (widget.video != null && widget.video.originList != null) {
+      return widget.video.originList.videos;
+    } else if (widget.video != null && widget.video.originSeries != null) {
+      return widget.video.originSeries.videos;
+    } else {
+      print(data.length);
       return data
           .map((value) => Video.fromJson(value,
               originModelType: widget.video.originModelType))
           .toList();
-    } else {
-      return (widget.video.originSeries != null)
-          ? widget.video.originSeries.videos
-          : (widget.video.originList != null
-              ? widget.video.originList.videos
-              : "hola");
     }
   }
 

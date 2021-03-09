@@ -31,7 +31,7 @@ class Lists {
     String _thumbnailUrl =
         has<String>(json["fimg_url"], value: MISSING_IMAGE_URL, comp: [""]);
 
-    List<Video> _videos = new List<Video>();
+    List<Video> _videos = [];
     has<List<dynamic>>(json["lista_childs"], then: (object) {
       String _season;
       String _chapter;

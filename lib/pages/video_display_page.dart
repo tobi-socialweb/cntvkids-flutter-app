@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/config_widget.dart';
@@ -68,7 +70,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void initState() {
     super.initState();
-
+    print("serie:" + widget.video.series);
+    print("titulo: " + widget.video.title);
     if (widget.betterPlayerController != null) {
       _betterPlayerController = widget.betterPlayerController;
       return;
@@ -153,6 +156,13 @@ class _VideoDisplayState extends State<VideoDisplay> {
     }
   }
 
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!hasSetFilter) {
@@ -194,6 +204,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
                     /// When using the 'back' button, toggle minimize.
                     onWillPop: () {
+                      playSound("sounds/go_back/go_back.mp3");
                       return Future<bool>.value(true);
                     });
               } else if (snapshot.hasError) {
@@ -211,6 +222,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 
   void toggleDisplay() {
+    playSound("sounds/go_back/go_back.mp3");
     Navigator.push(
         context,
         ConfigPageRoute(
@@ -284,6 +296,13 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     }
   }
 
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -323,116 +342,117 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               child: LimitedBox(
-
-                  /// TODO: fix
-                  maxWidth: 0.85 * size.width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          /// Left side icons.
-                          Container(
-                            height: miniVideoSize,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0.05 * size.height),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                SvgButton(
-                                  asset: SvgAsset.back_icon,
-                                  size: iconSize,
-                                  onPressed: () {
-                                    widget.betterPlayerController.dispose();
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-
-                          /// Centered video.
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0.01 * size.width,
-                                0.05 * size.height, 0.01 * size.width, 0.0),
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(0.075 * size.height),
-                              child: InheritedVideoDisplay(
-                                  context: context,
-                                  isMinimized: true,
-                                  toggleDisplay: toggleDisplay,
-                                  child: Container(
-                                    height: miniVideoSize,
-                                    child: AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: MediaQuery(
-                                          data: MediaQueryData(
-                                              size: Size(miniVideoSize * 16 / 9,
-                                                  miniVideoSize)),
-                                          child: Hero(
-                                            tag: widget.heroId,
-                                            child: BetterPlayer(
-                                              controller:
-                                                  widget.betterPlayerController,
-                                            ),
-                                          ),
-                                        )),
-                                  )),
-                            ),
-                          ),
-
-                          /// Right side icons.
-                          Container(
-                            height: miniVideoSize,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                ChromeCast(
-                                  video: widget.video,
-                                  iconSize: iconSize,
-                                ),
-                                SvgIcon(
-                                    asset: SvgAsset.videos_icon, size: iconSize)
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      /// FeaturedCardList(isMinimized: true),
-                      Expanded(
-                        child: Container(
-                          /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                /// TODO: fix
+                maxWidth: 0.85 * size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Left side icons.
+                        Container(
+                          height: miniVideoSize,
                           padding: EdgeInsets.symmetric(
-                              vertical: (size.height -
-                                      0.25 * size.height -
-                                      0.1 * size.height -
-                                      miniVideoSize) /
-                                  2),
-                          child: SearchCardList(
-                            search: hasSeries
-                                ? widget.video.series
-                                : widget.video.title,
-                            video: widget.video,
-                            isMinimized: true,
+                              vertical: 0.05 * size.height),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              SvgButton(
+                                asset: SvgAsset.back_icon,
+                                size: iconSize,
+                                onPressed: () {
+                                  playSound("sounds/go_back/go_back.mp3");
+                                  widget.betterPlayerController.dispose();
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
                           ),
                         ),
+
+                        /// Centered video.
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                              0.05 * size.height, 0.01 * size.width, 0.0),
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(0.075 * size.height),
+                            child: InheritedVideoDisplay(
+                                context: context,
+                                isMinimized: true,
+                                toggleDisplay: toggleDisplay,
+                                child: Container(
+                                  height: miniVideoSize,
+                                  child: AspectRatio(
+                                      aspectRatio: 16 / 9,
+                                      child: MediaQuery(
+                                        data: MediaQueryData(
+                                            size: Size(miniVideoSize * 16 / 9,
+                                                miniVideoSize)),
+                                        child: Hero(
+                                          tag: widget.heroId,
+                                          child: BetterPlayer(
+                                            controller:
+                                                widget.betterPlayerController,
+                                          ),
+                                        ),
+                                      )),
+                                )),
+                          ),
+                        ),
+
+                        /// Right side icons.
+                        Container(
+                          height: miniVideoSize,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              ChromeCast(
+                                video: widget.video,
+                                iconSize: iconSize,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// FeaturedCardList(isMinimized: true),
+                    Expanded(
+                      child: Container(
+                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                        padding: EdgeInsets.symmetric(
+                            vertical: (size.height -
+                                    0.25 * size.height -
+                                    0.1 * size.height -
+                                    miniVideoSize) /
+                                2),
+                        child: SearchCardList(
+                          search: hasSeries
+                              ? widget.video.series
+                              : widget.video.title,
+                          video: widget.video,
+                          isMinimized: true,
+                        ),
                       ),
-                    ],
-                  )),
+                    )
+                  ],
+                ),
+              ),
               onPressed: () {
+                playSound("sounds/click/click.mp3");
                 Navigator.of(context).pop();
               },
             ),
           ),
           onWillPop: () {
             widget.betterPlayerController.dispose();
+            playSound("sounds/go_back/go_back.mp3");
             Navigator.of(context).pop();
             return Future<bool>.value(true);
           }),
@@ -440,6 +460,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   }
 
   void toggleDisplay() {
+    playSound("sounds/go_back/go_back.mp3");
     Navigator.of(context).pop();
   }
 }

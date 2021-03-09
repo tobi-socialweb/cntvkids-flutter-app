@@ -63,6 +63,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     WidgetsBinding.instance.addObserver(this);
 
     setPlayerEffects();
+    startedScrolling = false;
   }
 
   /// Play sounds.
@@ -80,13 +81,12 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     if (!this.mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (controller.position.isScrollingNotifier.value) {
+      var value = controller.position.isScrollingNotifier.value;
+      if (value != null) {
         if (!startedScrolling) {
           playSound("sounds/beam/beam.mp3");
           startedScrolling = true;
         }
-      } else {
-        startedScrolling = false;
       }
     });
   }
@@ -162,123 +162,142 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     return BackgroundMusic(
         child: ColorFiltered(
       colorFilter: colorFilter,
-      child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              /// The colored curved blob in the background (white, yellow, etc.).
-              CustomPaint(
-                painter:
-                    BottomColoredBlobPainter(color: Colors.cyan, size: size),
-              ),
+      child: WillPopScope(
+        child: Scaffold(
+            backgroundColor: Theme.of(context).primaryColor,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                /// The colored curved blob in the background (white, yellow, etc.).
+                CustomPaint(
+                  painter:
+                      BottomColoredBlobPainter(color: Colors.cyan, size: size),
+                ),
 
-              /// Top Bar.
-              Container(
-                  constraints: BoxConstraints(
-                      maxHeight: topBarHeight, maxWidth: size.width),
-                  height: topBarHeight,
-                  width: size.width,
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      /// Back button.
-                      SvgButton(
-                        asset: SvgAsset.back_icon,
-                        size: 0.5 * topBarHeight,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                /// Top Bar.
+                Container(
+                    constraints: BoxConstraints(
+                        maxHeight: topBarHeight, maxWidth: size.width),
+                    height: topBarHeight,
+                    width: size.width,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        /// Back button.
+                        SvgButton(
+                          asset: SvgAsset.back_icon,
+                          size: 0.5 * topBarHeight,
+                          onPressed: () {
+                            playSound("sounds/go_back/go_back.mp3");
+                            Navigator.of(context).pop();
+                          },
+                        ),
 
-                      /// Series thumbnail avatar.
-                      Container(
-                        margin: EdgeInsets.only(right: 0.15 * topBarHeight),
-                        child: Hero(
-                            tag: avatarHeroId,
-                            child: CircleAvatar(
-                              /// diameter: 0.75 * topBarHeight
-                              radius: 0.375 * topBarHeight,
-                              backgroundImage: avatarImgProvider,
-                            )),
-                      ),
+                        /// Series thumbnail avatar.
+                        Container(
+                          margin: EdgeInsets.only(right: 0.15 * topBarHeight),
+                          child: Hero(
+                              tag: avatarHeroId,
+                              child: CircleAvatar(
+                                /// diameter: 0.75 * topBarHeight
+                                radius: 0.375 * topBarHeight,
+                                backgroundImage: avatarImgProvider,
+                              )),
+                        ),
 
-                      /// Series title & description.
-                      Container(
-                          margin: EdgeInsets.only(top: 0.05 * topBarHeight),
-                          width: 0.8 * size.width - 1.375 * topBarHeight,
-                          child: Column(
-                            mainAxisAlignment: hasDescription
-                                ? MainAxisAlignment.start
-                                : MainAxisAlignment.center,
-                            crossAxisAlignment: hasDescription
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.center,
-                            children: [
-                              /// Title
-                              Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: hasDescription
-                                      ? 0.15 * topBarHeight
-                                      : 0.2 * topBarHeight,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontFamily: "FredokaOne",
-                                  height: 1.0,
-                                ),
-                              ),
-
-                              /// Description
-                              if (hasDescription)
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(top: 0.05 * topBarHeight),
-                                  height: 0.6 * topBarHeight,
-                                  child: Expanded(
-                                    child: ListView(
-                                      primary: false,
-                                      shrinkWrap: true,
-                                      physics: BouncingScrollPhysics(),
-                                      children: [
-                                        Text(
-                                          clean(description),
-                                          style: TextStyle(
-                                            fontSize: 0.125 * topBarHeight,
-                                            fontWeight: FontWeight.normal,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                        /// Series title & description.
+                        Container(
+                            margin: EdgeInsets.only(top: 0.05 * topBarHeight),
+                            width: 0.8 * size.width - 1.375 * topBarHeight,
+                            child: Column(
+                              mainAxisAlignment: hasDescription
+                                  ? MainAxisAlignment.start
+                                  : MainAxisAlignment.center,
+                              crossAxisAlignment: hasDescription
+                                  ? CrossAxisAlignment.start
+                                  : CrossAxisAlignment.center,
+                              children: [
+                                /// Title
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontSize: hasDescription
+                                        ? 0.15 * topBarHeight
+                                        : 0.2 * topBarHeight,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: "FredokaOne",
+                                    height: 1.0,
                                   ),
-                                )
-                            ],
-                          )),
-                    ],
-                  )),
+                                ),
 
-              /// The card list.
-              Expanded(
-                  child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                controller: controller,
-                itemCount: cards.length,
-                itemBuilder: (context, index) {
-                  return cardWidget(cards[index], cards[index].id.toString());
-                },
-              )),
+                                /// Description
+                                if (hasDescription)
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                        top: 0.05 * topBarHeight),
+                                    height: 0.6 * topBarHeight,
+                                    child: Expanded(
+                                      child: ListView(
+                                        primary: false,
+                                        shrinkWrap: true,
+                                        physics: BouncingScrollPhysics(),
+                                        children: [
+                                          Text(
+                                            clean(description),
+                                            style: TextStyle(
+                                              fontSize: 0.125 * topBarHeight,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            )),
+                      ],
+                    )),
 
-              /// Space filler to keep things kinda centered.
-              Container(
-                width: size.width,
-                height: topBarHeight / 2,
-              ),
-            ],
-          )),
+                /// The card list.
+                Expanded(
+                  child: NotificationListener(
+                    child: ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      controller: controller,
+                      itemCount: cards.length,
+                      itemBuilder: (context, index) {
+                        return cardWidget(
+                            cards[index], cards[index].id.toString());
+                      },
+                    ),
+                    // ignore: missing_return
+                    onNotification: (notification) {
+                      if (notification is ScrollEndNotification) {
+                        setState(() {
+                          startedScrolling = false;
+                        });
+                      }
+                    },
+                  ),
+                ),
+
+                /// Space filler to keep things kinda centered.
+                Container(
+                  width: size.width,
+                  height: topBarHeight / 2,
+                ),
+              ],
+            )),
+        onWillPop: () {
+          playSound("sounds/go_back/go_back.mp3");
+          return Future<bool>.value(true);
+        },
+      ),
     ));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
@@ -71,6 +72,9 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void submit(String string) {
+    print("-----------------------");
+    print(string);
+    print("-----------------------\n\n");
     if (!this.mounted) return;
 
     setState(() {
@@ -93,12 +97,14 @@ class _SearchPageState extends State<SearchPage> {
     if (!this.mounted) return;
 
     setState(() {
+      BackgroundMusicManager.instance.music.pauseMusic();
       hide = true;
     });
   }
 
   void resultListener(SpeechRecognitionResult result) {
     setState(() {
+      BackgroundMusicManager.instance.music.resumeMusic();
       print("DEBUG: calling resultListener");
       _textToSpeech = result.recognizedWords;
       controller.text = _textToSpeech;
@@ -135,6 +141,13 @@ class _SearchPageState extends State<SearchPage> {
         });
         break;
     }
+  }
+
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
   }
 
   @override
@@ -197,11 +210,13 @@ class _SearchPageState extends State<SearchPage> {
                         children: [
                           /// Back button.
                           SvgButton(
-                            asset: SvgAsset.back_icon,
-                            size: iconSize,
-                            padding: padding,
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
+                              asset: SvgAsset.back_icon,
+                              size: iconSize,
+                              padding: padding,
+                              onPressed: () {
+                                playSound("sounds/go_back/go_back.mp3");
+                                Navigator.of(context).pop();
+                              }),
 
                           /// search container
                           Expanded(
@@ -256,6 +271,7 @@ class _SearchPageState extends State<SearchPage> {
                             onPressed: () {
                               SystemChannels.textInput
                                   .invokeMethod('TextInput.hide');
+                              playSound("sounds/click/click.mp3");
                               submit(_textToSpeech);
                             },
                           ),
@@ -271,8 +287,8 @@ class _SearchPageState extends State<SearchPage> {
                       )),
                   if (!hide)
                     Container(
-                      height: size.height - navHeight,
-                      width: size.width,
+                      height: 50,
+                      width: 200,
                       margin: EdgeInsets.only(top: navHeight),
                       child: lista,
                     ),
@@ -281,13 +297,6 @@ class _SearchPageState extends State<SearchPage> {
             ],
           )),
     );
-  }
-
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
   }
 }
 

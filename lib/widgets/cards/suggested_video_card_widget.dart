@@ -41,6 +41,7 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
 
   @override
   void onTap() {
+    playSound("sounds/click/click.mp3");
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
