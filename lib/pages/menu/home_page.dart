@@ -221,7 +221,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         child: TopNavigationBar(
                           getSelectedIndex: getCurrentSelectedIndex,
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          defaultIconSizes: 0.35 * navHeight,
+                          defaultIconSizes: 0.425 * navHeight,
                           defaultOnPressed: _onNavButtonTapped,
                           defaultTextScaleFactor: 0.00275 * size.height,
                           children: [
@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               icon: SvgAsset.logo_icon,
                               resetCount: true,
                               text: " ",
-                              size: 0.4 * navHeight,
+                              size: 0.435 * navHeight,
                             ),
                             NavigationBarButton(
                               icon: SvgAsset.videos_icon,

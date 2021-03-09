@@ -408,14 +408,24 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         /// Right side icons.
                         Container(
                           height: miniVideoSize,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.05 * size.height),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              ChromeCast(
-                                video: widget.video,
-                                iconSize: iconSize,
-                              ),
+                              Stack(
+                                children: [
+                                  SvgIcon(
+                                    asset: SvgAsset.chromecast_icon,
+                                    size: iconSize,
+                                  ),
+                                  ChromeCast(
+                                    video: widget.video,
+                                    iconSize: iconSize,
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
