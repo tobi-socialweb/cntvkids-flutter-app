@@ -181,7 +181,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         setState(() {
           cards.addAll(dataToCardList(response.data));
-          print("Se agrego ${cards.length}");
           if (cards.length % cardsPerPage != 0) continueLoadingPages = false;
         });
         await optionalCardManagement();
@@ -230,8 +229,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
     return FutureBuilder<List<dynamic>>(
       future: futureCards,
       builder: (context, snapshot) {
-        print(snapshot.hasData);
-
         /// If snapshot has values.
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {

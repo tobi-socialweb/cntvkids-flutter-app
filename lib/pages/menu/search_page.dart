@@ -72,9 +72,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void submit(String string) {
-    print("-----------------------");
-    print(string);
-    print("-----------------------\n\n");
     if (!this.mounted) return;
 
     setState(() {

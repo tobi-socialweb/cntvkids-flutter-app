@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +12,8 @@ import 'package:flutter_video_cast/flutter_video_cast.dart';
 
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
+
+import 'menu/search_detail_page.dart';
 
 class ChromeCastView extends StatefulWidget {
   final double iconSize;
@@ -18,94 +26,216 @@ class ChromeCastView extends StatefulWidget {
 
 class _ChromeCastViewState extends State<ChromeCastView> {
   bool _playing = false;
+
+  ColorFilter colorFilter;
+  VisualFilter currentVisualFilter;
+
+  bool hasSetFilter = false;
+
+  CachedNetworkImageProvider imgProvider;
+  Completer completer = new Completer();
+
+  @override
+  void initState() {
+    /// Set the URL and add a listener to complete the future.
+    imgProvider = new CachedNetworkImageProvider(widget.video.thumbnailUrl);
+    imgProvider.resolve(new ImageConfiguration()).addListener(
+        ImageStreamListener((info, _) => completer.complete(info.image)));
+
+    super.initState();
+  }
+
+  void updateVisualFilter(bool value, VisualFilter filter) {
+    if (!this.mounted) return;
+
+    switch (filter) {
+      case VisualFilter.grayscale:
+        setState(() {
+          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.grayscale : VisualFilter.normal;
+        });
+        break;
+
+      case VisualFilter.inverted:
+        setState(() {
+          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+          currentVisualFilter =
+              value ? VisualFilter.inverted : VisualFilter.normal;
+        });
+        break;
+
+      /// normal
+      default:
+        setState(() {
+          colorFilter = NORMAL_FILTER;
+          currentVisualFilter = VisualFilter.normal;
+        });
+        break;
+    }
+  }
+
+  /// Play sounds efects
+  Future<AudioPlayer> playSound(String soundName) async {
+    AudioCache cache = new AudioCache();
+    var bytes = await (await cache.load(soundName)).readAsBytes();
+    return cache.playBytes(bytes);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
     final double iconSize = 0.15 * size.height;
     final double miniVideoSize = 0.6 * size.height;
+    final double width = miniVideoSize * 16 / 9;
 
-    return WillPopScope(
-        child: Material(
-          color: Theme.of(context).accentColor,
-          child: LimitedBox(
-              maxWidth: 0.85 * size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// Left side icons.
-                      Container(
-                        height: miniVideoSize,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 0.05 * size.height),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            SvgButton(
-                              asset: SvgAsset.back_icon,
-                              size: iconSize,
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
+    final bool hasSeries =
+        widget.video.series != null || widget.video.series != "";
+
+    if (!hasSetFilter) {
+      hasSetFilter = true;
+
+      currentVisualFilter = Config.of(context).configSettings.filter;
+
+      switch (currentVisualFilter) {
+        case VisualFilter.grayscale:
+          colorFilter = GRAYSCALE_FILTER;
+          break;
+
+        case VisualFilter.inverted:
+          colorFilter = INVERTED_FILTER;
+          break;
+
+        default:
+          colorFilter = NORMAL_FILTER;
+      }
+    }
+    return ColorFiltered(
+      colorFilter: colorFilter,
+      child: WillPopScope(
+          child: Material(
+            color: Theme.of(context).accentColor,
+            child: FlatButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: LimitedBox(
+                /// TODO: fix
+                maxWidth: 0.85 * size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// Left side icons.
+                        Container(
+                          height: miniVideoSize,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.05 * size.height),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              SvgButton(
+                                asset: SvgAsset.back_icon,
+                                size: iconSize,
+                                onPressed: () {
+                                  playSound("sounds/go_back/go_back.mp3");
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          ),
                         ),
-                      ),
 
-                      /// Centered video.
-                      Container(
-                          padding: EdgeInsets.fromLTRB(25, 50, 25, 0),
+                        /// Centered video.
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                              0.05 * size.height, 0.01 * size.width, 0.0),
                           child: ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(0.075 * size.height),
-                              child: MediaQuery(
-                                  data: MediaQueryData(
-                                      size: Size(miniVideoSize * 16 / 9,
-                                          miniVideoSize)),
-                                  child: Stack(
-                                    children: [
-                                      CachedNetworkImage(
-                                        imageUrl: widget.video.thumbnailUrl,
-                                        filterQuality: FilterQuality.high,
-                                        fit: BoxFit.fitHeight,
-                                        height: miniVideoSize,
-                                      ),
-                                      Positioned(
-                                          top: 0.25 * miniVideoSize,
-                                          left: 0.25 * miniVideoSize,
-                                          child: _mediaControls())
-                                    ],
-                                  )))),
+                              child: Stack(
+                                children: [
+                                  Image(
+                                    image: imgProvider,
+                                    width: width,
+                                    height: miniVideoSize,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.medium,
+                                  ),
+                                  Positioned(
+                                    top: 0.25 * miniVideoSize,
+                                    left: 0.25 * miniVideoSize,
+                                    child: _mediaControls(),
+                                  ),
+                                ],
+                              )),
+                        ),
 
-                      /// Right side icons.
-                      Container(
-                        height: miniVideoSize,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            ChromeCastButton(
-                                size: widget.iconSize, color: Colors.white)
-                          ],
+                        /// Right side icons.
+                        Container(
+                          height: miniVideoSize,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.05 * size.height),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Stack(
+                                children: [
+                                  SvgIcon(
+                                    asset: SvgAsset.chromecast_icon,
+                                    size: iconSize,
+                                  ),
+                                  //// TODO: fix ulr sended to chrome cast
+                                  ChromeCastButton(
+                                      size: iconSize, color: Colors.white),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// FeaturedCardList(isMinimized: true),
+                    Expanded(
+                      child: Container(
+                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                        padding: EdgeInsets.symmetric(
+                            vertical: (size.height -
+                                    0.25 * size.height -
+                                    0.1 * size.height -
+                                    miniVideoSize) /
+                                2),
+                        child: SearchCardList(
+                          search: hasSeries
+                              ? widget.video.series
+                              : widget.video.title,
+                          video: widget.video,
+                          isMinimized: true,
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              )),
-        ),
-
-        /// TODO: fix pop
-        onWillPop: () {
-          Navigator.of(context).pop();
-          print("intento devolverse");
-          return Future<bool>.value(true);
-        });
+                    )
+                  ],
+                ),
+              ),
+              onPressed: () {
+                playSound("sounds/click/click.mp3");
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          onWillPop: () {
+            playSound("sounds/go_back/go_back.mp3");
+            Navigator.of(context).pop();
+            return Future<bool>.value(true);
+          }),
+    );
   }
 
   Widget _mediaControls() {

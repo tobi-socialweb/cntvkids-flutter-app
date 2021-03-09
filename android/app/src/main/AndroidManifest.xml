@@ -15,7 +15,7 @@
     </queries> -->
     <application
         android:label="CNTV Kids"
-        android:icon="@drawable/icon">
+        android:icon="@mipmap/launcher_icon">
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider" />
