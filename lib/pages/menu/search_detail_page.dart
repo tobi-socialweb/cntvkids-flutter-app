@@ -2,10 +2,6 @@ import 'dart:async';
 import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/common/constants.dart';
 
-import 'package:loading/loading.dart';
-import 'package:loading/indicator/ball_spin_fade_loader_indicator.dart'
-    show BallSpinFadeLoaderIndicator;
-
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/widgets/cards/suggested_video_card_widget.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
@@ -33,6 +29,7 @@ class SearchCardList extends StatefulWidget {
 }
 
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
+  bool sent = false;
   @override
   Widget cardWidget(object, String heroId, index) {
     return widget.isMinimized == false
@@ -61,6 +58,8 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
               Video.fromJson(value, originModelType: ModelType.video))
           .toList();
     } else {
+      if (sent) return [];
+      sent = true;
       return (widget.video.originSeries != null)
           ? widget.video.originSeries.videos
           : widget.video.originList.videos;
@@ -82,15 +81,4 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
 
   @override
   double get leftMargin => widget.leftMargin;
-
-  @override
-  Widget loadingWidget(size) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 0.05 * size.height),
-      child: Loading(
-          indicator: BallSpinFadeLoaderIndicator(),
-          size: 0.225 * size.height,
-          color: Colors.white),
-    );
-  }
 }

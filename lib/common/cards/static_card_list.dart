@@ -20,6 +20,8 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   /// All cards to show.
   List<dynamic> get cards;
 
+  List<Widget> videos = [];
+
   /// Returns the specific card widget corresponding to each model (with object).
   Widget cardWidget(dynamic object, String heroId);
 
@@ -52,6 +54,9 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   void initState() {
     super.initState();
 
+    for (int i = 0; i < cards.length; i++) {
+      videos.add(cardWidget(cards[i], cards[i].id.toString()));
+    }
     controller = ScrollController(
       initialScrollOffset: 0.0,
       keepScrollOffset: true,
@@ -81,12 +86,12 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     if (!this.mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var value = controller.position.isScrollingNotifier.value;
-      if (value != null) {
-        if (!startedScrolling) {
-          playSound("sounds/beam/beam.mp3");
-          startedScrolling = true;
-        }
+      // ignore: invalid_use_of_protected_member
+      if (controller.positions.length > 0 &&
+          controller.position.isScrollingNotifier.value &&
+          !startedScrolling) {
+        playSound("sounds/beam/beam.mp3");
+        startedScrolling = true;
       }
     });
   }
@@ -239,24 +244,22 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                                     margin: EdgeInsets.only(
                                         top: 0.05 * topBarHeight),
                                     height: 0.6 * topBarHeight,
-                                    child: Expanded(
-                                      child: ListView(
-                                        primary: false,
-                                        shrinkWrap: true,
-                                        physics: BouncingScrollPhysics(),
-                                        children: [
-                                          Text(
-                                            clean(description),
-                                            style: TextStyle(
-                                              fontSize: 0.125 * topBarHeight,
-                                              fontWeight: FontWeight.normal,
-                                              color: Colors.white,
-                                            ),
+                                    child: ListView(
+                                      primary: false,
+                                      shrinkWrap: true,
+                                      physics: BouncingScrollPhysics(),
+                                      children: [
+                                        Text(
+                                          clean(description),
+                                          style: TextStyle(
+                                            fontSize: 0.125 * topBarHeight,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  )
+                                  ),
                               ],
                             )),
                       ],
@@ -265,15 +268,11 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                 /// The card list.
                 Expanded(
                   child: NotificationListener(
-                    child: ListView.builder(
+                    child: ListView(
                       physics: BouncingScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       controller: controller,
-                      itemCount: cards.length,
-                      itemBuilder: (context, index) {
-                        return cardWidget(
-                            cards[index], cards[index].id.toString());
-                      },
+                      children: videos,
                     ),
                     // ignore: missing_return
                     onNotification: (notification) {

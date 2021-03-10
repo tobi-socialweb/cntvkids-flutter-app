@@ -57,13 +57,14 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
     super.initState();
   }
-  
+
   /// Play sounds efects
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
     return cache.playBytes(bytes);
   }
+
   @override
   Widget build(BuildContext context) {
     final double height = size.height * heightFactor;
@@ -84,6 +85,11 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
                   borderRadius: BorderRadius.circular(0.15 * height),
                   child: Stack(
                     children: [
+                      Container(
+                        width: width,
+                        height: height,
+                        color: Colors.white54,
+                      ),
                       Hero(
                         tag: heroId,
                         child: Image(
