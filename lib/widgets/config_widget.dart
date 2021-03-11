@@ -4,11 +4,16 @@ import 'package:flutter/widgets.dart';
 /// Enumerator for the types of filters that can be used in the app.
 enum VisualFilter { normal, inverted, grayscale, darkmode }
 
+/// Enumerator for either the theme being in light mode or dark mode.
+enum ThemeMode { light, dark }
+
 /// A settings class for storing values and sending to the [Config].
 class ConfigSettings {
   VisualFilter filter;
+  ThemeMode mode;
 
-  ConfigSettings({this.filter});
+  ConfigSettings(
+      {this.filter = VisualFilter.normal, this.mode = ThemeMode.light});
 }
 
 /// An InheritedWidget in charge of storing global app configurations.

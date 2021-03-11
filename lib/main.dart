@@ -25,31 +25,13 @@ void main() async {
   runApp(ChangeNotifierProvider<AppStateNotifier>(
       create: (context) => AppStateNotifier(),
       child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
+        print("DEBUG: $appState");
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'CNTV Kids',
-            theme: ThemeData(
-                brightness: Brightness.light,
-                primaryColorLight: Colors.white,
-                primaryColorDark: Colors.black,
-                primaryColor: Colors.red,
-                accentColor: Color(0xFF390084),
-                canvasColor: Color(0xFFE3E3E3),
-                textTheme: TextTheme(
-                  bodyText1: TextStyle(
-                    fontSize: 12,
-                    height: 1.5,
-                    color: Colors.black,
-                    fontFamily: "FredokaOne",
-                  ),
-                  bodyText2: TextStyle(
-                      fontSize: 12,
-                      height: 1.5,
-                      color: Colors.black,
-                      fontFamily: "FredokaOne"),
-                ),
-                backgroundColor: Colors.white,
-                scaffoldBackgroundColor: Colors.white),
+            theme: AppStateNotifier.lightTheme,
+            darkTheme: AppStateNotifier.darkTheme,
+            themeMode: appState.getTheme(),
             home: MyApp());
       })));
 }
