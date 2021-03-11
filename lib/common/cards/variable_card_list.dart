@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +79,8 @@ abstract class VariableCardListState<T extends StatefulWidget>
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
+    return cache.playBytes(bytes,
+        volume: BackgroundMusicManager.instance.volume);
   }
 
   /// Listener for scroll changes.
@@ -208,7 +210,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
             } else {
               return Center(
                 child: Image.asset(
-                  "app/preload.gif",
+                  "assets/app/preload.gif",
                 ),
               );
             }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 /// Enumerator for the types of filters that can be used in the app.
-enum VisualFilter { normal, inverted, grayscale }
+enum VisualFilter { normal, inverted, grayscale, darkmode }
 
 /// A settings class for storing values and sending to the [Config].
 class ConfigSettings {

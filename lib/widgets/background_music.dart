@@ -13,10 +13,10 @@ class Music {
 
 class BackgroundMusicManager {
   final BackgroundMusic music = BackgroundMusic();
-
   BackgroundMusicManager._privateConstructor();
   static final BackgroundMusicManager instance =
       BackgroundMusicManager._privateConstructor();
+  double volume = 0.5;
 }
 
 class BackgroundMusic extends StatefulWidget {
@@ -28,8 +28,8 @@ class BackgroundMusic extends StatefulWidget {
 
   /// Stop/play background music in agreement with de application state
   Future<void> loopMusic() async {
-    Music.player = await Music.cache
-        .loop('sounds/background/background_1.mp3', volume: 0.7);
+    Music.player = await Music.cache.loop('sounds/background/background_1.mp3',
+        volume: BackgroundMusicManager.instance.volume);
     print("DEBUG: loop music from home_page");
   }
 
@@ -46,6 +46,11 @@ class BackgroundMusic extends StatefulWidget {
   Future<void> pauseMusic() async {
     Music.player?.pause();
     print("DEBUG: pause music from home_page");
+  }
+
+  Future<void> changeVolume(double value) async {
+    Music.player?.setVolume(value);
+    print("DEBUG: set volumen to $value");
   }
 }
 

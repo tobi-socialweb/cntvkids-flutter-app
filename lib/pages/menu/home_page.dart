@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Menu pages
 import 'package:cntvkids_app/pages/menu/lists_page.dart';
 import 'package:cntvkids_app/pages/menu/series_page.dart';
@@ -52,6 +54,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// All options from the navigation bar
   List<Widget> _widgetOptions;
 
+  /// volumen controls variables
+  double _val;
+  Timer timer;
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +65,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     speech = stt.SpeechToText();
     initSpeechState();
-
+    _val = BackgroundMusicManager.instance.volume;
     colorFilter = NORMAL_FILTER;
     currentVisualFilter = VisualFilter.normal;
 
@@ -188,6 +194,43 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       },
                     ),
                   ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Card(
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.audiotrack,
+                          color: Colors.green,
+                          size: navHeight * 0.3,
+                        ),
+                        title: Text(
+                          'VOLUMEN MÚSICA',
+                          textScaleFactor: 2,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    Slider(
+                        value: _val,
+                        min: 0,
+                        max: 1,
+                        divisions: 100,
+                        onChanged: (val) {
+                          _val = val;
+                          setState(() {});
+                          if (timer != null) {
+                            timer.cancel();
+                          }
+                          //use timer for the smoother sliding
+                          timer = Timer(Duration(milliseconds: 200), () {
+                            BackgroundMusicManager.instance.music
+                                .changeVolume(val);
+                            BackgroundMusicManager.instance.volume = val;
+                          });
+                        })
+                  ],
                 )
               ],
             ),
@@ -299,7 +342,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
     var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes, volume: 10.0);
+    return cache.playBytes(bytes,
+        volume: BackgroundMusicManager.instance.volume);
   }
 
   /// Change the selected index when button is tapped.
