@@ -208,7 +208,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
             } else {
               return Center(
                 child: Image.asset(
-                  "app/preload.gif",
+                  "assets/app/preload.gif",
                 ),
               );
             }
