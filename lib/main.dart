@@ -1,6 +1,7 @@
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
-import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -23,17 +24,9 @@ void main() async {
 
   /// Theming and stuff probably related to OneSignal.
   runApp(ChangeNotifierProvider<AppStateNotifier>(
-      create: (context) => AppStateNotifier(),
-      child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
-        print("DEBUG: $appState");
-        return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'CNTV Kids',
-            theme: AppStateNotifier.lightTheme,
-            darkTheme: AppStateNotifier.darkTheme,
-            themeMode: appState.getTheme(),
-            home: MyApp());
-      })));
+    create: (context) => AppStateNotifier(),
+    child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
+  ));
 }
 
 /// Main app widget class.
@@ -66,7 +59,20 @@ class _MyAppState extends State<MyApp> {
           BetterPlayerEventType.finished) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return HomePage();
+          return Consumer<AppStateNotifier>(
+              builder: (context, appState, child) {
+            print("DEBUG: $appState");
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'CNTV_KIDS',
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              home: HomePage(
+                appState: appState,
+              ),
+            );
+          });
         }));
       }
     });
@@ -80,11 +86,6 @@ class _MyAppState extends State<MyApp> {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData && !end) {
           return SplashScreen(videoSplashScreen: videoSplashScreen);
-        } else if (snapshot.hasError) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return HomePage();
-          }));
         } else {
           return Container(color: Colors.black);
         }

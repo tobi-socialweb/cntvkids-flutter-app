@@ -65,3 +65,51 @@ final ColorFilter GRAYSCALE_FILTER =
 // ignore: non_constant_identifier_names
 final ColorFilter INVERTED_FILTER =
     const ColorFilter.mode(Colors.white, BlendMode.difference);
+
+final darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primaryColorLight: Colors.black,
+  primaryColorDark: Colors.white,
+  primaryColor: Color(0xFF390084),
+  accentColor: Color(0xFFF95D58),
+  canvasColor: Color(0xFF3F3F3F),
+  textTheme: TextTheme(
+    bodyText1: TextStyle(
+      fontSize: 12,
+      height: 1.5,
+      color: Colors.white,
+      fontFamily: "FredokaOne",
+    ),
+    bodyText2: TextStyle(
+        fontSize: 12,
+        height: 1.5,
+        color: Colors.white,
+        fontFamily: "FredokaOne"),
+  ),
+  backgroundColor: Colors.black,
+  scaffoldBackgroundColor: Colors.black,
+);
+
+final lightTheme = ThemeData(
+  brightness: Brightness.light,
+  primaryColorLight: Colors.white,
+  primaryColorDark: Colors.black,
+  primaryColor: Colors.red,
+  accentColor: Color(0xFF390084),
+  canvasColor: Color(0xFFE3E3E3),
+  textTheme: TextTheme(
+    bodyText1: TextStyle(
+      fontSize: 12,
+      height: 1.5,
+      color: Colors.black,
+      fontFamily: "FredokaOne",
+    ),
+    bodyText2: TextStyle(
+        fontSize: 12,
+        height: 1.5,
+        color: Colors.black,
+        fontFamily: "FredokaOne"),
+  ),
+  backgroundColor: Colors.white,
+  scaffoldBackgroundColor: Colors.white,
+);

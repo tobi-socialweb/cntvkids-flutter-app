@@ -20,6 +20,7 @@ import 'package:cntvkids_app/common/helpers.dart';
 
 /// Signals
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Audio plugins
@@ -32,8 +33,10 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
   final AppStateNotifier appState;
-
-  const HomePage({Key key, this.appState}) : super(key: key);
+  const HomePage({
+    Key key,
+    this.appState,
+  }) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -59,10 +62,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// volumen controls variables
   double _val;
   Timer timer;
-
   @override
   void initState() {
     super.initState();
+    _checkDarkTheme();
     _startOneSignal();
 
     speech = stt.SpeechToText();
@@ -85,6 +88,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         leftMargin: innerRadius + outerRadius,
       ),
     ];
+  }
+
+  _checkDarkTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'darktheme';
+    final platformTheme = MediaQuery.of(context).platformBrightness;
+    final platformThemeCode = platformTheme == Brightness.dark ? 1 : 0;
+    final value = prefs.getInt(key) ?? platformThemeCode;
+    await changeToDarkTheme(context, value == 1);
+    await Future.delayed(Duration(seconds: 1));
   }
 
   Future<void> initSpeechState() async {
@@ -159,21 +172,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "CHANGE THEME (${Theme.of(context).brightness})",
+                      "CHANGE THEME",
                       textScaleFactor: 2,
                       style: TextStyle(color: Colors.white),
                     ),
                     Switch(
-                      activeColor: Colors.white,
-                      value: Theme.of(context).brightness == Brightness.light,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value)
-                            widget.appState.setLightMode();
-                          else
-                            widget.appState.setDarkMode();
-                        });
+                      onChanged: (val) async {
+                        await changeToDarkTheme(context, val);
                       },
+                      activeColor: Colors.white,
+                      value: Provider.of<AppStateNotifier>(context).isDarkMode,
                     ),
                   ],
                 ),
