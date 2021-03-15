@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -117,13 +116,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
     return completer.future;
   }
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
     return InheritedVideoDisplay(
@@ -144,7 +136,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
                   /// When using the 'back' button, toggle minimize.
                   onWillPop: () {
-                    playSound("sounds/go_back/go_back.mp3");
+                    MusicEffect.play("sounds/go_back/go_back.mp3");
                     return Future<bool>.value(true);
                   });
             } else if (snapshot.hasError) {
@@ -161,7 +153,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 
   void toggleDisplay() {
-    playSound("sounds/go_back/go_back.mp3");
+    MusicEffect.play("sounds/go_back/go_back.mp3");
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MinimizedVideoDisplay(
         video: widget.video,
@@ -203,13 +195,6 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     );
   }
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -247,7 +232,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                               asset: SvgAsset.back_icon,
                               size: iconSize,
                               onPressed: () {
-                                playSound("sounds/go_back/go_back.mp3");
+                                MusicEffect.play("sounds/go_back/go_back.mp3");
                                 widget.betterPlayerController.dispose();
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
@@ -332,21 +317,21 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
               ),
             ),
             onPressed: () {
-              playSound("sounds/click/click.mp3");
+              MusicEffect.play("sounds/click/click.mp3");
               Navigator.of(context).pop();
             },
           ),
         ),
         onWillPop: () {
           widget.betterPlayerController.dispose();
-          playSound("sounds/go_back/go_back.mp3");
+          MusicEffect.play("sounds/go_back/go_back.mp3");
           Navigator.of(context).pop();
           return Future<bool>.value(true);
         });
   }
 
   void toggleDisplay() {
-    playSound("sounds/go_back/go_back.mp3");
+    MusicEffect.play("sounds/go_back/go_back.mp3");
     Navigator.of(context).pop();
   }
 }

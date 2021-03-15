@@ -22,8 +22,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Audio plugins
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 ///
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -63,7 +61,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     speech = stt.SpeechToText();
     initSpeechState();
-    _val = BackgroundMusicManager.instance.volume;
+    _val = BackgroundMusicManager.getVolume();
     _widgetOptions = [
       FeaturedCardList(
         leftMargin: innerRadius + outerRadius,
@@ -90,217 +88,208 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return BackgroundMusic(
-      child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          drawerScrimColor: Colors.transparent,
-          drawer: MenuDrawer(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "CHANGE THEME",
-                    textScaleFactor: 2,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Switch(
-                    onChanged: (value) async {
-                      await AppStateNotifier.save(
-                          context, value ? VisualMode.dark : VisualMode.normal);
-                    },
-                    activeColor: Colors.white,
-                    value: Provider.of<AppStateNotifier>(context).isDarkMode,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "GRAYSCALE",
-                    textScaleFactor: 2,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Switch(
-                    onChanged: (value) async {
-                      await AppStateNotifier.save(context,
-                          value ? VisualMode.grayscale : VisualMode.normal);
-                    },
-                    activeColor: Colors.white,
-                    value: Provider.of<AppStateNotifier>(context).filter ==
-                        GRAYSCALE_FILTER,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "INVERTED",
-                    textScaleFactor: 2,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Switch(
-                    onChanged: (value) async {
-                      await AppStateNotifier.save(context,
-                          value ? VisualMode.inverted : VisualMode.normal);
-                    },
-                    activeColor: Colors.white,
-                    value: Provider.of<AppStateNotifier>(context).filter ==
-                        INVERTED_FILTER,
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Card(
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.audiotrack,
-                        color: Colors.green,
-                        size: navHeight * 0.3,
-                      ),
-                      title: Text(
-                        'VOLUMEN MÚSICA',
-                        textScaleFactor: 2,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                  Slider(
-                      value: _val,
-                      min: 0,
-                      max: 1,
-                      divisions: 100,
-                      onChanged: (val) {
-                        _val = val;
-                        setState(() {});
-                        if (timer != null) {
-                          timer.cancel();
-                        }
-                        //use timer for the smoother sliding
-                        timer = Timer(Duration(milliseconds: 200), () {
-                          BackgroundMusicManager.instance.music
-                              .changeVolume(val);
-                          BackgroundMusicManager.instance.volume = val;
-                        });
-                      })
-                ],
-              )
-            ],
-          ),
-          body: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: length),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    /// The colored curved blob in the background (white, yellow, etc.).
-                    BottomColoredBlob(
-                      size: size,
-                      currentSelectedIndex: _selectedIndex,
-                      colors: [
-                        Colors.white,
-                        Colors.cyan,
-                        Colors.yellow,
-                        Theme.of(context).accentColor,
-                        Colors.white
-                      ],
-                      getCurrentSelectedIndex: getCurrentSelectedIndex,
-                    ),
-
-                    /// Top Navigation Bar.
-                    Container(
-                      width: size.width,
-                      height: navHeight,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: TopNavigationBar(
-                        getSelectedIndex: getCurrentSelectedIndex,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        defaultIconSizes: 0.425 * navHeight,
-                        defaultOnPressed: _onNavButtonTapped,
-                        defaultTextScaleFactor: 0.00275 * size.height,
-                        children: [
-                          NavigationBarButton(
-                            icon: SvgAsset.logo_icon,
-                            resetCount: true,
-                            text: " ",
-                            size: 0.435 * navHeight,
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.videos_icon,
-                            activeIcon: SvgAsset.videos_active_icon,
-                            text: "Destacados",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.series_icon,
-                            activeIcon: SvgAsset.series_active_icon,
-                            text: "Series",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.lists_icon,
-                            activeIcon: SvgAsset.lists_active_icon,
-                            text: "Listas",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.games_icon,
-                            activeIcon: SvgAsset.games_active_icon,
-                            text: "Juegos",
-                          ),
-                          NavigationBarButton(
-                            icon: SvgAsset.search_icon,
-                            text: "Buscar",
-                            onPressed: (index) {
-                              playSound("sounds/click/click.mp3");
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SearchPage(
-                                  speech: speech,
-                                );
-                              }));
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// Video & Game Cards' List.
-                    Expanded(
-                      child: Center(
-                        child: _widgetOptions.elementAt(_selectedIndex),
-                      ),
-                    ),
-                  ],
+    return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        drawerScrimColor: Colors.transparent,
+        drawer: MenuDrawer(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "CHANGE THEME",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              PullableDrawerBlob(
-                size: size,
-                color: Theme.of(context).accentColor,
-                length: length,
-                innerRadius: innerRadius,
-                outerRadius: outerRadius,
-                iconSizePercentage: 0.65,
-              ),
-            ],
-          )),
-    );
-  }
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter: value ? VisualMode.dark : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).isDarkMode,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "GRAYSCALE",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter:
+                            value ? VisualMode.grayscale : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).filter ==
+                      GRAYSCALE_FILTER,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "INVERTED",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter:
+                            value ? VisualMode.inverted : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).filter ==
+                      INVERTED_FILTER,
+                ),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Card(
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.audiotrack,
+                      color: Colors.green,
+                      size: navHeight * 0.3,
+                    ),
+                    title: Text(
+                      'VOLUMEN MÚSICA',
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
+                Slider(
+                    value: _val,
+                    min: 0,
+                    max: 1,
+                    divisions: 100,
+                    onChanged: (val) {
+                      _val = val;
+                      setState(() {});
+                      if (timer != null) {
+                        timer.cancel();
+                      }
+                      //use timer for the smoother sliding
+                      timer = Timer(Duration(milliseconds: 200), () {
+                        BackgroundMusicManager.setVolume(val);
+                        AppStateNotifier.save(context, musicVolume: val);
+                      });
+                    })
+              ],
+            )
+          ],
+        ),
+        body: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: length),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  /// The colored curved blob in the background (white, yellow, etc.).
+                  BottomColoredBlob(
+                    size: size,
+                    currentSelectedIndex: _selectedIndex,
+                    colors: [
+                      Colors.white,
+                      Colors.cyan,
+                      Colors.yellow,
+                      Theme.of(context).accentColor,
+                      Colors.white
+                    ],
+                    getCurrentSelectedIndex: getCurrentSelectedIndex,
+                  ),
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes,
-        volume: BackgroundMusicManager.instance.volume);
+                  /// Top Navigation Bar.
+                  Container(
+                    width: size.width,
+                    height: navHeight,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TopNavigationBar(
+                      getSelectedIndex: getCurrentSelectedIndex,
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      defaultIconSizes: 0.425 * navHeight,
+                      defaultOnPressed: _onNavButtonTapped,
+                      defaultTextScaleFactor: 0.00275 * size.height,
+                      children: [
+                        NavigationBarButton(
+                          icon: SvgAsset.logo_icon,
+                          resetCount: true,
+                          text: " ",
+                          size: 0.435 * navHeight,
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.videos_icon,
+                          activeIcon: SvgAsset.videos_active_icon,
+                          text: "Destacados",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.series_icon,
+                          activeIcon: SvgAsset.series_active_icon,
+                          text: "Series",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.lists_icon,
+                          activeIcon: SvgAsset.lists_active_icon,
+                          text: "Listas",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.games_icon,
+                          activeIcon: SvgAsset.games_active_icon,
+                          text: "Juegos",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.search_icon,
+                          text: "Buscar",
+                          onPressed: (index) {
+                            MusicEffect.play("sounds/click/click.mp3");
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return SearchPage(
+                                speech: speech,
+                              );
+                            }));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  /// Video & Game Cards' List.
+                  Expanded(
+                    child: Center(
+                      child: _widgetOptions.elementAt(_selectedIndex),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PullableDrawerBlob(
+              size: size,
+              color: Theme.of(context).accentColor,
+              length: length,
+              innerRadius: innerRadius,
+              outerRadius: outerRadius,
+              iconSizePercentage: 0.65,
+            ),
+          ],
+        ));
   }
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play("sounds/click/click.mp3");
     setState(() {
       _selectedIndex = index;
     });

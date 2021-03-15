@@ -5,6 +5,7 @@ import 'package:cntvkids_app/models/lists_model.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/lists_detail_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
 class ListsCard extends StatefulWidget {
   final Lists list;
@@ -27,7 +28,7 @@ class _ListsCardState extends ClickableCardState<ListsCard> {
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play("sounds/click/click.mp3");
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ListsCardDetail(
           list: widget.list, heroId: widget.heroId, imgProvider: imgProvider);

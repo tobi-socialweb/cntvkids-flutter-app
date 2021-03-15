@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
-
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:provider/provider.dart';
 
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     with WidgetsBindingObserver {
@@ -65,14 +63,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     startedScrolling = false;
   }
 
-  /// Play sounds.
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes,
-        volume: BackgroundMusicManager.instance.volume);
-  }
-
   /// Listener for scroll changes.
   ///
   /// Loads the next page (per page) for cards videos if the scroll is
@@ -85,7 +75,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        playSound("sounds/beam/beam.mp3");
+        MusicEffect.play("sounds/beam/beam.mp3");
         startedScrolling = true;
       }
     });
@@ -111,6 +101,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
+      volume: Provider.of<AppStateNotifier>(context).musicVolume,
       child: WillPopScope(
         child: Scaffold(
             backgroundColor: Theme.of(context).primaryColor,
@@ -139,7 +130,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                           asset: SvgAsset.back_icon,
                           size: 0.5 * topBarHeight,
                           onPressed: () {
-                            playSound("sounds/go_back/go_back.mp3");
+                            MusicEffect.play("sounds/go_back/go_back.mp3");
                             Navigator.of(context).pop();
                           },
                         ),
@@ -237,7 +228,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
               ],
             )),
         onWillPop: () {
-          playSound("sounds/go_back/go_back.mp3");
+          MusicEffect.play("sounds/go_back/go_back.mp3");
           return Future<bool>.value(true);
         },
       ),

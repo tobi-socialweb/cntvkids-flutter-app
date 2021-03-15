@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +45,6 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   String get cardText;
 
   bool get hasTextDecoration => false;
-
   @override
   void initState() {
     /// Set the URL and add a listener to complete the future.
@@ -56,13 +53,6 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
         ImageStreamListener((info, _) => completer.complete(info.image)));
 
     super.initState();
-  }
-
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
   }
 
   @override

@@ -57,6 +57,7 @@ const String ONE_SIGNAL_APP_ID = "45e71839-7d7b-445a-b325-b9009d92171e";
 const bool ENABLE_DYNAMIC_LINK = false;
 
 const String VISUAL_MODE_KEY = "visualmode";
+const String MUSIC_VOLUME_KEY = "musicvolume";
 
 // ignore: non_constant_identifier_names
 final ColorFilter NORMAL_FILTER =

@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play("sounds/click/click.mp3");
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return SeriesCardDetail(
           series: widget.series,

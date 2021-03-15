@@ -2,6 +2,7 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -61,17 +62,21 @@ class _MyAppState extends State<MyApp> {
             MaterialPageRoute(builder: (context) {
           return Consumer<AppStateNotifier>(
               builder: (context, appState, child) {
-            print("DEBUG: $appState");
+            print(
+                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}");
             return ColorFiltered(
                 colorFilter: appState.filter,
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: 'CNTV_KIDS',
-                  theme: lightTheme,
-                  darkTheme: darkTheme,
-                  themeMode:
-                      appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                  home: HomePage(),
+                child: BackgroundMusic(
+                  volume: appState.musicVolume,
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: 'CNTV_KIDS',
+                    theme: lightTheme,
+                    darkTheme: darkTheme,
+                    themeMode:
+                        appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    home: HomePage(),
+                  ),
                 ));
           });
         }));

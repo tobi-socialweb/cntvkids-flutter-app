@@ -1,9 +1,11 @@
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 /// General plugins
 import 'package:flutter/material.dart';
 
 /// Audio plugins
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+
 import 'package:focus_detector/focus_detector.dart';
 
 class Music {
@@ -11,25 +13,49 @@ class Music {
   static AudioCache cache = new AudioCache();
 }
 
+class MusicEffect {
+  static AudioPlayer player = new AudioPlayer();
+  static AudioCache cache = new AudioCache();
+
+  /// Play effect sound.
+  static Future<void> play(String asset) async {
+    player =
+        await cache.play(asset, volume: BackgroundMusicManager.getVolume());
+  }
+}
+
+/// Singleton.
 class BackgroundMusicManager {
   final BackgroundMusic music = BackgroundMusic();
+
   BackgroundMusicManager._privateConstructor();
   static final BackgroundMusicManager instance =
       BackgroundMusicManager._privateConstructor();
+
   double volume = 0.5;
+
+  static void setVolume(double volume) {
+    BackgroundMusicManager.instance.volume = volume;
+    BackgroundMusicManager.instance.music.changeVolume(volume);
+  }
+
+  static double getVolume() {
+    return BackgroundMusicManager.instance.volume;
+  }
 }
 
 class BackgroundMusic extends StatefulWidget {
   final Widget child;
+  final double volume;
 
-  const BackgroundMusic({Key key, this.child}) : super(key: key);
+  const BackgroundMusic({Key key, this.child, this.volume}) : super(key: key);
 
   BackgroundMusicState createState() => BackgroundMusicState();
 
   /// Stop/play background music in agreement with de application state
   Future<void> loopMusic() async {
     Music.player = await Music.cache.loop('sounds/background/background_1.mp3',
-        volume: BackgroundMusicManager.instance.volume);
+        volume: BackgroundMusicManager.getVolume());
     print("DEBUG: loop music from home_page");
   }
 
@@ -58,9 +84,11 @@ class BackgroundMusicState extends State<BackgroundMusic>
     with WidgetsBindingObserver {
   @override
   void initState() {
-    super.initState();
-
     WidgetsBinding.instance.addObserver(this);
+
+    BackgroundMusicManager.setVolume(widget.volume);
+
+    super.initState();
   }
 
   // Change background sound in agreement of app state

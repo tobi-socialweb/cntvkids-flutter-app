@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,12 +21,6 @@ class _WebViewPageState extends State<WebViewPage> {
   final Completer<WebViewController> _controllerCompleter =
       Completer<WebViewController>();
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
   // web view controls
 
   _backButton() {
@@ -41,7 +34,7 @@ class _WebViewPageState extends State<WebViewPage> {
           return FloatingActionButton(
             backgroundColor: Colors.transparent,
             onPressed: () async {
-              playSound("sounds/go_back/go_back.mp3");
+              MusicEffect.play("sounds/go_back/go_back.mp3");
               Navigator.of(context).pop();
             },
             child: SvgIcon(

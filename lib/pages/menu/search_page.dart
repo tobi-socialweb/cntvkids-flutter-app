@@ -1,5 +1,3 @@
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 
@@ -83,13 +81,6 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
@@ -136,7 +127,8 @@ class _SearchPageState extends State<SearchPage> {
                                 size: iconSize,
                                 padding: padding,
                                 onPressed: () {
-                                  playSound("sounds/go_back/go_back.mp3");
+                                  MusicEffect.play(
+                                      "sounds/go_back/go_back.mp3");
                                   Navigator.of(context).pop();
                                 }),
 
@@ -194,7 +186,7 @@ class _SearchPageState extends State<SearchPage> {
                               onPressed: () {
                                 SystemChannels.textInput
                                     .invokeMethod('TextInput.hide');
-                                playSound("sounds/click/click.mp3");
+                                MusicEffect.play("sounds/click/click.mp3");
                                 submit(_textToSpeech);
                               },
                             ),

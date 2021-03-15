@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
-
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
@@ -75,14 +72,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
     controller.addListener(_scrollControllerListener);
   }
 
-  /// Play sounds.
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes,
-        volume: BackgroundMusicManager.instance.volume);
-  }
-
   /// Listener for scroll changes.
   _scrollControllerListener() {
     if (!this.mounted) return;
@@ -101,7 +90,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        playSound("sounds/beam/beam.mp3");
+        MusicEffect.play("sounds/beam/beam.mp3");
         startedScrolling = true;
       }
     });

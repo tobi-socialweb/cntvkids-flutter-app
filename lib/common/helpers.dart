@@ -30,6 +30,12 @@ class AppStateNotifier extends ChangeNotifier {
   ColorFilter filter = NORMAL_FILTER;
   bool isDarkMode = false;
   bool notificationOn = true;
+  double musicVolume = 0.5;
+
+  void setMusicVolume(double volume) {
+    this.musicVolume = volume;
+    notifyListeners();
+  }
 
   void setVisualMode(VisualMode filter) {
     switch (filter) {
@@ -65,11 +71,21 @@ class AppStateNotifier extends ChangeNotifier {
   }
 
   /// Save visual mode to user preferences.
-  static Future<Null> save(BuildContext context, VisualMode filter) async {
+  static Future<Null> save(BuildContext context,
+      {VisualMode filter, double musicVolume}) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(VISUAL_MODE_KEY, filter.toString());
 
-    Provider.of<AppStateNotifier>(context, listen: false).setVisualMode(filter);
+    if (filter != null) {
+      await prefs.setString(VISUAL_MODE_KEY, filter.toString());
+
+      Provider.of<AppStateNotifier>(context, listen: false)
+          .setVisualMode(filter);
+    } else if (musicVolume != null) {
+      await prefs.setDouble(MUSIC_VOLUME_KEY, musicVolume);
+
+      Provider.of<AppStateNotifier>(context, listen: false)
+          .setMusicVolume(musicVolume);
+    }
   }
 
   /// Load visual mode from user preferences.
@@ -79,14 +95,16 @@ class AppStateNotifier extends ChangeNotifier {
     /// Get current platform brightness to use if no preferences were saved.
     final brightness =
         MediaQuery.of(context).platformBrightness == Brightness.light
-            ? "normal"
-            : "dark";
+            ? VisualMode.normal.toString()
+            : VisualMode.dark.toString();
 
     /// Get visual filter enum from preferences or current platform's brightness
-    final value =
+    final filterValue =
         visualModeFromString(prefs.getString(VISUAL_MODE_KEY) ?? brightness);
 
-    await save(context, value);
+    final volumeValue = prefs.getDouble(MUSIC_VOLUME_KEY) ?? 0.5;
+
+    await save(context, filter: filterValue, musicVolume: volumeValue);
   }
 }
 
