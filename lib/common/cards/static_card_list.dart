@@ -1,4 +1,3 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:audioplayers/audio_cache.dart';
@@ -42,11 +41,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
   /// Determined on initState of card list has description.
   bool hasDescription;
-
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
-  bool hasSetFilter = false;
 
   void setPlayerEffects();
 
@@ -111,63 +105,12 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
         '');
   }
 
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    if (!hasSetFilter) {
-      hasSetFilter = true;
-
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-
     return BackgroundMusic(
-        child: ColorFiltered(
-      colorFilter: colorFilter,
       child: WillPopScope(
         child: Scaffold(
             backgroundColor: Theme.of(context).primaryColor,
@@ -298,6 +241,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
           return Future<bool>.value(true);
         },
       ),
-    ));
+    );
   }
 }

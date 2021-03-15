@@ -62,16 +62,17 @@ class _MyAppState extends State<MyApp> {
           return Consumer<AppStateNotifier>(
               builder: (context, appState, child) {
             print("DEBUG: $appState");
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'CNTV_KIDS',
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              themeMode: appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-              home: HomePage(
-                appState: appState,
-              ),
-            );
+            return ColorFiltered(
+                colorFilter: appState.colorFilter,
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'CNTV_KIDS',
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  themeMode:
+                      appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                  home: HomePage(),
+                ));
           });
         }));
       }

@@ -2,17 +2,12 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
-import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:flutter/services.dart';
-
-/// Signals
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 
 ///
@@ -38,37 +33,15 @@ class _SearchPageState extends State<SearchPage> {
 
   bool hasSpeech;
 
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
   @override
   void initState() {
     super.initState();
-    _startOneSignal();
 
     lista = SearchCardList();
     controller = TextEditingController();
     hide = true;
 
     hasSpeech = widget.speech.isAvailable;
-  }
-
-  _startOneSignal() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'notification';
-    final value = prefs.getInt(key) ?? 1;
-
-    onesignal.init(
-      ONE_SIGNAL_APP_ID,
-      iOSSettings: {
-        OSiOSSettings.autoPrompt: true,
-        OSiOSSettings.inAppLaunchUrl: true
-      },
-    );
-    onesignal.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
-    onesignal.setInFocusDisplayType(OSNotificationDisplayType.notification);
-
-    await enableNotification(context, value == 1);
   }
 
   void submit(String string) {
@@ -110,36 +83,6 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
   /// Play sounds efects
   Future<AudioPlayer> playSound(String soundName) async {
     AudioCache cache = new AudioCache();
@@ -156,144 +99,126 @@ class _SearchPageState extends State<SearchPage> {
     final EdgeInsets padding = EdgeInsets.fromLTRB(
         0.00625 * navHeight, 0.0, 0.00625 * navHeight, 0.25 * navHeight);
 
-    if (currentVisualFilter == null) {
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-
-    return ColorFiltered(
-      colorFilter: colorFilter,
-      child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: Theme.of(context).primaryColor,
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              /// The colored curved blob in the background (white, yellow, etc.).
-              CustomPaint(
-                painter: BottomColoredBlobPainter(
-                  size: size,
-                  color: Colors.white,
+    return BackgroundMusic(
+        child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Theme.of(context).primaryColor,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                /// The colored curved blob in the background (white, yellow, etc.).
+                CustomPaint(
+                  painter: BottomColoredBlobPainter(
+                    size: size,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
 
-              /// Top Bar.
-              Stack(
-                children: [
-                  Container(
-                      constraints: BoxConstraints(
-                          maxHeight: navHeight,
-                          maxWidth: size.width,
-                          minWidth: size.width,
-                          minHeight: navHeight),
-                      height: navHeight,
-                      width: size.width,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          /// Back button.
-                          SvgButton(
-                              asset: SvgAsset.back_icon,
-                              size: iconSize,
-                              padding: padding,
-                              onPressed: () {
-                                playSound("sounds/go_back/go_back.mp3");
-                                Navigator.of(context).pop();
-                              }),
+                /// Top Bar.
+                Stack(
+                  children: [
+                    Container(
+                        constraints: BoxConstraints(
+                            maxHeight: navHeight,
+                            maxWidth: size.width,
+                            minWidth: size.width,
+                            minHeight: navHeight),
+                        height: navHeight,
+                        width: size.width,
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            /// Back button.
+                            SvgButton(
+                                asset: SvgAsset.back_icon,
+                                size: iconSize,
+                                padding: padding,
+                                onPressed: () {
+                                  playSound("sounds/go_back/go_back.mp3");
+                                  Navigator.of(context).pop();
+                                }),
 
-                          /// search container
-                          Expanded(
-                            child: Container(
-                                height: 0.35 * navHeight,
-                                margin:
-                                    EdgeInsets.only(bottom: 0.25 * navHeight),
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius:
-                                        BorderRadius.circular(navHeight * 0.1)),
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: size.width * 0.025),
-                                  child: TextField(
-                                      controller: controller,
-                                      textAlignVertical:
-                                          TextAlignVertical.center,
-                                      style: TextStyle(
-                                          fontSize: 12 * 0.003 * size.height,
-                                          height: 1.5,
-                                          color: Colors.white,
-                                          fontFamily: "FredokaOne"),
-                                      onTap: () {
-                                        setState(() {
-                                          hide = true;
-                                        });
-                                      },
-                                      onChanged: (string) {
-                                        setState(() {
-                                          _textToSpeech = string;
-                                        });
-                                      },
-                                      onSubmitted: (string) => submit(string),
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: _textToSpeech,
-                                        hintStyle: TextStyle(
+                            /// search container
+                            Expanded(
+                              child: Container(
+                                  height: 0.35 * navHeight,
+                                  margin:
+                                      EdgeInsets.only(bottom: 0.25 * navHeight),
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(
+                                          navHeight * 0.1)),
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: size.width * 0.025),
+                                    child: TextField(
+                                        controller: controller,
+                                        textAlignVertical:
+                                            TextAlignVertical.center,
+                                        style: TextStyle(
                                             fontSize: 12 * 0.003 * size.height,
                                             height: 1.5,
                                             color: Colors.white,
                                             fontFamily: "FredokaOne"),
-                                      )),
-                                )),
-                          ),
+                                        onTap: () {
+                                          setState(() {
+                                            hide = true;
+                                          });
+                                        },
+                                        onChanged: (string) {
+                                          setState(() {
+                                            _textToSpeech = string;
+                                          });
+                                        },
+                                        onSubmitted: (string) => submit(string),
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: _textToSpeech,
+                                          hintStyle: TextStyle(
+                                              fontSize:
+                                                  12 * 0.003 * size.height,
+                                              height: 1.5,
+                                              color: Colors.white,
+                                              fontFamily: "FredokaOne"),
+                                        )),
+                                  )),
+                            ),
 
-                          /// Search button
-                          SvgButton(
-                            asset: SvgAsset.search_icon,
-                            size: iconSize,
-                            padding: padding,
-                            onPressed: () {
-                              SystemChannels.textInput
-                                  .invokeMethod('TextInput.hide');
-                              playSound("sounds/click/click.mp3");
-                              submit(_textToSpeech);
-                            },
-                          ),
+                            /// Search button
+                            SvgButton(
+                              asset: SvgAsset.search_icon,
+                              size: iconSize,
+                              padding: padding,
+                              onPressed: () {
+                                SystemChannels.textInput
+                                    .invokeMethod('TextInput.hide');
+                                playSound("sounds/click/click.mp3");
+                                submit(_textToSpeech);
+                              },
+                            ),
 
-                          /// TODO: Fix button not glowing when used
-                          SvgButton(
-                            asset: SvgAsset.record_icon,
-                            size: iconSize,
-                            onPressed: startListening,
-                            padding: padding,
-                          ),
-                        ],
-                      )),
-                  if (!hide)
-                    Container(
-                      height: size.height - navHeight,
-                      width: size.width,
-                      margin: EdgeInsets.only(top: navHeight),
-                      child: lista,
-                    ),
-                ],
-              )
-            ],
-          )),
-    );
+                            /// TODO: Fix button not glowing when used
+                            SvgButton(
+                              asset: SvgAsset.record_icon,
+                              size: iconSize,
+                              onPressed: startListening,
+                              padding: padding,
+                            ),
+                          ],
+                        )),
+                    if (!hide)
+                      Container(
+                        height: size.height - navHeight,
+                        width: size.width,
+                        margin: EdgeInsets.only(top: navHeight),
+                        child: lista,
+                      ),
+                  ],
+                )
+              ],
+            )));
   }
 }
 

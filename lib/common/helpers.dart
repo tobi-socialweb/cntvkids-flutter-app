@@ -1,11 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
-import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/material.dart';
-
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:provider/provider.dart';
 
@@ -19,12 +15,30 @@ DioCacheManager customDioCacheManager =
     DioCacheManager(CacheConfig(baseUrl: WORDPRESS_URL));
 Dio customDio = Dio()..interceptors.add(customDioCacheManager.interceptor);
 
+enum VisualFilters { normal, inverted, grayscale, darkmode }
+
 class AppStateNotifier extends ChangeNotifier {
   bool isDarkMode = false;
   bool notificationOn = true;
+  ColorFilter colorFilter = NORMAL_FILTER;
 
   void updateTheme(bool isDarkMode) {
     this.isDarkMode = isDarkMode;
+    notifyListeners();
+  }
+
+  void updateFilter(VisualFilters filter, bool value) {
+    switch (filter) {
+      case VisualFilters.grayscale:
+        this.colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+        break;
+      case VisualFilters.inverted:
+        this.colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+        break;
+      default:
+        this.colorFilter = NORMAL_FILTER;
+        break;
+    }
     notifyListeners();
   }
 
@@ -42,18 +56,14 @@ Future<Null> changeToDarkTheme(BuildContext context, bool val) async {
   Provider.of<AppStateNotifier>(context, listen: false).updateTheme(val);
 }
 
-OneSignal onesignal = OneSignal();
-
-DatabaseReference databaseReference = new FirebaseDatabase().reference();
-
-Future<Null> enableNotification(context, bool val) async {
+Future<Null> changeFilter(
+    BuildContext context, bool val, VisualFilters filter) async {
   final prefs = await SharedPreferences.getInstance();
-  final key = 'notification';
-  final value = val ? 1 : 0;
-  await prefs.setInt(key, value);
-  onesignal.setSubscription(val);
+  final key = 'filter';
+  final value = filter.toString();
+  await prefs.setString(key, value);
   Provider.of<AppStateNotifier>(context, listen: false)
-      .updateNotifcationSetting(val);
+      .updateFilter(filter, val);
 }
 
 class SvgIcon extends StatelessWidget {

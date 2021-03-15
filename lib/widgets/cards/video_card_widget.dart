@@ -1,4 +1,3 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,16 +46,12 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
-    Navigator.push(
-        context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
-            builder: (context) {
-              return VideoDisplay(
-                video: widget.video,
-                heroId: widget.heroId,
-              );
-            }));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return VideoDisplay(
+        video: widget.video,
+        heroId: widget.heroId,
+      );
+    }));
   }
 
   @override

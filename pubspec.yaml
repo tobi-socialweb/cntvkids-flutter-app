@@ -5,7 +5,6 @@ publish_to: none
 environment:
   sdk: '>=2.2.2 <3.0.0'
 dependencies:
-  avatar_glow: ^1.2.0
   speech_to_text: ^3.1.0
   async: ^2.4.2
   audioplayers: ^0.17.3
@@ -33,7 +32,6 @@ dependencies:
       url: 'git://github.com/leonzone/loading.git'
       path: loading
       ref: 8f5a63f
-  onesignal_flutter: ^2.6.1
   path_provider: ^1.6.14
   provider: ^4.3.2+2
   r_dart_library:
