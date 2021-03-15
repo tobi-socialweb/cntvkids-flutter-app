@@ -11,34 +11,51 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
 
+/// Enumerator for the types of filters that can be used in the app.
+enum VisualMode { normal, dark, inverted, grayscale }
+
+VisualMode visualModeFromString(String value) {
+  for (int i = 0; i < VisualMode.values.length; i++) {
+    if (value == VisualMode.values[i].toString()) return VisualMode.values[i];
+  }
+
+  return null;
+}
+
 DioCacheManager customDioCacheManager =
     DioCacheManager(CacheConfig(baseUrl: WORDPRESS_URL));
 Dio customDio = Dio()..interceptors.add(customDioCacheManager.interceptor);
 
-enum VisualFilters { normal, inverted, grayscale, darkmode }
-
 class AppStateNotifier extends ChangeNotifier {
+  ColorFilter filter = NORMAL_FILTER;
   bool isDarkMode = false;
   bool notificationOn = true;
-  ColorFilter colorFilter = NORMAL_FILTER;
 
-  void updateTheme(bool isDarkMode) {
-    this.isDarkMode = isDarkMode;
-    notifyListeners();
-  }
-
-  void updateFilter(VisualFilters filter, bool value) {
+  void setVisualMode(VisualMode filter) {
     switch (filter) {
-      case VisualFilters.grayscale:
-        this.colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
+      case VisualMode.grayscale:
+        this.filter = GRAYSCALE_FILTER;
+        this.isDarkMode = false;
         break;
-      case VisualFilters.inverted:
-        this.colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
+
+      case VisualMode.inverted:
+        this.filter = INVERTED_FILTER;
+        this.isDarkMode = false;
         break;
+
+      case VisualMode.dark:
+        this.filter = NORMAL_FILTER;
+        this.isDarkMode = true;
+        break;
+
       default:
-        this.colorFilter = NORMAL_FILTER;
+
+        /// normal
+        this.filter = NORMAL_FILTER;
+        this.isDarkMode = false;
         break;
     }
+
     notifyListeners();
   }
 
@@ -46,24 +63,31 @@ class AppStateNotifier extends ChangeNotifier {
     this.notificationOn = notificationOn;
     notifyListeners();
   }
-}
 
-Future<Null> changeToDarkTheme(BuildContext context, bool val) async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = 'darktheme';
-  final value = val ? 1 : 0;
-  await prefs.setInt(key, value);
-  Provider.of<AppStateNotifier>(context, listen: false).updateTheme(val);
-}
+  /// Save visual mode to user preferences.
+  static Future<Null> save(BuildContext context, VisualMode filter) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(VISUAL_MODE_KEY, filter.toString());
 
-Future<Null> changeFilter(
-    BuildContext context, bool val, VisualFilters filter) async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = 'filter';
-  final value = filter.toString();
-  await prefs.setString(key, value);
-  Provider.of<AppStateNotifier>(context, listen: false)
-      .updateFilter(filter, val);
+    Provider.of<AppStateNotifier>(context, listen: false).setVisualMode(filter);
+  }
+
+  /// Load visual mode from user preferences.
+  static void load(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    /// Get current platform brightness to use if no preferences were saved.
+    final brightness =
+        MediaQuery.of(context).platformBrightness == Brightness.light
+            ? "normal"
+            : "dark";
+
+    /// Get visual filter enum from preferences or current platform's brightness
+    final value =
+        visualModeFromString(prefs.getString(VISUAL_MODE_KEY) ?? brightness);
+
+    await save(context, value);
+  }
 }
 
 class SvgIcon extends StatelessWidget {

@@ -56,8 +56,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _checkDarkTheme();
-    _checkFilter();
+
+    /// Load app visual mode preferences.
+    AppStateNotifier.load(context);
     //_startOneSignal();
 
     speech = stt.SpeechToText();
@@ -77,28 +78,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         leftMargin: innerRadius + outerRadius,
       ),
     ];
-  }
-
-  _checkDarkTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'darktheme';
-    final platformTheme = MediaQuery.of(context).platformBrightness;
-    final platformThemeCode = platformTheme == Brightness.dark ? 1 : 0;
-    final value = prefs.getInt(key) ?? platformThemeCode;
-    await changeToDarkTheme(context, value == 1);
-    await Future.delayed(Duration(seconds: 1));
-  }
-
-  _checkFilter() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'filter';
-    final value = prefs.getString(key);
-    if (value == 'greyscale') {
-      await changeFilter(context, true, VisualFilters.grayscale);
-    } else if (value == 'inverted') {
-      await changeFilter(context, true, VisualFilters.inverted);
-    }
-    await Future.delayed(Duration(seconds: 1));
   }
 
   Future<void> initSpeechState() async {
@@ -126,8 +105,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     style: TextStyle(color: Colors.white),
                   ),
                   Switch(
-                    onChanged: (val) async {
-                      await changeToDarkTheme(context, val);
+                    onChanged: (value) async {
+                      await AppStateNotifier.save(
+                          context, value ? VisualMode.dark : VisualMode.normal);
                     },
                     activeColor: Colors.white,
                     value: Provider.of<AppStateNotifier>(context).isDarkMode,
@@ -143,11 +123,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     style: TextStyle(color: Colors.white),
                   ),
                   Switch(
-                    onChanged: (val) async {
-                      await changeFilter(context, val, VisualFilters.grayscale);
+                    onChanged: (value) async {
+                      await AppStateNotifier.save(context,
+                          value ? VisualMode.grayscale : VisualMode.normal);
                     },
                     activeColor: Colors.white,
-                    value: Provider.of<AppStateNotifier>(context).colorFilter ==
+                    value: Provider.of<AppStateNotifier>(context).filter ==
                         GRAYSCALE_FILTER,
                   ),
                 ],
@@ -161,11 +142,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     style: TextStyle(color: Colors.white),
                   ),
                   Switch(
-                    onChanged: (val) async {
-                      await changeFilter(context, val, VisualFilters.inverted);
+                    onChanged: (value) async {
+                      await AppStateNotifier.save(context,
+                          value ? VisualMode.inverted : VisualMode.normal);
                     },
                     activeColor: Colors.white,
-                    value: Provider.of<AppStateNotifier>(context).colorFilter ==
+                    value: Provider.of<AppStateNotifier>(context).filter ==
                         INVERTED_FILTER,
                   ),
                 ],

@@ -42,7 +42,6 @@ class _MyAppState extends State<MyApp> {
   /// TODO: implement timer to test if video could not load and show
   /// error message. (and some retry attempts).
   void initState() {
-    super.initState();
     videoSplashScreen = BetterPlayer.network(
         "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
         betterPlayerConfiguration: BetterPlayerConfiguration(
@@ -52,6 +51,7 @@ class _MyAppState extends State<MyApp> {
           controlsConfiguration:
               BetterPlayerControlsConfiguration(showControls: false),
         ));
+
     videoSplashScreen.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(videoSplashScreen);
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
               builder: (context, appState, child) {
             print("DEBUG: $appState");
             return ColorFiltered(
-                colorFilter: appState.colorFilter,
+                colorFilter: appState.filter,
                 child: MaterialApp(
                   debugShowCheckedModeBanner: false,
                   title: 'CNTV_KIDS',
@@ -77,6 +77,8 @@ class _MyAppState extends State<MyApp> {
         }));
       }
     });
+
+    super.initState();
   }
 
   @override
