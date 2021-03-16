@@ -58,7 +58,7 @@ const bool ENABLE_DYNAMIC_LINK = false;
 
 const String VISUAL_MODE_KEY = "visualmode";
 const String MUSIC_VOLUME_KEY = "musicvolume";
-
+const String LIKE_LIST_KEY = "likelist";
 // ignore: non_constant_identifier_names
 final ColorFilter NORMAL_FILTER =
     const ColorFilter.mode(Colors.transparent, BlendMode.color);

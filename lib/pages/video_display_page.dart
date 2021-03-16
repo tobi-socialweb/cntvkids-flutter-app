@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +13,8 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:focus_detector/focus_detector.dart';
 
 typedef bool BoolCallback();
 
@@ -58,7 +61,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
   BetterPlayerDataSource _betterPlayerDataSource;
 
   bool showOneAlert = true;
-
   @override
   void initState() {
     super.initState();
@@ -106,13 +108,14 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerDataSource: _betterPlayerDataSource);
   }
 
-  likeAlert(BuildContext context) {
+  likeAlert(BuildContext context) async {
     double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
+    final prefs = await SharedPreferences.getInstance();
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Te gusto el video: ${widget.video.title}?"),
+            title: Text("Te gusto el video: \"${widget.video.title}\" ?"),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -121,14 +124,37 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       height: sizeAlertHeight,
                       alignment: Alignment.centerLeft,
                       child: Text("No")),
-                  onPressed: () => print("No me gustó"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
                 ElevatedButton(
                   child: Container(
                       height: sizeAlertHeight,
                       alignment: Alignment.centerRight,
-                      child: Text("si")),
-                  onPressed: () => print("si me gustó"),
+                      child: Text("Si")),
+                  onPressed: () {
+                    var idVideo = widget.video.id.toString();
+                    print("Debug: video a guardar-> " + idVideo);
+                    var lista = prefs.getStringList(LIKE_LIST_KEY);
+                    print("Debug: Lista-> $lista");
+                    bool add = true;
+                    if (lista == null) {
+                      lista = [];
+                    } else {
+                      for (int i = 0; i < lista.length; i++) {
+                        if (lista[i] == idVideo) {
+                          add = false;
+                        }
+                      }
+                    }
+                    if (add) {
+                      lista.add(idVideo);
+                      prefs.setStringList(LIKE_LIST_KEY, lista);
+                    }
+
+                    Navigator.of(context).pop();
+                  },
                 ),
               ],
             ),
@@ -146,7 +172,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
       if (showOneAlert &&
           event.betterPlayerEventType == BetterPlayerEventType.finished &&
           context != null) {
-        print("hola");
         likeAlert(context);
         showOneAlert = false;
       }
@@ -191,6 +216,11 @@ class _VideoDisplayState extends State<VideoDisplay> {
     );
   }
 
+  void dispose() {
+    video.controller.dispose(forceDispose: true);
+    super.dispose();
+  }
+
   void toggleDisplay() {
     MusicEffect.play("sounds/go_back/go_back.mp3");
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -200,12 +230,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerController: _betterPlayerController,
       );
     }));
-  }
-
-  @override
-  void dispose() {
-    video.controller.dispose(forceDispose: true);
-    super.dispose();
   }
 }
 
@@ -222,7 +246,7 @@ class MinimizedVideoDisplay extends StatefulWidget {
 
 class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   SearchCardList suggested;
-
+  bool shouldDispose = true;
   @override
   void initState() {
     super.initState();
@@ -242,135 +266,140 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     final double iconSize = 0.1 * size.height;
     final double miniVideoSize = 0.6 * size.height;
 
-    return WillPopScope(
-        child: Material(
-          color: Theme.of(context).accentColor,
-          child: FlatButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: LimitedBox(
-              /// TODO: fix
-              maxWidth: 0.85 * size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// Left side icons.
-                      Container(
-                        height: miniVideoSize,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 0.05 * size.height),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            SvgButton(
-                              asset: SvgAsset.back_icon,
-                              size: iconSize,
-                              onPressed: () {
-                                MusicEffect.play("sounds/go_back/go_back.mp3");
-                                widget.betterPlayerController.dispose();
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        ),
+    return FocusDetector(
+      onFocusLost: () {
+        print("Debug: vista minimizada Perdio foco");
+        if (shouldDispose) {
+          print("Debug: dipose al entrar a otro video");
+          widget.betterPlayerController.dispose(forceDispose: true);
+        }
+      },
+      child: Material(
+        color: Theme.of(context).accentColor,
+        child: FlatButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          child: LimitedBox(
+            /// TODO: fix
+            maxWidth: 0.85 * size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /// Left side icons.
+                    Container(
+                      height: miniVideoSize,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          SvgButton(
+                            asset: SvgAsset.back_icon,
+                            size: iconSize,
+                            onPressed: () {
+                              MusicEffect.play("sounds/go_back/go_back.mp3");
+                              widget.betterPlayerController.dispose();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
                       ),
-
-                      /// Centered video.
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0.01 * size.width,
-                            0.05 * size.height, 0.01 * size.width, 0.0),
-                        child: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(0.075 * size.height),
-                          child: InheritedVideoDisplay(
-                              context: context,
-                              isMinimized: true,
-                              toggleDisplay: toggleDisplay,
-                              child: Container(
-                                height: miniVideoSize,
-                                child: AspectRatio(
-                                    aspectRatio: 16 / 9,
-                                    child: MediaQuery(
-                                      data: MediaQueryData(
-                                          size: Size(miniVideoSize * 16 / 9,
-                                              miniVideoSize)),
-                                      child: Hero(
-                                        tag: widget.heroId,
-                                        child: BetterPlayer(
-                                          controller:
-                                              widget.betterPlayerController,
-                                        ),
-                                      ),
-                                    )),
-                              )),
-                        ),
-                      ),
-
-                      /// Right side icons.
-                      Container(
-                        height: miniVideoSize,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 0.05 * size.height),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Stack(
-                              children: [
-                                SvgIcon(
-                                  asset: SvgAsset.chromecast_icon,
-                                  size: iconSize,
-                                ),
-                                ChromeCast(
-                                  video: widget.video,
-                                  iconSize: iconSize,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  /// FeaturedCardList(isMinimized: true),
-                  Expanded(
-                    child: Container(
-                      /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
-                      padding: EdgeInsets.symmetric(
-                          vertical: (size.height -
-                                  0.25 * size.height -
-                                  0.1 * size.height -
-                                  miniVideoSize) /
-                              2),
-                      child: suggested,
                     ),
-                  )
-                ],
-              ),
+
+                    /// Centered video.
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                          0.05 * size.height, 0.01 * size.width, 0.0),
+                      child: ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(0.075 * size.height),
+                        child: InheritedVideoDisplay(
+                            context: context,
+                            isMinimized: true,
+                            toggleDisplay: toggleDisplay,
+                            child: Container(
+                              height: miniVideoSize,
+                              child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: MediaQuery(
+                                    data: MediaQueryData(
+                                        size: Size(miniVideoSize * 16 / 9,
+                                            miniVideoSize)),
+                                    child: Hero(
+                                      tag: widget.heroId,
+                                      child: BetterPlayer(
+                                        controller:
+                                            widget.betterPlayerController,
+                                      ),
+                                    ),
+                                  )),
+                            )),
+                      ),
+                    ),
+
+                    /// Right side icons.
+                    Container(
+                      height: miniVideoSize,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Stack(
+                            children: [
+                              SvgIcon(
+                                asset: SvgAsset.chromecast_icon,
+                                size: iconSize,
+                              ),
+                              ChromeCast(
+                                video: widget.video,
+                                iconSize: iconSize,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                /// FeaturedCardList(isMinimized: true),
+                Expanded(
+                  child: Container(
+                    /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                    padding: EdgeInsets.symmetric(
+                        vertical: (size.height -
+                                0.25 * size.height -
+                                0.1 * size.height -
+                                miniVideoSize) /
+                            2),
+                    child: suggested,
+                  ),
+                )
+              ],
             ),
-            onPressed: () {
-              MusicEffect.play("sounds/click/click.mp3");
-              Navigator.of(context).pop();
-            },
           ),
+          onPressed: () {
+            toggleDisplay();
+          },
         ),
-        onWillPop: () {
-          widget.betterPlayerController.dispose();
-          MusicEffect.play("sounds/go_back/go_back.mp3");
-          Navigator.of(context).pop();
-          return Future<bool>.value(true);
-        });
+      ),
+    );
   }
 
   void toggleDisplay() {
-    MusicEffect.play("sounds/go_back/go_back.mp3");
+    if (!mounted) return;
+    setState(() {
+      shouldDispose = false;
+    });
+    MusicEffect.play("sounds/click/click.mp3");
     Navigator.of(context).pop();
   }
 }
