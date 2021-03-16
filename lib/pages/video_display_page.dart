@@ -57,6 +57,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
   BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource _betterPlayerDataSource;
 
+  bool showOneAlert = true;
+
   @override
   void initState() {
     super.initState();
@@ -104,12 +106,49 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerDataSource: _betterPlayerDataSource);
   }
 
+  likeAlert(BuildContext context) {
+    double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Te gusto el video: ${widget.video.title}?"),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  child: Container(
+                      height: sizeAlertHeight,
+                      alignment: Alignment.centerLeft,
+                      child: Text("No")),
+                  onPressed: () => print("No me gustó"),
+                ),
+                ElevatedButton(
+                  child: Container(
+                      height: sizeAlertHeight,
+                      alignment: Alignment.centerRight,
+                      child: Text("si")),
+                  onPressed: () => print("si me gustó"),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   Future<dynamic> _getFutureVideo() {
     video = BetterPlayer(controller: _betterPlayerController);
 
     video.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(video);
+      }
+      if (showOneAlert &&
+          event.betterPlayerEventType == BetterPlayerEventType.finished &&
+          context != null) {
+        print("hola");
+        likeAlert(context);
+        showOneAlert = false;
       }
     });
 

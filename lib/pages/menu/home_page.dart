@@ -19,7 +19,6 @@ import 'package:cntvkids_app/common/helpers.dart';
 
 /// Signals
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Audio plugins
 

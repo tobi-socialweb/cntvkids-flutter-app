@@ -20,9 +20,11 @@ class CustomPlayerControls extends StatefulWidget {
   _CustomPlayerControlsState createState() => _CustomPlayerControlsState();
 }
 
-class _CustomPlayerControlsState extends State<CustomPlayerControls> {
+class _CustomPlayerControlsState extends State<CustomPlayerControls> { 
+
   @override
   Widget build(BuildContext context) {
+
     return Positioned.fill(
         child: WillPopScope(
             child: GestureDetector(
@@ -349,9 +351,11 @@ class _DisplayTime extends StatefulWidget {
   final BetterPlayerController controller;
   final double textScaleFactor;
   final double diagonalOffset;
-
-  _DisplayTime(
-      {this.controller, this.textScaleFactor = 2.5, this.diagonalOffset = 2.5});
+  _DisplayTime({
+    this.controller,
+    this.textScaleFactor = 2.5,
+    this.diagonalOffset = 2.5,
+  });
 
   _DisplayTimeState createState() => _DisplayTimeState();
 
@@ -489,7 +493,7 @@ class _DisplayTimeState extends State<_DisplayTime> {
     });
 
     controller.videoPlayerController.addListener(() {
-      if (value.isBuffering && timer.isActive) {
+      if (value.isBuffering && timer != null && timer.isActive) {
         cancelTimer();
       } else if (!value.isBuffering && timer != null && !timer.isActive) {
         startTimer();
