@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 

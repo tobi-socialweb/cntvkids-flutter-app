@@ -1,9 +1,9 @@
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/series_model.dart';
 import 'package:cntvkids_app/pages/menu/series_detail_page.dart';
 
@@ -21,7 +21,7 @@ class SeriesCard extends StatefulWidget {
 
 class _SeriesCardState extends ClickableCardState<SeriesCard> {
   @override
-  String get badge => SvgAsset.series_badge;
+  AssetResource get badge => SvgAsset.series_badge;
 
   @override
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);

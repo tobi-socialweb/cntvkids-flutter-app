@@ -1,9 +1,9 @@
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/models/lists_model.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/lists_detail_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 
@@ -21,7 +21,7 @@ class ListsCard extends StatefulWidget {
 
 class _ListsCardState extends ClickableCardState<ListsCard> {
   @override
-  String get badge => SvgAsset.lists_badge;
+  AssetResource get badge => SvgAsset.lists_badge;
 
   @override
   String get heroId => widget.heroId;

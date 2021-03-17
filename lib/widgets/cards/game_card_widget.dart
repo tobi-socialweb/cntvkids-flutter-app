@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class GameCard extends StatefulWidget {
 
 class _GameCardState extends ClickableCardState<GameCard> {
   @override
-  String get badge => SvgAsset.games_badge;
+  AssetResource get badge => SvgAsset.games_badge;
 
   @override
   String get cardText => widget.game.title;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:better_player/better_player.dart' hide VideoPlayerValue;
@@ -20,11 +21,9 @@ class CustomPlayerControls extends StatefulWidget {
   _CustomPlayerControlsState createState() => _CustomPlayerControlsState();
 }
 
-class _CustomPlayerControlsState extends State<CustomPlayerControls> { 
-
+class _CustomPlayerControlsState extends State<CustomPlayerControls> {
   @override
   Widget build(BuildContext context) {
-
     return Positioned.fill(
         child: WillPopScope(
             child: GestureDetector(

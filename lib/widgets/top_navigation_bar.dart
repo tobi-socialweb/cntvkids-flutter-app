@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/common/constants.dart';
 
 class InheritedTopNavigationBar extends InheritedWidget {
   final int Function() getSelectedIndex;
@@ -103,8 +104,8 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
 
 /// A single button for the [TopNavigationBar] widget.
 class NavigationBarButton extends StatefulWidget {
-  final String icon;
-  final String activeIcon;
+  final AssetResource icon;
+  final AssetResource activeIcon;
   final bool isPressed;
   final double size;
   final int index;
@@ -187,7 +188,7 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
                   textScaleFactor: widget.textScaleFactor,
                   style: TextStyle(
                     color: Colors.white,
-                    fontFamily: "FredokaOne",
+                    fontFamily: FontAsset.fredoka_one,
                   ),
                 ),
               )

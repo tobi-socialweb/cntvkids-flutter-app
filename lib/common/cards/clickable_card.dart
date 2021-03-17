@@ -31,7 +31,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   void onTap();
 
   /// The icon that will show on top of the thumbnail.
-  String get badge;
+  AssetResource get badge;
 
   /// Used to fetch the thumbnail and wait for it to load.
   CachedNetworkImageProvider imgProvider;

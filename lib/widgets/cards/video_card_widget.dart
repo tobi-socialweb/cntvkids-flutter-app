@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
   }
 
   @override
-  String get badge => SvgAsset.videos_badge;
+  AssetResource get badge => SvgAsset.videos_badge;
 
   @override
   String get cardText => formatVideoText();
