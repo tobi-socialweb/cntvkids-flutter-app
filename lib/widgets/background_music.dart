@@ -1,5 +1,6 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/common/constants.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -18,9 +19,9 @@ class MusicEffect {
   static AudioCache cache = new AudioCache();
 
   /// Play effect sound.
-  static Future<void> play(String asset) async {
-    player =
-        await cache.play(asset, volume: BackgroundMusicManager.getVolume());
+  static Future<void> play(AssetResource asset) async {
+    player = await cache.play(asset.name,
+        volume: BackgroundMusicManager.getVolume());
   }
 }
 

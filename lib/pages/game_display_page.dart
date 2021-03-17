@@ -35,7 +35,7 @@ class _WebViewPageState extends State<WebViewPage> {
           return FloatingActionButton(
             backgroundColor: Colors.transparent,
             onPressed: () async {
-              MusicEffect.play("sounds/go_back/go_back.mp3");
+              MusicEffect.play(MediaAsset.mp3.go_back);
               Navigator.of(context).pop();
             },
             child: SvgIcon(

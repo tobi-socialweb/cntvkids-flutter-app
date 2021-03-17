@@ -41,11 +41,11 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
 
   @override
   void onTap() {
-    MusicEffect.play("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return VideoDisplay(
         video: widget.video,
         heroId: widget.heroId,

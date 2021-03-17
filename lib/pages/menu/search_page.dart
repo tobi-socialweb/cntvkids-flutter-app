@@ -127,8 +127,7 @@ class _SearchPageState extends State<SearchPage> {
                                 size: iconSize,
                                 padding: padding,
                                 onPressed: () {
-                                  MusicEffect.play(
-                                      "sounds/go_back/go_back.mp3");
+                                  MusicEffect.play(MediaAsset.mp3.click);
                                   Navigator.of(context).pop();
                                 }),
 
@@ -186,7 +185,7 @@ class _SearchPageState extends State<SearchPage> {
                               onPressed: () {
                                 SystemChannels.textInput
                                     .invokeMethod('TextInput.hide');
-                                MusicEffect.play("sounds/click/click.mp3");
+                                MusicEffect.play(MediaAsset.mp3.click);
                                 submit(_textToSpeech);
                               },
                             ),

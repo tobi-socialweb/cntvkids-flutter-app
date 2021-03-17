@@ -200,7 +200,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
                   /// When using the 'back' button, toggle minimize.
                   onWillPop: () {
-                    MusicEffect.play("sounds/go_back/go_back.mp3");
+                    MusicEffect.play(MediaAsset.mp3.go_back);
                     return Future<bool>.value(true);
                   });
             } else if (snapshot.hasError) {
@@ -222,7 +222,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 
   void toggleDisplay() {
-    MusicEffect.play("sounds/go_back/go_back.mp3");
+    MusicEffect.play(MediaAsset.mp3.go_back);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MinimizedVideoDisplay(
         video: widget.video,
@@ -302,7 +302,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             asset: SvgAsset.back_icon,
                             size: iconSize,
                             onPressed: () {
-                              MusicEffect.play("sounds/go_back/go_back.mp3");
+                              MusicEffect.play(MediaAsset.mp3.go_back);
                               widget.betterPlayerController.dispose();
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
@@ -399,7 +399,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     setState(() {
       shouldDispose = false;
     });
-    MusicEffect.play("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     Navigator.of(context).pop();
   }
 }

@@ -33,7 +33,7 @@ class _GameCardState extends ClickableCardState<GameCard> {
 
   @override
   void onTap() {
-    MusicEffect.play("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
     Navigator.push(
         context,

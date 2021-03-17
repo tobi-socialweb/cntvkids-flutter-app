@@ -90,7 +90,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        MusicEffect.play("sounds/beam/beam.mp3");
+        MusicEffect.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });

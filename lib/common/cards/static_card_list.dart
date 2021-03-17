@@ -75,7 +75,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        MusicEffect.play("sounds/beam/beam.mp3");
+        MusicEffect.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });
@@ -130,7 +130,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                           asset: SvgAsset.back_icon,
                           size: 0.5 * topBarHeight,
                           onPressed: () {
-                            MusicEffect.play("sounds/go_back/go_back.mp3");
+                            MusicEffect.play(MediaAsset.mp3.go_back);
                             Navigator.of(context).pop();
                           },
                         ),
@@ -228,7 +228,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
               ],
             )),
         onWillPop: () {
-          MusicEffect.play("sounds/go_back/go_back.mp3");
+          MusicEffect.play(MediaAsset.mp3.go_back);
           return Future<bool>.value(true);
         },
       ),

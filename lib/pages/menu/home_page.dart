@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           icon: SvgAsset.search_icon,
                           text: "Buscar",
                           onPressed: (index) {
-                            MusicEffect.play("sounds/click/click.mp3");
+                            MusicEffect.play(MediaAsset.mp3.click);
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return SearchPage(
@@ -288,7 +288,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    MusicEffect.play("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;
     });

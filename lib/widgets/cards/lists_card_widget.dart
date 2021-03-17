@@ -28,7 +28,7 @@ class _ListsCardState extends ClickableCardState<ListsCard> {
 
   @override
   void onTap() {
-    MusicEffect.play("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ListsCardDetail(
           list: widget.list, heroId: widget.heroId, imgProvider: imgProvider);

@@ -78,7 +78,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                               asset: SvgAsset.back_icon,
                               size: iconSize,
                               onPressed: () {
-                                MusicEffect.play("sounds/go_back/go_back.mp3");
+                                MusicEffect.play(MediaAsset.mp3.go_back);
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
@@ -161,13 +161,13 @@ class _ChromeCastViewState extends State<ChromeCastView> {
               ),
             ),
             onPressed: () {
-              MusicEffect.play("sounds/click/click.mp3");
+              MusicEffect.play(MediaAsset.mp3.click);
               Navigator.of(context).pop();
             },
           ),
         ),
         onWillPop: () {
-          MusicEffect.play("sounds/go_back/go_back.mp3");
+          MusicEffect.play(MediaAsset.mp3.go_back);
           Navigator.of(context).pop();
           return Future<bool>.value(true);
         });
