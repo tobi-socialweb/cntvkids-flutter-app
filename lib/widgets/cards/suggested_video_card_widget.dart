@@ -44,6 +44,8 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
     MusicEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
 
+    Navigator.pop(context);
+
     /// When tapped, open video.
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return VideoDisplay(

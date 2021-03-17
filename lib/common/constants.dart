@@ -143,57 +143,54 @@ class _PngAsset {
   /// Asset from file: `assets/app/icon-android-google-play.png`
   // ignore: non_constant_identifier_names, unused_field
   final icon_android_google_play =
-      const AssetImage("assets/app/icon-android-google-play.png");
+      const AssetImage("app/icon-android-google-play.png");
 
   /// Asset from file: `assets/app/icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final icon = const AssetImage("assets/app/icon.png");
+  final icon = const AssetImage("app/icon.png");
 
   /// Asset from file: `assets/app/splash.png`
   // ignore: non_constant_identifier_names, unused_field
-  final splash = const AssetImage("assets/app/splash.png");
+  final splash = const AssetImage("app/splash.png");
 
   /// Asset from file: `assets/images/backgrounds/background-red.png`
   // ignore: non_constant_identifier_names, unused_field
   final background_red =
-      const AssetImage("assets/images/backgrounds/background-red.png");
+      const AssetImage("images/backgrounds/background-red.png");
 
   /// Asset from file: `assets/images/logo/logo_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final logo_icon = const AssetImage("assets/images/logo/logo_icon.png");
+  final logo_icon = const AssetImage("images/logo/logo_icon.png");
 
   /// Asset from file: `assets/images/record/record_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final record_icon = const AssetImage("assets/images/record/record_icon.png");
+  final record_icon = const AssetImage("images/record/record_icon.png");
 
   /// Asset from file: `assets/images/search/search_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final search_icon = const AssetImage("assets/images/search/search_icon.png");
+  final search_icon = const AssetImage("images/search/search_icon.png");
 
   /// Asset from file: `assets/images/videos/videos_badge.png`
   // ignore: non_constant_identifier_names, unused_field
-  final videos_badge =
-      const AssetImage("assets/images/videos/videos_badge.png");
+  final videos_badge = const AssetImage("images/videos/videos_badge.png");
 
   /// Asset from file: `assets/images/chromecast/old/chromecast_active_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final chromecast_active_icon = const AssetImage(
-      "assets/images/chromecast/old/chromecast_active_icon.png");
+  final chromecast_active_icon =
+      const AssetImage("images/chromecast/old/chromecast_active_icon.png");
 
   /// Asset from file: `assets/images/chromecast/old/chromecast_icon.png`
   // ignore: non_constant_identifier_names, unused_field
   final chromecast_icon =
-      const AssetImage("assets/images/chromecast/old/chromecast_icon.png");
+      const AssetImage("images/chromecast/old/chromecast_icon.png");
 
   /// Asset from file: `assets/images/record/2.0x/record_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final record_icon$1 =
-      const AssetImage("assets/images/record/2.0x/record_icon.png");
+  final record_icon$1 = const AssetImage("images/record/2.0x/record_icon.png");
 
   /// Asset from file: `assets/images/search/2.0x/search_icon.png`
   // ignore: non_constant_identifier_names, unused_field
-  final search_icon$1 =
-      const AssetImage("assets/images/search/2.0x/search_icon.png");
+  final search_icon$1 = const AssetImage("images/search/2.0x/search_icon.png");
 }
 
 /// All available `gif` assets.
@@ -203,7 +200,7 @@ class _GifAsset {
 
   /// Asset from file: `assets/app/preload.gif`
   // ignore: non_constant_identifier_names, unused_field
-  final preload = const AssetImage("assets/app/preload.gif");
+  final preload = const AssetImage("app/preload.gif");
 }
 
 /// All available font families.
@@ -369,37 +366,37 @@ class _Mp3Asset {
   /// Asset from file: `assets/sounds/background/background_1.mp3`
   // ignore: non_constant_identifier_names, unused_field
   final background_1 =
-      const AssetResource("assets/sounds/background/background_1.mp3");
+      const AssetResource("sounds/background/background_1.mp3");
 
   /// Asset from file: `assets/sounds/background/background_2.mp3`
   // ignore: non_constant_identifier_names, unused_field
   final background_2 =
-      const AssetResource("assets/sounds/background/background_2.mp3");
+      const AssetResource("sounds/background/background_2.mp3");
 
   /// Asset from file: `assets/sounds/beam/beam.mp3`
   // ignore: non_constant_identifier_names, unused_field
-  final beam = const AssetResource("assets/sounds/beam/beam.mp3");
+  final beam = const AssetResource("sounds/beam/beam.mp3");
 
   /// Asset from file: `assets/sounds/click/click.mp3`
   // ignore: non_constant_identifier_names, unused_field
-  final click = const AssetResource("assets/sounds/click/click.mp3");
+  final click = const AssetResource("sounds/click/click.mp3");
 
   /// Asset from file: `assets/sounds/go_back/go_back.mp3`
   // ignore: non_constant_identifier_names, unused_field
-  final go_back = const AssetResource("assets/sounds/go_back/go_back.mp3");
+  final go_back = const AssetResource("sounds/go_back/go_back.mp3");
 
   /// Asset from file: `assets/sounds/intro/intro.mp3`
   // ignore: non_constant_identifier_names, unused_field
-  final intro = const AssetResource("assets/sounds/intro/intro.mp3");
+  final intro = const AssetResource("sounds/intro/intro.mp3");
 
   /// Asset from file: `assets/sounds/notification/notification.mp3`
   // ignore: non_constant_identifier_names, unused_field
   final notification =
-      const AssetResource("assets/sounds/notification/notification.mp3");
+      const AssetResource("sounds/notification/notification.mp3");
 
   /// Asset from file: `assets/sounds/wave/wave.mp3`
   // ignore: non_constant_identifier_names, unused_field
-  final wave = const AssetResource("assets/sounds/wave/wave.mp3");
+  final wave = const AssetResource("sounds/wave/wave.mp3");
 }
 
 /// All available `mp4` assets.
@@ -410,42 +407,42 @@ class _Mp4Asset {
   /// Asset from file: `assets/sounds/background/background_1.mp4`
   // ignore: non_constant_identifier_names, unused_field
   final background_1 =
-      const AssetResource("assets/sounds/background/background_1.mp4");
+      const AssetResource("sounds/background/background_1.mp4");
 
   /// Asset from file: `assets/sounds/background/background_2.mp4`
   // ignore: non_constant_identifier_names, unused_field
   final background_2 =
-      const AssetResource("assets/sounds/background/background_2.mp4");
+      const AssetResource("sounds/background/background_2.mp4");
 
   /// Asset from file: `assets/sounds/beam/beam.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final beam = const AssetResource("assets/sounds/beam/beam.mp4");
+  final beam = const AssetResource("sounds/beam/beam.mp4");
 
   /// Asset from file: `assets/sounds/click/click.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final click = const AssetResource("assets/sounds/click/click.mp4");
+  final click = const AssetResource("sounds/click/click.mp4");
 
   /// Asset from file: `assets/sounds/go_back/go_back.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final go_back = const AssetResource("assets/sounds/go_back/go_back.mp4");
+  final go_back = const AssetResource("sounds/go_back/go_back.mp4");
 
   /// Asset from file: `assets/sounds/intro/intro.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final intro = const AssetResource("assets/sounds/intro/intro.mp4");
+  final intro = const AssetResource("sounds/intro/intro.mp4");
 
   /// Asset from file: `assets/sounds/notification/notification.mp4`
   // ignore: non_constant_identifier_names, unused_field
   final notification =
-      const AssetResource("assets/sounds/notification/notification.mp4");
+      const AssetResource("sounds/notification/notification.mp4");
 
   /// Asset from file: `assets/sounds/unavailable_action/unavailable_action.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final unavailable_action = const AssetResource(
-      "assets/sounds/unavailable_action/unavailable_action.mp4");
+  final unavailable_action =
+      const AssetResource("sounds/unavailable_action/unavailable_action.mp4");
 
   /// Asset from file: `assets/sounds/wave/wave.mp4`
   // ignore: non_constant_identifier_names, unused_field
-  final wave = const AssetResource("assets/sounds/wave/wave.mp4");
+  final wave = const AssetResource("sounds/wave/wave.mp4");
 }
 
 /// All available `aif` assets.
@@ -455,29 +452,28 @@ class _AifAsset {
 
   /// Asset from file: `assets/sounds/click/click.aif`
   // ignore: non_constant_identifier_names, unused_field
-  final click = const AssetResource("assets/sounds/click/click.aif");
+  final click = const AssetResource("sounds/click/click.aif");
 
   /// Asset from file: `assets/sounds/go_back/go_back.aif`
   // ignore: non_constant_identifier_names, unused_field
-  final go_back = const AssetResource("assets/sounds/go_back/go_back.aif");
+  final go_back = const AssetResource("sounds/go_back/go_back.aif");
 
   /// Asset from file: `assets/sounds/notification/notification.aif`
   // ignore: non_constant_identifier_names, unused_field
   final notification =
-      const AssetResource("assets/sounds/notification/notification.aif");
+      const AssetResource("sounds/notification/notification.aif");
 
   /// Asset from file: `assets/sounds/results/resultados.aif`
   // ignore: non_constant_identifier_names, unused_field
-  final resultados =
-      const AssetResource("assets/sounds/results/resultados.aif");
+  final resultados = const AssetResource("sounds/results/resultados.aif");
 
   /// Asset from file: `assets/sounds/unavailable_action/unavailable_action.aif`
   // ignore: non_constant_identifier_names, unused_field
-  final unavailable_action = const AssetResource(
-      "assets/sounds/unavailable_action/unavailable_action.aif");
+  final unavailable_action =
+      const AssetResource("sounds/unavailable_action/unavailable_action.aif");
 
   /// Asset from file: `assets/sounds/wave/wave.aif`
   // ignore: non_constant_identifier_names, unused_field
-  final wave = const AssetResource("assets/sounds/wave/wave.aif");
+  final wave = const AssetResource("sounds/wave/wave.aif");
 }
 // --- END OF GENERATED CODE BY `assets.py` ---

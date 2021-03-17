@@ -190,19 +190,12 @@ class _VideoDisplayState extends State<VideoDisplay> {
           future: _getFutureVideo(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return WillPopScope(
-                  child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Hero(
-                        tag: widget.heroId,
-                        child: snapshot.data,
-                      )),
-
-                  /// When using the 'back' button, toggle minimize.
-                  onWillPop: () {
-                    MusicEffect.play(MediaAsset.mp3.go_back);
-                    return Future<bool>.value(true);
-                  });
+              return AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Hero(
+                    tag: widget.heroId,
+                    child: snapshot.data,
+                  ));
             } else if (snapshot.hasError) {
               return Text(snapshot.error);
             } else {
@@ -214,11 +207,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
             }
           }),
     );
-  }
-
-  void dispose() {
-    video.controller.dispose(forceDispose: true);
-    super.dispose();
   }
 
   void toggleDisplay() {

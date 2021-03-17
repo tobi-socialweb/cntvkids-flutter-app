@@ -49,8 +49,11 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   void initState() {
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(thumbnailUrl);
-    imgProvider.resolve(new ImageConfiguration()).addListener(
-        ImageStreamListener((info, _) => completer.complete(info.image)));
+    imgProvider
+        .resolve(new ImageConfiguration())
+        .addListener(ImageStreamListener((info, _) {
+      if (!completer.isCompleted) completer.complete(info.image);
+    }));
 
     super.initState();
   }
