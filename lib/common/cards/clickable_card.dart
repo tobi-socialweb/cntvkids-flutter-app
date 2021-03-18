@@ -11,8 +11,8 @@ import 'package:cntvkids_app/common/constants.dart';
 
 abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   /// The available space
-  Size get size => Size(MediaQuery.of(context).size.width,
-      MediaQuery.of(context).size.height * (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
+  Size get size =>
+      scaleSize(context, heightFactor: (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
 
   /// The card's margins.
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);

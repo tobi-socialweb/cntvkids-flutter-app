@@ -20,8 +20,13 @@ class MusicEffect {
 
   /// Play effect sound.
   static Future<void> play(AssetResource asset) async {
-    player = await cache.play(asset.name,
-        volume: BackgroundMusicManager.getVolume());
+    /// This assumes the asset's path falls under the `assets/` directory.
+    /// Therefore, because `cache.play()` adds it manually, it should be
+    /// removed first.
+    String fileName = asset.name.replaceFirst(RegExp(r'assets/'), "");
+
+    player =
+        await cache.play(fileName, volume: BackgroundMusicManager.getVolume());
   }
 }
 

@@ -16,8 +16,6 @@ import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:focus_detector/focus_detector.dart';
 
-typedef bool BoolCallback();
-
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
   final BuildContext context;

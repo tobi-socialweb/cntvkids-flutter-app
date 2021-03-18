@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -14,7 +16,7 @@ import 'package:cntvkids_app/common/constants.dart';
 /// Enumerator for the types of filters that can be used in the app.
 enum VisualMode { normal, dark, inverted, grayscale }
 
-VisualMode visualModeFromString(String value) {
+VisualMode stringToVisualMode(String value) {
   for (int i = 0; i < VisualMode.values.length; i++) {
     if (value == VisualMode.values[i].toString()) return VisualMode.values[i];
   }
@@ -71,7 +73,7 @@ class AppStateNotifier extends ChangeNotifier {
   }
 
   /// Save visual mode to user preferences.
-  static Future<Null> save(BuildContext context,
+  static Future<void> save(BuildContext context,
       {VisualMode filter, double musicVolume}) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -100,7 +102,7 @@ class AppStateNotifier extends ChangeNotifier {
 
     /// Get visual filter enum from preferences or current platform's brightness
     final filterValue =
-        visualModeFromString(prefs.getString(VISUAL_MODE_KEY) ?? brightness);
+        stringToVisualMode(prefs.getString(VISUAL_MODE_KEY) ?? brightness);
 
     final volumeValue = prefs.getDouble(MUSIC_VOLUME_KEY) ?? 0.5;
 
@@ -159,9 +161,20 @@ class SvgButton extends StatelessWidget {
   }
 }
 
-Size newSize({double width, double height, Size current}) {
-  double _w = (width == null && current != null) ? current.width : width;
-  double _h = (height == null && current != null) ? current.height : height;
-
-  return Size(_w ?? 1.0, _h ?? 1.0);
+/// Create a new Size widget by giving either `widthFactor` and/or
+/// `heightFactor` and the current `context` to use for the base when scaling
+/// and filling the empty values of the new size, if any.
+///
+/// Code example:
+/// ```dart
+/// /// Assume current display size has values (`width:5`, `height:50`),
+/// /// meaning that MediaQuery.of(context).size == Size(`5`, `50`).
+///
+/// Size newSize = scaleSize(context, widthFactor: 10);
+/// /// `newSize` has values (`width:50`, `height:50`).
+/// ```
+Size scaleSize(BuildContext context,
+    {double widthFactor = 1.0, double heightFactor = 1.0}) {
+  Size size = MediaQuery.of(context).size;
+  return Size(size.width * widthFactor, size.height * heightFactor);
 }

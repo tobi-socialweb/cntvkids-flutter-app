@@ -33,10 +33,6 @@ dependencies:
       ref: 8f5a63f
   path_provider: ^1.6.14
   provider: ^4.3.2+2
-  r_dart_library:
-    git:
-      url: 'https://github.com/YK-Unit/r_dart_library.git'
-      ref: 0.2.1
   share: ^0.6.5
   shared_preferences: ^0.5.10
   speech_to_text: ^3.1.0
@@ -56,8 +52,6 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-
-  # media assets
   - assets/sounds/background/background_1.mp3
   - assets/sounds/background/background_2.mp3
   - assets/sounds/beam/beam.mp3
@@ -81,8 +75,6 @@ flutter:
   - assets/sounds/results/resultados.aif
   - assets/sounds/unavailable_action/unavailable_action.aif
   - assets/sounds/wave/wave.aif
-
-  # other assets
   - assets/images/back/back_icon.svg
   - assets/images/backgrounds/background-red.svg
   - assets/images/chromecast/chromecast_active_icon.svg
@@ -109,8 +101,6 @@ flutter:
   - assets/images/backgrounds/18x9/background-red.svg
   - assets/images/chromecast/old/chromecast_active_icon.svg
   - assets/images/chromecast/old/chromecast_icon.svg
-
-  # image assets
   - assets/app/icon-android-google-play.png
   - assets/app/icon.png
   - assets/app/splash.png
@@ -143,20 +133,10 @@ flutter:
   - assets/images/record/2.0x/record_icon.png
   - assets/images/search/2.0x/search_icon.png
   - assets/app/preload.gif
-
-  # font assets:
   fonts:
   - family: FredokaOne
     fonts:
     - asset: fonts/FredokaOne/FredokaOne.ttf
-flr:
-  core_version: 3.1.0
-  dartfmt_line_length: 80
-  assets:
-  - assets/images
-  - assets/sounds
-  fonts:
-  - fonts
 flutter_native_splash:
   color: '#FFFFFF'
   image: assets/images/logo/logo_icon.png
