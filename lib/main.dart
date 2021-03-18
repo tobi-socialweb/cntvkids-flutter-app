@@ -7,11 +7,8 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:better_player/better_player.dart';
-
 import 'package:provider/provider.dart';
 
-import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
 /// Main function called at app start.
@@ -59,16 +56,6 @@ class _MyAppState extends State<MyApp> {
 
   /// TODO: implement timer to test if video could not load and show error message. (and some retry attempts).
   void initState() {
-    splashScreenVideo = BetterPlayer.network(
-        "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
-        betterPlayerConfiguration: BetterPlayerConfiguration(
-          aspectRatio: 16 / 9,
-          autoPlay: true,
-          autoDispose: false,
-          controlsConfiguration:
-              BetterPlayerControlsConfiguration(showControls: false),
-        ));
-
     splashScreenVideo.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(splashScreenVideo);

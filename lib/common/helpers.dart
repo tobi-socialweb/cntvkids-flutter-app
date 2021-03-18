@@ -6,14 +6,11 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/store_manager.dart';
 
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 
