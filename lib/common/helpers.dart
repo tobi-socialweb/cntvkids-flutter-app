@@ -1,10 +1,10 @@
-import 'package:cntvkids_app/common/store_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-
-import 'package:flutter/material.dart';
 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
@@ -12,9 +12,8 @@ import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/store_manager.dart';
 
 DioCacheManager customDioCacheManager =
     DioCacheManager(CacheConfig(baseUrl: WORDPRESS_URL));
@@ -71,10 +70,10 @@ class AppStateNotifier extends ChangeNotifier {
     scaffoldBackgroundColor: Colors.white,
   );
 
-  ThemeData _themeData;
+  ThemeData _themeData = lightTheme;
   ThemeMode getTheme() {
     print("DEBUG: getting theme mode: ${_themeData.brightness}");
-    return _themeData == null || _themeData.brightness == Brightness.light
+    return _themeData.brightness == Brightness.light
         ? ThemeMode.light
         : ThemeMode.dark;
   }
@@ -131,7 +130,7 @@ class SvgIcon extends StatelessWidget {
   final EdgeInsets padding;
 
   SvgIcon(
-      {@required this.asset, this.size = 10.0, this.padding = EdgeInsets.zero});
+      {required this.asset, this.size = 10.0, this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +152,10 @@ class SvgButton extends StatelessWidget {
   final EdgeInsets padding;
 
   const SvgButton(
-      {Key key,
-      this.onPressed,
-      this.asset,
-      this.size,
+      {Key? key,
+      required this.onPressed,
+      required this.asset,
+      required this.size,
       this.padding = EdgeInsets.zero})
       : super(key: key);
 
@@ -176,9 +175,9 @@ class SvgButton extends StatelessWidget {
   }
 }
 
-Size newSize({double width, double height, Size current}) {
-  double _w = (width == null && current != null) ? current.width : width;
-  double _h = (height == null && current != null) ? current.height : height;
+Size newSize({double? width, double? height, Size? current}) {
+  double? _w = (width == null && current != null) ? current.width : width;
+  double? _h = (height == null && current != null) ? current.height : height;
 
   return Size(_w ?? 1.0, _h ?? 1.0);
 }
