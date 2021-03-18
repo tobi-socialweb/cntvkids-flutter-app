@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     /// Load app visual mode preferences.
     AppStateNotifier.load(context);
     //_startOneSignal();
+    //AppStateNotifier.loadIp(context);
 
     speech = stt.SpeechToText();
     initSpeechState();
