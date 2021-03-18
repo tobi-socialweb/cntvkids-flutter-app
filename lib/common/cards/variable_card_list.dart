@@ -1,13 +1,11 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
-
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
@@ -29,6 +27,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
   /// The last page that was loaded.
   int currentPage = 1;
+
+  /// If user began scrolling.
+  bool startedScrolling;
 
   /// If user began scrolling.
   bool isScrolling = false;
@@ -76,13 +77,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
     super.initState();
   }
 
-  /// Play sounds.
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   /// Listener for scroll changes.
   _scrollControllerListener() {
     if (!this.mounted) return;
@@ -101,9 +95,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
       // ignore: invalid_use_of_protected_member
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
-          !isScrolling) {
-        playSound("sounds/beam/beam.mp3");
-        isScrolling = true;
+          !startedScrolling) {
+        MusicEffect.play(MediaAsset.mp3.beam);
+        startedScrolling = true;
       }
     });
   }

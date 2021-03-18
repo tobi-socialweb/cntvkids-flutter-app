@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 
 import 'package:better_player/better_player.dart' hide VideoPlayerValue;
@@ -43,6 +45,8 @@ class _CustomPlayerControlsState extends State<CustomPlayerControls> {
             ),
             onWillPop: () {
               if (InheritedVideoDisplay.of(context).isMinimized) {
+                MusicEffect.play(MediaAsset.mp3.go_back);
+                Navigator.of(context).pop();
                 Navigator.of(context).pop();
               } else {
                 InheritedVideoDisplay.of(context).toggleDisplay();
@@ -349,9 +353,11 @@ class _DisplayTime extends StatefulWidget {
   final BetterPlayerController controller;
   final double textScaleFactor;
   final double diagonalOffset;
-
-  _DisplayTime(
-      {this.controller, this.textScaleFactor = 2.5, this.diagonalOffset = 2.5});
+  _DisplayTime({
+    this.controller,
+    this.textScaleFactor = 2.5,
+    this.diagonalOffset = 2.5,
+  });
 
   _DisplayTimeState createState() => _DisplayTimeState();
 
@@ -489,7 +495,7 @@ class _DisplayTimeState extends State<_DisplayTime> {
     });
 
     controller.videoPlayerController.addListener(() {
-      if (value.isBuffering && timer.isActive) {
+      if (value.isBuffering && timer != null && timer.isActive) {
         cancelTimer();
       } else if (!value.isBuffering && timer != null && !timer.isActive) {
         startTimer();

@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/pages/menu/home_page.dart';
+import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -25,17 +29,9 @@ void main() async {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
   runApp(ChangeNotifierProvider<AppStateNotifier>(
-      create: (context) => AppStateNotifier(),
-      child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
-        print("DEBUG: $appState");
-        return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'CNTV Kids',
-            theme: AppStateNotifier.lightTheme,
-            darkTheme: AppStateNotifier.darkTheme,
-            themeMode: appState.getTheme(),
-            home: MyApp());
-      })));
+    create: (context) => AppStateNotifier(),
+    child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
+  ));
 }
 
 /// Main app widget class.
@@ -63,12 +59,43 @@ class _MyAppState extends State<MyApp> {
 
   /// TODO: implement timer to test if video could not load and show error message. (and some retry attempts).
   void initState() {
+    splashScreenVideo = BetterPlayer.network(
+        "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
+        betterPlayerConfiguration: BetterPlayerConfiguration(
+          aspectRatio: 16 / 9,
+          autoPlay: true,
+          autoDispose: false,
+          controlsConfiguration:
+              BetterPlayerControlsConfiguration(showControls: false),
+        ));
+
     splashScreenVideo.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(splashScreenVideo);
       } else if (event.betterPlayerEventType ==
           BetterPlayerEventType.finished) {
-        pushHomePage();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return Consumer<AppStateNotifier>(
+              builder: (context, appState, child) {
+            print(
+                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}");
+            return ColorFiltered(
+                colorFilter: appState.filter,
+                child: BackgroundMusic(
+                  volume: appState.musicVolume,
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: 'CNTV_KIDS',
+                    theme: lightTheme,
+                    darkTheme: darkTheme,
+                    themeMode:
+                        appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                    home: HomePage(),
+                  ),
+                ));
+          });
+        }));
       }
     });
 
@@ -80,7 +107,6 @@ class _MyAppState extends State<MyApp> {
     return FutureBuilder(
       future: completer.future,
       builder: (context, AsyncSnapshot snapshot) {
-        /// If video loaded and has not ended.
         if (snapshot.hasData && !videoEnded) {
           return Container(
             color: Colors.black,
@@ -91,12 +117,9 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           );
-
-          /// Otherwise, show a black screen.
         } else {
           /// If there was an error, just push the home page.
           if (snapshot.hasError) pushHomePage();
-
           return Container(color: Colors.black);
         }
       },

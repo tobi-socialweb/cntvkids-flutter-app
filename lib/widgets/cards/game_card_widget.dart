@@ -1,10 +1,9 @@
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/games_model.dart';
-import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:cntvkids_app/pages/game_display_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 
@@ -23,7 +22,7 @@ class GameCard extends StatefulWidget {
 
 class _GameCardState extends ClickableCardState<GameCard> {
   @override
-  String get badge => SvgAsset.games_badge;
+  AssetResource get badge => SvgAsset.games_badge;
 
   @override
   String get cardText => widget.game.title;
@@ -33,12 +32,11 @@ class _GameCardState extends ClickableCardState<GameCard> {
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
     Navigator.push(
         context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
+        MaterialPageRoute(
             builder: (context) => WebViewPage(url: widget.game.gameUrl)));
   }
 

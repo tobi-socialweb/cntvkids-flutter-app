@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +10,9 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/constants.dart';
 
 abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
-  /// The available space for the card.
-  Size get size => Size(MediaQuery.of(context).size.width,
-      MediaQuery.of(context).size.height * (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
+  /// The available space
+  Size get size =>
+      scaleSize(context, heightFactor: (1 - 3 * NAVBAR_HEIGHT_PROP / 2));
 
   /// The card's margins.
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);
@@ -33,7 +31,7 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   void onTap();
 
   /// The icon that will show on top of the thumbnail.
-  String get badge;
+  AssetResource get badge;
 
   /// Used to fetch the thumbnail and wait for it to load.
   CachedNetworkImageProvider imgProvider;
@@ -47,22 +45,17 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
   String get cardText;
 
   bool get hasTextDecoration => false;
-
   @override
   void initState() {
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(thumbnailUrl);
-    imgProvider.resolve(new ImageConfiguration()).addListener(
-        ImageStreamListener((info, _) => completer.complete(info.image)));
+    imgProvider
+        .resolve(new ImageConfiguration())
+        .addListener(ImageStreamListener((info, _) {
+      if (!completer.isCompleted) completer.complete(info.image);
+    }));
 
     super.initState();
-  }
-
-  /// Play sounds efects.
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
   }
 
   @override
@@ -119,7 +112,7 @@ class _CardElements extends StatelessWidget {
   final String heroId;
   final ImageProvider imgProvider;
   final double diagonalPos;
-  final String asset;
+  final AssetResource asset;
   final double iconSize;
   final void Function() onTap;
 

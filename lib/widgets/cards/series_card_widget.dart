@@ -1,9 +1,9 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/series_model.dart';
 import 'package:cntvkids_app/pages/menu/series_detail_page.dart';
 
@@ -21,24 +21,20 @@ class SeriesCard extends StatefulWidget {
 
 class _SeriesCardState extends ClickableCardState<SeriesCard> {
   @override
-  String get badge => SvgAsset.series_badge;
+  AssetResource get badge => SvgAsset.series_badge;
 
   @override
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
-    Navigator.push(
-        context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
-            builder: (context) {
-              return SeriesCardDetail(
-                  series: widget.series,
-                  heroId: widget.heroId,
-                  imgProvider: imgProvider);
-            }));
+    MusicEffect.play(MediaAsset.mp3.click);
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return SeriesCardDetail(
+          series: widget.series,
+          heroId: widget.heroId,
+          imgProvider: imgProvider);
+    }));
   }
 
   @override

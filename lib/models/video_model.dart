@@ -16,6 +16,7 @@ class Video extends BaseModel {
   final List<int> categories;
   final String type;
   VideoOriginInfo originInfo;
+  bool useSignLang;
 
   Video({
     this.id = -1,
@@ -30,7 +31,10 @@ class Video extends BaseModel {
     this.categories = const [],
     this.type = "",
     this.originInfo,
-  });
+    this.useSignLang,
+  }) {
+    this.originInfo = originInfo ?? VideoOriginInfo();
+  }
 
   /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json,
@@ -80,6 +84,7 @@ class Video extends BaseModel {
       extra: _extra,
       categories: _categories,
       type: _type,
+      useSignLang: false,
       originInfo: _originInfo,
     );
   }

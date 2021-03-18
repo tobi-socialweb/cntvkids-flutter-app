@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Menu pages
 import 'package:cntvkids_app/pages/menu/lists_page.dart';
 import 'package:cntvkids_app/pages/menu/series_page.dart';
@@ -9,7 +11,6 @@ import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
-import 'package:cntvkids_app/widgets/config_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -17,23 +18,25 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 
 /// Signals
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 /// Audio plugins
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 ///
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
-  final AppStateNotifier appState;
+  const HomePage({
+    Key key,
+  }) : super(key: key);
 
-  const HomePage({Key key, this.appState}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
+
+  static _HomePageState of(BuildContext context) {
+    return context.findAncestorStateOfType<_HomePageState>();
+  }
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
@@ -42,11 +45,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   stt.SpeechToText speech;
   String word;
 
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
-  Config globalConfig;
-
   final double length = 15.0;
   final double innerRadius = 5.0;
   final double outerRadius = 30.0;
@@ -54,17 +52,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// All options from the navigation bar
   List<Widget> _widgetOptions;
 
+  /// volumen controls variables
+  double _val;
+  Timer timer;
   @override
   void initState() {
     super.initState();
-    _startOneSignal();
+
+    /// Load app visual mode preferences.
+    AppStateNotifier.load(context);
 
     speech = stt.SpeechToText();
     initSpeechState();
-
-    colorFilter = NORMAL_FILTER;
-    currentVisualFilter = VisualFilter.normal;
-
+    _val = BackgroundMusicManager.getVolume();
     _widgetOptions = [
       FeaturedCardList(
         leftMargin: innerRadius + outerRadius,
@@ -85,250 +85,233 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await speech.initialize();
   }
 
-  _startOneSignal() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'notification';
-    final value = prefs.getInt(key) ?? 1;
-
-    onesignal.init(
-      ONE_SIGNAL_APP_ID,
-      iOSSettings: {
-        OSiOSSettings.autoPrompt: true,
-        OSiOSSettings.inAppLaunchUrl: true
-      },
-    );
-    onesignal.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
-    onesignal.setInFocusDisplayType(OSNotificationDisplayType.notification);
-
-    await enableNotification(context, value == 1);
-  }
-
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     /// Get size of the current context widget.
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return BackgroundMusic(
-        child: Config(
-      configSettings: ConfigSettings(filter: currentVisualFilter),
-      child: ColorFiltered(
-        colorFilter: colorFilter,
-        child: Scaffold(
-            backgroundColor: Theme.of(context).primaryColor,
-            drawerScrimColor: Colors.transparent,
-            drawer: MenuDrawer(
+    return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        drawerScrimColor: Colors.transparent,
+        drawer: MenuDrawer(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "CHANGE THEME (${Theme.of(context).brightness})",
-                      textScaleFactor: 2,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Switch(
-                      activeColor: Colors.white,
-                      value: Theme.of(context).brightness == Brightness.light,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value)
-                            widget.appState.setLightMode();
-                          else
-                            widget.appState.setDarkMode();
-                        });
-                      },
-                    ),
-                  ],
+                Text(
+                  "LENGUA DE SEÑAS",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "GRAYSCALE",
-                      textScaleFactor: 2,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Switch(
-                      activeColor: Colors.white,
-                      value: currentVisualFilter == VisualFilter.grayscale,
-                      onChanged: (value) {
-                        setState(() {
-                          print(
-                              "DEBUG: $value, in grayscale, ${currentVisualFilter.toString()}");
-                          updateVisualFilter(value, VisualFilter.grayscale);
-                        });
-                      },
-                    ),
-                  ],
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        isUsingSignLang: value);
+                    setState(() {});
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).isUsingSignLang,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "INVERTED",
-                      textScaleFactor: 2,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Switch(
-                      activeColor: Colors.white,
-                      value: currentVisualFilter == VisualFilter.inverted,
-                      onChanged: (value) {
-                        setState(() {
-                          print(
-                              "DEBUG: $value, in inverted, ${currentVisualFilter.toString()}");
-                          updateVisualFilter(value, VisualFilter.inverted);
-                        });
-                      },
-                    ),
-                  ],
-                )
               ],
             ),
-            body: Stack(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(left: length),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// The colored curved blob in the background (white, yellow, etc.).
-                      BottomColoredBlob(
-                        size: size,
-                        currentSelectedIndex: _selectedIndex,
-                        colors: [
-                          Colors.white,
-                          Colors.cyan,
-                          Colors.yellow,
-                          Theme.of(context).accentColor,
-                          Colors.white
-                        ],
-                        getCurrentSelectedIndex: getCurrentSelectedIndex,
-                      ),
-
-                      /// Top Navigation Bar.
-                      Container(
-                        width: size.width,
-                        height: navHeight,
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: TopNavigationBar(
-                          getSelectedIndex: getCurrentSelectedIndex,
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          defaultIconSizes: 0.425 * navHeight,
-                          defaultOnPressed: _onNavButtonTapped,
-                          defaultTextScaleFactor: 0.00275 * size.height,
-                          children: [
-                            NavigationBarButton(
-                              icon: SvgAsset.logo_icon,
-                              resetCount: true,
-                              text: " ",
-                              size: 0.435 * navHeight,
-                            ),
-                            NavigationBarButton(
-                              icon: SvgAsset.videos_icon,
-                              activeIcon: SvgAsset.videos_active_icon,
-                              text: "Destacados",
-                            ),
-                            NavigationBarButton(
-                              icon: SvgAsset.series_icon,
-                              activeIcon: SvgAsset.series_active_icon,
-                              text: "Series",
-                            ),
-                            NavigationBarButton(
-                              icon: SvgAsset.lists_icon,
-                              activeIcon: SvgAsset.lists_active_icon,
-                              text: "Listas",
-                            ),
-                            NavigationBarButton(
-                              icon: SvgAsset.games_icon,
-                              activeIcon: SvgAsset.games_active_icon,
-                              text: "Juegos",
-                            ),
-                            NavigationBarButton(
-                              icon: SvgAsset.search_icon,
-                              text: "Buscar",
-                              onPressed: (index) {
-                                playSound("sounds/click/click.mp3");
-                                Navigator.push(
-                                    context,
-                                    ConfigPageRoute(
-                                        configSettings: ConfigSettings(
-                                            filter: currentVisualFilter),
-                                        builder: (context) {
-                                          return SearchPage(
-                                            speech: speech,
-                                          );
-                                        }));
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      /// Video & Game Cards' List.
-                      Expanded(
-                        child: Center(
-                          child: _widgetOptions.elementAt(_selectedIndex),
-                        ),
-                      ),
-                    ],
-                  ),
+                Text(
+                  "CHANGE THEME",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
                 ),
-                PullableDrawerBlob(
-                  size: size,
-                  color: Theme.of(context).accentColor,
-                  length: length,
-                  innerRadius: innerRadius,
-                  outerRadius: outerRadius,
-                  iconSizePercentage: 0.65,
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter: value ? VisualMode.dark : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).isDarkMode,
                 ),
               ],
-            )),
-      ),
-    ));
-  }
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "GRAYSCALE",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter:
+                            value ? VisualMode.grayscale : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).filter ==
+                      GRAYSCALE_FILTER,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "INVERTED",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        filter:
+                            value ? VisualMode.inverted : VisualMode.normal);
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).filter ==
+                      INVERTED_FILTER,
+                ),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Card(
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.audiotrack,
+                      color: Colors.green,
+                      size: navHeight * 0.3,
+                    ),
+                    title: Text(
+                      'VOLUMEN MÚSICA',
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
+                Slider(
+                    value: _val,
+                    min: 0,
+                    max: 1,
+                    divisions: 100,
+                    onChanged: (val) {
+                      _val = val;
+                      setState(() {});
+                      if (timer != null) {
+                        timer.cancel();
+                      }
+                      //use timer for the smoother sliding
+                      timer = Timer(Duration(milliseconds: 200), () {
+                        BackgroundMusicManager.setVolume(val);
+                        AppStateNotifier.save(context, musicVolume: val);
+                      });
+                    })
+              ],
+            )
+          ],
+        ),
+        body: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: length),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  /// The colored curved blob in the background (white, yellow, etc.).
+                  BottomColoredBlob(
+                    size: size,
+                    currentSelectedIndex: _selectedIndex,
+                    colors: [
+                      Colors.white,
+                      Colors.cyan,
+                      Colors.yellow,
+                      Theme.of(context).accentColor,
+                      Colors.white
+                    ],
+                    getCurrentSelectedIndex: getCurrentSelectedIndex,
+                  ),
 
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes, volume: 10.0);
+                  /// Top Navigation Bar.
+                  Container(
+                    width: size.width,
+                    height: navHeight,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TopNavigationBar(
+                      getSelectedIndex: getCurrentSelectedIndex,
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      defaultIconSizes: 0.425 * navHeight,
+                      defaultOnPressed: _onNavButtonTapped,
+                      defaultTextScaleFactor: 0.00275 * size.height,
+                      children: [
+                        NavigationBarButton(
+                          icon: SvgAsset.logo_icon,
+                          resetCount: true,
+                          text: " ",
+                          size: 0.435 * navHeight,
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.videos_icon,
+                          activeIcon: SvgAsset.videos_active_icon,
+                          text: "Destacados",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.series_icon,
+                          activeIcon: SvgAsset.series_active_icon,
+                          text: "Series",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.lists_icon,
+                          activeIcon: SvgAsset.lists_active_icon,
+                          text: "Listas",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.games_icon,
+                          activeIcon: SvgAsset.games_active_icon,
+                          text: "Juegos",
+                        ),
+                        NavigationBarButton(
+                          icon: SvgAsset.search_icon,
+                          text: "Buscar",
+                          onPressed: (index) {
+                            MusicEffect.play(MediaAsset.mp3.click);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return SearchPage(
+                                speech: speech,
+                              );
+                            }));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  /// Video & Game Cards' List.
+                  Expanded(
+                    child: Center(
+                      child: _widgetOptions.elementAt(_selectedIndex),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PullableDrawerBlob(
+              size: size,
+              color: Theme.of(context).accentColor,
+              length: length,
+              innerRadius: innerRadius,
+              outerRadius: outerRadius,
+              iconSizePercentage: 0.65,
+            ),
+          ],
+        ));
   }
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;
     });
@@ -336,6 +319,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   int getCurrentSelectedIndex() {
     return _selectedIndex;
+  }
+
+  void rebuild() {
+    setState(() {});
   }
 }
 

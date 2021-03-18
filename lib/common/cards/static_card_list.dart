@@ -1,13 +1,10 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
 import 'package:flutter/material.dart';
-
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:provider/provider.dart';
 
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     with WidgetsBindingObserver {
@@ -16,6 +13,9 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     initialScrollOffset: 0.0,
     keepScrollOffset: true,
   );
+
+  /// If user began scrolling.
+  bool startedScrolling;
 
   /// If user began scrolling.
   bool isScrolling = false;
@@ -46,11 +46,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   /// Determined on initState of card list has description.
   bool hasDescription = true;
 
-  ColorFilter colorFilter = NORMAL_FILTER;
-  VisualFilter currentVisualFilter = VisualFilter.normal;
-
-  bool hasSetFilter = false;
-
   void setPlayerEffects();
 
   @override
@@ -70,13 +65,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     setPlayerEffects();
   }
 
-  /// Play sounds.
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   /// Listener for scroll changes.
   ///
   /// Loads the next page (per page) for cards videos if the scroll is
@@ -88,9 +76,9 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
       // ignore: invalid_use_of_protected_member
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
-          !isScrolling) {
-        playSound("sounds/beam/beam.mp3");
-        isScrolling = true;
+          !startedScrolling) {
+        MusicEffect.play(MediaAsset.mp3.beam);
+        startedScrolling = true;
       }
     });
   }
@@ -109,63 +97,12 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
         '');
   }
 
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    if (!hasSetFilter) {
-      hasSetFilter = true;
-
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-
     return BackgroundMusic(
-        child: ColorFiltered(
-      colorFilter: colorFilter,
       child: WillPopScope(
         child: Scaffold(
             backgroundColor: Theme.of(context).primaryColor,
@@ -194,7 +131,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                           asset: SvgAsset.back_icon,
                           size: 0.5 * topBarHeight,
                           onPressed: () {
-                            playSound("sounds/go_back/go_back.mp3");
+                            MusicEffect.play(MediaAsset.mp3.go_back);
                             Navigator.of(context).pop();
                           },
                         ),
@@ -293,10 +230,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
               ],
             )),
         onWillPop: () {
-          playSound("sounds/go_back/go_back.mp3");
+          MusicEffect.play(MediaAsset.mp3.go_back);
           return Future<bool>.value(true);
         },
       ),
-    ));
+    );
   }
 }

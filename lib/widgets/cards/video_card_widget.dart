@@ -1,8 +1,6 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/video_display_page.dart';
@@ -33,7 +31,7 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
   }
 
   @override
-  String get badge => SvgAsset.videos_badge;
+  AssetResource get badge => SvgAsset.videos_badge;
 
   @override
   String get cardText => formatVideoText();
@@ -43,20 +41,16 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
+    MusicEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
 
     /// When tapped, open video.
-    Navigator.push(
-        context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
-            builder: (context) {
-              return VideoDisplay(
-                video: widget.video,
-                heroId: widget.heroId,
-              );
-            }));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return VideoDisplay(
+        video: widget.video,
+        heroId: widget.heroId,
+      );
+    }));
   }
 
   @override

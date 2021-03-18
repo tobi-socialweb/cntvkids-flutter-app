@@ -1,22 +1,25 @@
 import 'dart:async';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
-import 'package:cntvkids_app/widgets/config_widget.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:better_player/better_player.dart';
-
+import 'package:focus_detector/focus_detector.dart';
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
+
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/video_cast_widget.dart';
+import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 
-typedef bool BoolCallback();
+import 'package:cntvkids_app/widgets/video_cast_widget.dart';
+import 'package:provider/provider.dart';
+
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
@@ -40,14 +43,12 @@ class VideoDisplay extends StatefulWidget {
   final Video video;
   final String heroId;
   final BetterPlayerController betterPlayerController;
-  final List<Video> suggested;
 
   const VideoDisplay(
       {Key key,
       @required this.video,
       @required this.heroId,
-      this.betterPlayerController,
-      this.suggested})
+      this.betterPlayerController})
       : super(key: key);
 
   @override
@@ -62,11 +63,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   BetterPlayerController _betterPlayerController;
   BetterPlayerDataSource _betterPlayerDataSource;
 
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
-  bool hasSetFilter = false;
-
+  bool showOneAlert = true;
   @override
   void initState() {
     super.initState();
@@ -114,6 +111,88 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerDataSource: _betterPlayerDataSource);
   }
 
+  likeAlert(BuildContext context) async {
+    double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Te gusto el video: \"${widget.video.title}\" ?"),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  child: Container(
+                      height: sizeAlertHeight,
+                      alignment: Alignment.centerLeft,
+                      child: Text("No")),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton(
+                  child: Container(
+                      height: sizeAlertHeight,
+                      alignment: Alignment.centerRight,
+                      child: Text("Si")),
+                  onPressed: () async {
+                    String itemId = widget.video.id.toString();
+                    print("DEBUG: detalles de video a guardar ....");
+                    print("DEBUG: " + itemId);
+                    int userId = await getUserId(context);
+                    print("DEBUG: $userId");
+                    String userIp =
+                        Provider.of<AppStateNotifier>(context, listen: false)
+                            .ip;
+                    print("DEBUG: " + userIp);
+
+                    try {
+                      String requestUrl =
+                          "https://cntvinfantil.cl/wp-json/wp-ulike-pro/v1/vote/?item_id=$itemId&user_id=$userId&type=post&status=like&user_ip=$userIp";
+
+                      Response response = await customDio.post(requestUrl,
+                          options: buildCacheOptions(Duration(days: 3),
+                              maxStale: Duration(days: 7)));
+
+                      /// If request has succeeded.
+                      if (response.statusCode == 200) {
+                        print("DEBUG: response succeded: ${response.data}");
+                      }
+                    } on DioError catch (e) {
+                      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+                          DioErrorType.CONNECT_TIMEOUT == e.type) {
+                        /// Couldn't reach the server.
+                        throw (ERROR_MESSAGE[ErrorTypes.UNREACHABLE]);
+                      } else if (DioErrorType.RESPONSE == e.type) {
+                        /// If request was badly formed.
+                        if (e.response.statusCode == 400) {
+                          print("reponse 400");
+
+                          /// Otherwise.
+                        } else {
+                          print(e.message);
+                          print(e.request.toString());
+                        }
+                      } else if (DioErrorType.DEFAULT == e.type) {
+                        if (e.message.contains('SocketException')) {
+                          /// No connection to internet.
+                          throw (ERROR_MESSAGE[ErrorTypes.NO_CONNECTION]);
+                        }
+                      } else {
+                        /// Unknown problem connecting to server.
+                        throw (ERROR_MESSAGE[ErrorTypes.UNKNOWN]);
+                      }
+                    }
+
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   Future<dynamic> _getFutureVideo() {
     video = BetterPlayer(controller: _betterPlayerController);
 
@@ -121,125 +200,55 @@ class _VideoDisplayState extends State<VideoDisplay> {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(video);
       }
+      if (showOneAlert &&
+          event.betterPlayerEventType == BetterPlayerEventType.finished &&
+          context != null) {
+        likeAlert(context);
+        showOneAlert = false;
+      }
     });
 
     return completer.future;
   }
 
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (!hasSetFilter) {
-      hasSetFilter = true;
-
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-
-    return ColorFiltered(
-      colorFilter: colorFilter,
-      child: InheritedVideoDisplay(
-        context: context,
-        isMinimized: false,
-        toggleDisplay: toggleDisplay,
-        child: FutureBuilder(
-            future: _getFutureVideo(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return WillPopScope(
-                    child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Hero(
-                          tag: widget.heroId,
-                          child: snapshot.data,
-                        )),
-
-                    /// When using the 'back' button, toggle minimize.
-                    onWillPop: () {
-                      playSound("sounds/go_back/go_back.mp3");
-                      return Future<bool>.value(true);
-                    });
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error);
-              } else {
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                );
-              }
-            }),
-      ),
+    return InheritedVideoDisplay(
+      context: context,
+      isMinimized: false,
+      toggleDisplay: toggleDisplay,
+      child: FutureBuilder(
+          future: _getFutureVideo(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Hero(
+                    tag: widget.heroId,
+                    child: snapshot.data,
+                  ));
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error);
+            } else {
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              );
+            }
+          }),
     );
   }
 
   void toggleDisplay() {
-    playSound("sounds/go_back/go_back.mp3");
-    Navigator.push(
-        context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
-            builder: (context) {
-              return MinimizedVideoDisplay(
-                video: widget.video,
-                heroId: widget.heroId,
-                betterPlayerController: _betterPlayerController,
-              );
-            }));
-  }
-
-  @override
-  void dispose() {
-    video.controller.dispose(forceDispose: true);
-    super.dispose();
+    MusicEffect.play(MediaAsset.mp3.go_back);
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return MinimizedVideoDisplay(
+        video: widget.video,
+        heroId: widget.heroId,
+        betterPlayerController: _betterPlayerController,
+      );
+    }));
   }
 }
 
@@ -248,7 +257,6 @@ class MinimizedVideoDisplay extends StatefulWidget {
   final Video video;
   final String heroId;
   final BetterPlayerController betterPlayerController;
-
   MinimizedVideoDisplay({this.video, this.heroId, this.betterPlayerController});
 
   @override
@@ -256,51 +264,17 @@ class MinimizedVideoDisplay extends StatefulWidget {
 }
 
 class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
-  bool hasSetFilter = false;
-
+  SearchCardList suggested;
+  bool shouldDispose = true;
   @override
   void initState() {
     super.initState();
-  }
-
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
+    bool hasSeries = widget.video.series != null || widget.video.series != "";
+    suggested = SearchCardList(
+      search: hasSeries ? widget.video.series : widget.video.title,
+      video: widget.video,
+      isMinimized: true,
+    );
   }
 
   @override
@@ -311,166 +285,140 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     final double iconSize = 0.1 * size.height;
     final double miniVideoSize = 0.6 * size.height;
 
-    final bool hasSeries =
-        widget.video.series != null || widget.video.series != "";
-
-    if (!hasSetFilter) {
-      hasSetFilter = true;
-
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-
-    return ColorFiltered(
-      colorFilter: colorFilter,
-      child: WillPopScope(
-          child: Material(
-            color: Theme.of(context).accentColor,
-            child: FlatButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              child: LimitedBox(
-                /// TODO: fix
-                maxWidth: 0.85 * size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return FocusDetector(
+      onFocusLost: () {
+        print("Debug: vista minimizada Perdio foco");
+        if (shouldDispose) {
+          print("Debug: dipose al entrar a otro video");
+          widget.betterPlayerController.dispose(forceDispose: true);
+        }
+      },
+      child: Material(
+        color: Theme.of(context).accentColor,
+        child: FlatButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          child: LimitedBox(
+            /// TODO: fix
+            maxWidth: 0.85 * size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        /// Left side icons.
-                        Container(
-                          height: miniVideoSize,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.05 * size.height),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              SvgButton(
-                                asset: SvgAsset.back_icon,
-                                size: iconSize,
-                                onPressed: () {
-                                  playSound("sounds/go_back/go_back.mp3");
-                                  widget.betterPlayerController.dispose();
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-
-                        /// Centered video.
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0.01 * size.width,
-                              0.05 * size.height, 0.01 * size.width, 0.0),
-                          child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(0.075 * size.height),
-                            child: InheritedVideoDisplay(
-                                context: context,
-                                isMinimized: true,
-                                toggleDisplay: toggleDisplay,
-                                child: Container(
-                                  height: miniVideoSize,
-                                  child: AspectRatio(
-                                      aspectRatio: 16 / 9,
-                                      child: MediaQuery(
-                                        data: MediaQueryData(
-                                            size: Size(miniVideoSize * 16 / 9,
-                                                miniVideoSize)),
-                                        child: Hero(
-                                          tag: widget.heroId,
-                                          child: BetterPlayer(
-                                            controller:
-                                                widget.betterPlayerController,
-                                          ),
-                                        ),
-                                      )),
-                                )),
-                          ),
-                        ),
-
-                        /// Right side icons.
-                        Container(
-                          height: miniVideoSize,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.05 * size.height),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Stack(
-                                children: [
-                                  SvgIcon(
-                                    asset: SvgAsset.chromecast_icon,
-                                    size: iconSize,
-                                  ),
-                                  ChromeCast(
-                                    video: widget.video,
-                                    iconSize: iconSize,
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                    /// Left side icons.
+                    Container(
+                      height: miniVideoSize,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          SvgButton(
+                            asset: SvgAsset.back_icon,
+                            size: iconSize,
+                            onPressed: () {
+                              MusicEffect.play(MediaAsset.mp3.go_back);
+                              widget.betterPlayerController.dispose();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      ),
                     ),
 
-                    /// FeaturedCardList(isMinimized: true),
-                    Expanded(
-                      child: Container(
-                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
-                        padding: EdgeInsets.symmetric(
-                            vertical: (size.height -
-                                    0.25 * size.height -
-                                    0.1 * size.height -
-                                    miniVideoSize) /
-                                2),
-                        child: SearchCardList(
-                          search: hasSeries
-                              ? widget.video.series
-                              : widget.video.title,
-                          video: widget.video,
-                          isMinimized: true,
-                        ),
+                    /// Centered video.
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                          0.05 * size.height, 0.01 * size.width, 0.0),
+                      child: ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(0.075 * size.height),
+                        child: InheritedVideoDisplay(
+                            context: context,
+                            isMinimized: true,
+                            toggleDisplay: toggleDisplay,
+                            child: Container(
+                              height: miniVideoSize,
+                              child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: MediaQuery(
+                                    data: MediaQueryData(
+                                        size: Size(miniVideoSize * 16 / 9,
+                                            miniVideoSize)),
+                                    child: Hero(
+                                      tag: widget.heroId,
+                                      child: BetterPlayer(
+                                        controller:
+                                            widget.betterPlayerController,
+                                      ),
+                                    ),
+                                  )),
+                            )),
                       ),
-                    )
+                    ),
+
+                    /// Right side icons.
+                    Container(
+                      height: miniVideoSize,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Stack(
+                            children: [
+                              SvgIcon(
+                                asset: SvgAsset.chromecast_icon,
+                                size: iconSize,
+                              ),
+                              ChromeCast(
+                                video: widget.video,
+                                iconSize: iconSize,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              onPressed: () {
-                playSound("sounds/click/click.mp3");
-                Navigator.of(context).pop();
-              },
+
+                /// FeaturedCardList(isMinimized: true),
+                Expanded(
+                  child: Container(
+                    /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                    padding: EdgeInsets.symmetric(
+                        vertical: (size.height -
+                                0.25 * size.height -
+                                0.1 * size.height -
+                                miniVideoSize) /
+                            2),
+                    child: suggested,
+                  ),
+                )
+              ],
             ),
           ),
-          onWillPop: () {
-            widget.betterPlayerController.dispose();
-            playSound("sounds/go_back/go_back.mp3");
-            Navigator.of(context).pop();
-            return Future<bool>.value(true);
-          }),
+          onPressed: () {
+            toggleDisplay();
+          },
+        ),
+      ),
     );
   }
 
   void toggleDisplay() {
-    playSound("sounds/go_back/go_back.mp3");
+    if (!mounted) return;
+    setState(() {
+      shouldDispose = false;
+    });
+    MusicEffect.play(MediaAsset.mp3.click);
     Navigator.of(context).pop();
   }
 }

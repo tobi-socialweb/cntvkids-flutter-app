@@ -1,11 +1,11 @@
-import 'package:cntvkids_app/widgets/config_widget.dart';
+import 'package:cntvkids_app/common/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/models/lists_model.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/lists_detail_page.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 
 class ListsCard extends StatefulWidget {
   final Lists list;
@@ -21,24 +21,18 @@ class ListsCard extends StatefulWidget {
 
 class _ListsCardState extends ClickableCardState<ListsCard> {
   @override
-  String get badge => SvgAsset.lists_badge;
+  AssetResource get badge => SvgAsset.lists_badge;
 
   @override
   String get heroId => widget.heroId;
 
   @override
   void onTap() {
-    playSound("sounds/click/click.mp3");
-    Navigator.push(
-        context,
-        ConfigPageRoute(
-            configSettings: Config.of(context).configSettings,
-            builder: (context) {
-              return ListsCardDetail(
-                  list: widget.list,
-                  heroId: widget.heroId,
-                  imgProvider: imgProvider);
-            }));
+    MusicEffect.play(MediaAsset.mp3.click);
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ListsCardDetail(
+          list: widget.list, heroId: widget.heroId, imgProvider: imgProvider);
+    }));
   }
 
   @override

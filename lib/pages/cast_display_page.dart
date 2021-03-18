@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/config_widget.dart';
+import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -27,11 +25,6 @@ class ChromeCastView extends StatefulWidget {
 class _ChromeCastViewState extends State<ChromeCastView> {
   bool _playing = false;
 
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
-
-  bool hasSetFilter = false;
-
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
 
@@ -45,43 +38,6 @@ class _ChromeCastViewState extends State<ChromeCastView> {
     super.initState();
   }
 
-  void updateVisualFilter(bool value, VisualFilter filter) {
-    if (!this.mounted) return;
-
-    switch (filter) {
-      case VisualFilter.grayscale:
-        setState(() {
-          colorFilter = value ? GRAYSCALE_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.grayscale : VisualFilter.normal;
-        });
-        break;
-
-      case VisualFilter.inverted:
-        setState(() {
-          colorFilter = value ? INVERTED_FILTER : NORMAL_FILTER;
-          currentVisualFilter =
-              value ? VisualFilter.inverted : VisualFilter.normal;
-        });
-        break;
-
-      /// normal
-      default:
-        setState(() {
-          colorFilter = NORMAL_FILTER;
-          currentVisualFilter = VisualFilter.normal;
-        });
-        break;
-    }
-  }
-
-  /// Play sounds efects
-  Future<AudioPlayer> playSound(String soundName) async {
-    AudioCache cache = new AudioCache();
-    var bytes = await (await cache.load(soundName)).readAsBytes();
-    return cache.playBytes(bytes);
-  }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -93,149 +49,128 @@ class _ChromeCastViewState extends State<ChromeCastView> {
     final bool hasSeries =
         widget.video.series != null || widget.video.series != "";
 
-    if (!hasSetFilter) {
-      hasSetFilter = true;
-
-      currentVisualFilter = Config.of(context).configSettings.filter;
-
-      switch (currentVisualFilter) {
-        case VisualFilter.grayscale:
-          colorFilter = GRAYSCALE_FILTER;
-          break;
-
-        case VisualFilter.inverted:
-          colorFilter = INVERTED_FILTER;
-          break;
-
-        default:
-          colorFilter = NORMAL_FILTER;
-      }
-    }
-    return ColorFiltered(
-      colorFilter: colorFilter,
-      child: WillPopScope(
-          child: Material(
-            color: Theme.of(context).accentColor,
-            child: FlatButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              child: LimitedBox(
-                /// TODO: fix
-                maxWidth: 0.85 * size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        /// Left side icons.
-                        Container(
-                          height: miniVideoSize,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.05 * size.height),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              SvgButton(
-                                asset: SvgAsset.back_icon,
-                                size: iconSize,
-                                onPressed: () {
-                                  playSound("sounds/go_back/go_back.mp3");
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-
-                        /// Centered video.
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0.01 * size.width,
-                              0.05 * size.height, 0.01 * size.width, 0.0),
-                          child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(0.075 * size.height),
-                              child: Stack(
-                                children: [
-                                  Image(
-                                    image: imgProvider,
-                                    width: width,
-                                    height: miniVideoSize,
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.medium,
-                                  ),
-                                  Positioned(
-                                    top: 0.25 * miniVideoSize,
-                                    left: 0.25 * miniVideoSize,
-                                    child: _mediaControls(),
-                                  ),
-                                ],
-                              )),
-                        ),
-
-                        /// Right side icons.
-                        Container(
-                          height: miniVideoSize,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.05 * size.height),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Stack(
-                                children: [
-                                  SvgIcon(
-                                    asset: SvgAsset.chromecast_icon,
-                                    size: iconSize,
-                                  ),
-                                  //// TODO: fix ulr sended to chrome cast
-                                  ChromeCastButton(
-                                      size: iconSize, color: Colors.white),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    /// FeaturedCardList(isMinimized: true),
-                    Expanded(
-                      child: Container(
-                        /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
-                        padding: EdgeInsets.symmetric(
-                            vertical: (size.height -
-                                    0.25 * size.height -
-                                    0.1 * size.height -
-                                    miniVideoSize) /
-                                2),
-                        child: SearchCardList(
-                          search: hasSeries
-                              ? widget.video.series
-                              : widget.video.title,
-                          video: widget.video,
-                          isMinimized: true,
+    return WillPopScope(
+        child: Material(
+          color: Theme.of(context).accentColor,
+          child: FlatButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: LimitedBox(
+              /// TODO: fix
+              maxWidth: 0.85 * size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// Left side icons.
+                      Container(
+                        height: miniVideoSize,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            SvgButton(
+                              asset: SvgAsset.back_icon,
+                              size: iconSize,
+                              onPressed: () {
+                                MusicEffect.play(MediaAsset.mp3.go_back);
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
                         ),
                       ),
-                    )
-                  ],
-                ),
+
+                      /// Centered video.
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0.01 * size.width,
+                            0.05 * size.height, 0.01 * size.width, 0.0),
+                        child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(0.075 * size.height),
+                            child: Stack(
+                              children: [
+                                Image(
+                                  image: imgProvider,
+                                  width: width,
+                                  height: miniVideoSize,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.medium,
+                                ),
+                                Positioned(
+                                  top: 0.25 * miniVideoSize,
+                                  left: 0.25 * miniVideoSize,
+                                  child: _mediaControls(),
+                                ),
+                              ],
+                            )),
+                      ),
+
+                      /// Right side icons.
+                      Container(
+                        height: miniVideoSize,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 0.05 * size.height),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Stack(
+                              children: [
+                                SvgIcon(
+                                  asset: SvgAsset.chromecast_icon,
+                                  size: iconSize,
+                                ),
+                                //// TODO: fix ulr sended to chrome cast
+                                ChromeCastButton(
+                                    size: iconSize, color: Colors.white),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  /// FeaturedCardList(isMinimized: true),
+                  Expanded(
+                    child: Container(
+                      /// 0.35 = hight factor of suggested video, 0.05 = padding of video center
+                      padding: EdgeInsets.symmetric(
+                          vertical: (size.height -
+                                  0.25 * size.height -
+                                  0.1 * size.height -
+                                  miniVideoSize) /
+                              2),
+                      child: SearchCardList(
+                        search: hasSeries
+                            ? widget.video.series
+                            : widget.video.title,
+                        video: widget.video,
+                        isMinimized: true,
+                      ),
+                    ),
+                  )
+                ],
               ),
-              onPressed: () {
-                playSound("sounds/click/click.mp3");
-                Navigator.of(context).pop();
-              },
             ),
+            onPressed: () {
+              MusicEffect.play(MediaAsset.mp3.click);
+              Navigator.of(context).pop();
+            },
           ),
-          onWillPop: () {
-            playSound("sounds/go_back/go_back.mp3");
-            Navigator.of(context).pop();
-            return Future<bool>.value(true);
-          }),
-    );
+        ),
+        onWillPop: () {
+          MusicEffect.play(MediaAsset.mp3.go_back);
+          Navigator.of(context).pop();
+          return Future<bool>.value(true);
+        });
   }
 
   Widget _mediaControls() {
