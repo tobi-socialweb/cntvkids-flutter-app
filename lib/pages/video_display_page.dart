@@ -1,20 +1,22 @@
 import 'dart:async';
 
-import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:better_player/better_player.dart';
-
-import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/video_cast_widget.dart';
-import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/helpers.dart';
+
+import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
+
+import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
+
+import 'package:cntvkids_app/widgets/video_cast_widget.dart';
+import 'package:provider/provider.dart';
 
 typedef bool BoolCallback();
 
@@ -110,7 +112,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   likeAlert(BuildContext context) async {
     double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
-    final prefs = await SharedPreferences.getInstance();
     return showDialog(
         context: context,
         builder: (context) {
@@ -133,25 +134,16 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       height: sizeAlertHeight,
                       alignment: Alignment.centerRight,
                       child: Text("Si")),
-                  onPressed: () {
-                    var idVideo = widget.video.id.toString();
-                    print("Debug: video a guardar-> " + idVideo);
-                    var lista = prefs.getStringList(LIKE_LIST_KEY);
-                    print("Debug: Lista-> $lista");
-                    bool add = true;
-                    if (lista == null) {
-                      lista = [];
-                    } else {
-                      for (int i = 0; i < lista.length; i++) {
-                        if (lista[i] == idVideo) {
-                          add = false;
-                        }
-                      }
-                    }
-                    if (add) {
-                      lista.add(idVideo);
-                      prefs.setStringList(LIKE_LIST_KEY, lista);
-                    }
+                  onPressed: () async {
+                    String itemId = widget.video.id.toString();
+                    print("Debug: detalles de video a guardar ....");
+                    print(itemId);
+                    int userId = await getUserId(context);
+                    print(userId);
+                    String userIp =
+                        Provider.of<AppStateNotifier>(context, listen: false)
+                            .ip;
+                    print(userIp);
 
                     Navigator.of(context).pop();
                   },
