@@ -34,9 +34,7 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
 
   @override
   List dataToCardList(data) {
-    return data
-        .map((value) => Video.fromJson(value, originModelType: ModelType.video))
-        .toList();
+    return data.map((value) => Video.fromJson(value)).toList();
   }
 
   @override

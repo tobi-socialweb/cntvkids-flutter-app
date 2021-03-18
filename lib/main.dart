@@ -1,11 +1,14 @@
-import 'package:cntvkids_app/pages/splash_screen_page.dart';
-import 'package:better_player/better_player.dart';
-import 'package:cntvkids_app/pages/menu/home_page.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'package:better_player/better_player.dart';
+
 import 'package:provider/provider.dart';
-import 'common/helpers.dart';
-import 'dart:async';
+
+import 'package:cntvkids_app/pages/menu/home_page.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 
 /// Main function called at app start.
 void main() async {
@@ -21,35 +24,16 @@ void main() async {
   /// a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
-  /// Theming and stuff probably related to OneSignal.
   runApp(ChangeNotifierProvider<AppStateNotifier>(
       create: (context) => AppStateNotifier(),
       child: Consumer<AppStateNotifier>(builder: (context, appState, child) {
+        print("DEBUG: $appState");
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'CNTV Kids',
-            theme: ThemeData(
-                brightness: Brightness.light,
-                primaryColorLight: Colors.white,
-                primaryColorDark: Colors.black,
-                primaryColor: Colors.red,
-                accentColor: Color(0xFF390084),
-                canvasColor: Color(0xFFE3E3E3),
-                textTheme: TextTheme(
-                  bodyText1: TextStyle(
-                    fontSize: 12,
-                    height: 1.5,
-                    color: Colors.black,
-                    fontFamily: "FredokaOne",
-                  ),
-                  bodyText2: TextStyle(
-                      fontSize: 12,
-                      height: 1.5,
-                      color: Colors.black,
-                      fontFamily: "FredokaOne"),
-                ),
-                backgroundColor: Colors.white,
-                scaffoldBackgroundColor: Colors.white),
+            theme: AppStateNotifier.lightTheme,
+            darkTheme: AppStateNotifier.darkTheme,
+            themeMode: appState.getTheme(),
             home: MyApp());
       })));
 }
@@ -60,53 +44,75 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  /// A future completer used when loading the splash screen.
   Completer completer = new Completer();
-  BetterPlayer videoSplashScreen;
-  bool end = false;
 
-  /// TODO: implement timer to test if video could not load and show
-  /// error message. (and some retry attempts).
+  /// The splash screen video loaded using BetterPlayer.
+  BetterPlayer splashScreenVideo = BetterPlayer.network(
+      "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
+      betterPlayerConfiguration: BetterPlayerConfiguration(
+        aspectRatio: 16 / 9,
+        autoPlay: true,
+        autoDispose: false,
+        controlsConfiguration:
+            BetterPlayerControlsConfiguration(showControls: false),
+      ));
+
+  /// If the splash screen video has ended or not.
+  bool videoEnded = false;
+
+  /// TODO: implement timer to test if video could not load and show error message. (and some retry attempts).
   void initState() {
-    super.initState();
-    videoSplashScreen = BetterPlayer.network(
-        "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
-        betterPlayerConfiguration: BetterPlayerConfiguration(
-          aspectRatio: 16 / 9,
-          autoPlay: true,
-          autoDispose: false,
-          controlsConfiguration:
-              BetterPlayerControlsConfiguration(showControls: false),
-        ));
-    videoSplashScreen.controller.addEventsListener((event) {
+    splashScreenVideo.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
-        completer.complete(videoSplashScreen);
+        completer.complete(splashScreenVideo);
       } else if (event.betterPlayerEventType ==
           BetterPlayerEventType.finished) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return HomePage();
-        }));
+        pushHomePage();
       }
     });
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: completer.future,
-      // ignore: missing_return
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData && !end) {
-          return SplashScreen(videoSplashScreen: videoSplashScreen);
-        } else if (snapshot.hasError) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return HomePage();
-          }));
+        /// If video loaded and has not ended.
+        if (snapshot.hasData && !videoEnded) {
+          return Container(
+            color: Colors.black,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: splashScreenVideo,
+              ),
+            ),
+          );
+
+          /// Otherwise, show a black screen.
         } else {
+          /// If there was an error, just push the home page.
+          if (snapshot.hasError) pushHomePage();
+
           return Container(color: Colors.black);
         }
       },
     );
+  }
+
+  void pushHomePage() {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return HomePage();
+    }));
+  }
+
+  @override
+  void dispose() {
+    splashScreenVideo.controller.dispose(forceDispose: true);
+
+    super.dispose();
   }
 }

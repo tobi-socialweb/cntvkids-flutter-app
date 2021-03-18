@@ -29,7 +29,9 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  final AppStateNotifier appState;
+
+  const HomePage({Key key, this.appState}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -147,6 +149,28 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             drawerScrimColor: Colors.transparent,
             drawer: MenuDrawer(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "CHANGE THEME (${Theme.of(context).brightness})",
+                      textScaleFactor: 2,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Switch(
+                      activeColor: Colors.white,
+                      value: Theme.of(context).brightness == Brightness.light,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value)
+                            widget.appState.setLightMode();
+                          else
+                            widget.appState.setDarkMode();
+                        });
+                      },
+                    ),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

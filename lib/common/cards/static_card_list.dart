@@ -12,10 +12,13 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     with WidgetsBindingObserver {
   /// Controller for the `ListView` scrolling.
-  ScrollController controller;
+  ScrollController controller = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
 
   /// If user began scrolling.
-  bool startedScrolling;
+  bool isScrolling = false;
 
   /// All cards to show.
   List<dynamic> get cards;
@@ -41,10 +44,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   String get description;
 
   /// Determined on initState of card list has description.
-  bool hasDescription;
+  bool hasDescription = true;
 
-  ColorFilter colorFilter;
-  VisualFilter currentVisualFilter;
+  ColorFilter colorFilter = NORMAL_FILTER;
+  VisualFilter currentVisualFilter = VisualFilter.normal;
 
   bool hasSetFilter = false;
 
@@ -57,10 +60,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     for (int i = 0; i < cards.length; i++) {
       videos.add(cardWidget(cards[i], cards[i].id.toString()));
     }
-    controller = ScrollController(
-      initialScrollOffset: 0.0,
-      keepScrollOffset: true,
-    );
+
     controller.addListener(_scrollControllerListener);
 
     hasDescription = description != null && description != "";
@@ -68,7 +68,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     WidgetsBinding.instance.addObserver(this);
 
     setPlayerEffects();
-    startedScrolling = false;
   }
 
   /// Play sounds.
@@ -89,9 +88,9 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
       // ignore: invalid_use_of_protected_member
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
-          !startedScrolling) {
+          !isScrolling) {
         playSound("sounds/beam/beam.mp3");
-        startedScrolling = true;
+        isScrolling = true;
       }
     });
   }
@@ -278,9 +277,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                     onNotification: (notification) {
                       if (notification is ScrollEndNotification) {
                         setState(() {
-                          startedScrolling = false;
+                          isScrolling = false;
                         });
                       }
+                      return true;
                     },
                   ),
                 ),

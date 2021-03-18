@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-
-import 'package:flutter/material.dart';
 
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
@@ -11,20 +12,95 @@ import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/store_manager.dart';
 
 DioCacheManager customDioCacheManager =
     DioCacheManager(CacheConfig(baseUrl: WORDPRESS_URL));
 Dio customDio = Dio()..interceptors.add(customDioCacheManager.interceptor);
 
 class AppStateNotifier extends ChangeNotifier {
-  bool isDarkMode = false;
   bool notificationOn = true;
 
-  void updateTheme(bool isDarkMode) {
-    this.isDarkMode = isDarkMode;
+  static final darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    primaryColorLight: Colors.black,
+    primaryColorDark: Colors.white,
+    primaryColor: Color(0xFF390084),
+    accentColor: Color(0xFFF95D58),
+    canvasColor: Color(0xFF3F3F3F),
+    textTheme: TextTheme(
+      bodyText1: TextStyle(
+        fontSize: 12,
+        height: 1.5,
+        color: Colors.white,
+        fontFamily: "FredokaOne",
+      ),
+      bodyText2: TextStyle(
+          fontSize: 12,
+          height: 1.5,
+          color: Colors.white,
+          fontFamily: "FredokaOne"),
+    ),
+    backgroundColor: Colors.black,
+    scaffoldBackgroundColor: Colors.black,
+  );
+
+  static final lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primaryColorLight: Colors.white,
+    primaryColorDark: Colors.black,
+    primaryColor: Colors.red,
+    accentColor: Color(0xFF390084),
+    canvasColor: Color(0xFFE3E3E3),
+    textTheme: TextTheme(
+      bodyText1: TextStyle(
+        fontSize: 12,
+        height: 1.5,
+        color: Colors.black,
+        fontFamily: "FredokaOne",
+      ),
+      bodyText2: TextStyle(
+          fontSize: 12,
+          height: 1.5,
+          color: Colors.black,
+          fontFamily: "FredokaOne"),
+    ),
+    backgroundColor: Colors.white,
+    scaffoldBackgroundColor: Colors.white,
+  );
+
+  ThemeData _themeData = lightTheme;
+  ThemeMode getTheme() {
+    print("DEBUG: getting theme mode: ${_themeData.brightness}");
+    return _themeData.brightness == Brightness.light
+        ? ThemeMode.light
+        : ThemeMode.dark;
+  }
+
+  AppStateNotifier() {
+    StorageManager.readData('themeMode').then((value) {
+      print('DEBUG: value read from storage: ' + value.toString());
+      var themeMode = value ?? 'dark';
+      if (themeMode == 'light') {
+        _themeData = lightTheme;
+      } else {
+        print('DEBUG: setting dark theme');
+        _themeData = darkTheme;
+      }
+      notifyListeners();
+    });
+  }
+
+  void setDarkMode() async {
+    _themeData = darkTheme;
+    StorageManager.saveData('themeMode', 'dark');
+    notifyListeners();
+  }
+
+  void setLightMode() async {
+    _themeData = lightTheme;
+    StorageManager.saveData('themeMode', 'light');
     notifyListeners();
   }
 
@@ -32,14 +108,6 @@ class AppStateNotifier extends ChangeNotifier {
     this.notificationOn = notificationOn;
     notifyListeners();
   }
-}
-
-Future<Null> changeToDarkTheme(BuildContext context, bool val) async {
-  final prefs = await SharedPreferences.getInstance();
-  final key = 'darktheme';
-  final value = val ? 1 : 0;
-  await prefs.setInt(key, value);
-  Provider.of<AppStateNotifier>(context, listen: false).updateTheme(val);
 }
 
 OneSignal onesignal = OneSignal();
@@ -61,8 +129,7 @@ class SvgIcon extends StatelessWidget {
   final double size;
   final EdgeInsets padding;
 
-  SvgIcon(
-      {@required this.asset, this.size = 10.0, this.padding = EdgeInsets.zero});
+  SvgIcon({this.asset, this.size = 10.0, this.padding = EdgeInsets.zero});
 
   @override
   Widget build(BuildContext context) {

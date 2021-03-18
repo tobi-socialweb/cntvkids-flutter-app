@@ -1,0 +1,23 @@
+# ignore these folders and files in root.
+/.*
+/android/*
+/apk_builds/*
+/build/*
+/ios/*
+/lib/*
+/gen/*
+/gen/*
+/LICENSE
+/pubspec.*
+
+# ignore these folders only when adding them in the output files
+# (this means they will be included in the pubspec.yaml file).
+%/assets/app/android/*
+%/assets/app/ios/*
+
+# ignore any files of this type.
+*.py
+*.md
+*.apk
+*.txt
+*.xml
