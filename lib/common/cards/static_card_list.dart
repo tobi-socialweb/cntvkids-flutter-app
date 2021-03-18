@@ -101,7 +101,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
     return BackgroundMusic(
-      volume: Provider.of<AppStateNotifier>(context).musicVolume,
       child: WillPopScope(
         child: Scaffold(
             backgroundColor: Theme.of(context).primaryColor,

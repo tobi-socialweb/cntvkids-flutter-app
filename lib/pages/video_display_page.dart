@@ -18,6 +18,9 @@ import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:provider/provider.dart';
 
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
+
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
   final BuildContext context;
@@ -134,14 +137,52 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       child: Text("Si")),
                   onPressed: () async {
                     String itemId = widget.video.id.toString();
-                    print("Debug: detalles de video a guardar ....");
-                    print(itemId);
+                    print("DEBUG: detalles de video a guardar ....");
+                    print("DEBUG: " + itemId);
                     int userId = await getUserId(context);
-                    print(userId);
+                    print("DEBUG: $userId");
                     String userIp =
                         Provider.of<AppStateNotifier>(context, listen: false)
                             .ip;
-                    print(userIp);
+                    print("DEBUG: " + userIp);
+
+                    try {
+                      String requestUrl =
+                          "https://cntvinfantil.cl/wp-json/wp-ulike-pro/v1/vote/?item_id=$itemId&user_id=$userId&type=post&status=like&user_ip=$userIp";
+
+                      Response response = await customDio.post(requestUrl,
+                          options: buildCacheOptions(Duration(days: 3),
+                              maxStale: Duration(days: 7)));
+
+                      /// If request has succeeded.
+                      if (response.statusCode == 200) {
+                        print("DEBUG: response succeded: ${response.data}");
+                      }
+                    } on DioError catch (e) {
+                      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+                          DioErrorType.CONNECT_TIMEOUT == e.type) {
+                        /// Couldn't reach the server.
+                        throw (ERROR_MESSAGE[ErrorTypes.UNREACHABLE]);
+                      } else if (DioErrorType.RESPONSE == e.type) {
+                        /// If request was badly formed.
+                        if (e.response.statusCode == 400) {
+                          print("reponse 400");
+
+                          /// Otherwise.
+                        } else {
+                          print(e.message);
+                          print(e.request.toString());
+                        }
+                      } else if (DioErrorType.DEFAULT == e.type) {
+                        if (e.message.contains('SocketException')) {
+                          /// No connection to internet.
+                          throw (ERROR_MESSAGE[ErrorTypes.NO_CONNECTION]);
+                        }
+                      } else {
+                        /// Unknown problem connecting to server.
+                        throw (ERROR_MESSAGE[ErrorTypes.UNKNOWN]);
+                      }
+                    }
 
                     Navigator.of(context).pop();
                   },

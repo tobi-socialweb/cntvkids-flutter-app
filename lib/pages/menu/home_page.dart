@@ -32,6 +32,10 @@ class HomePage extends StatefulWidget {
   }) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
+
+  static _HomePageState of(BuildContext context) {
+    return context.findAncestorStateOfType<_HomePageState>();
+  }
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
@@ -56,8 +60,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     /// Load app visual mode preferences.
     AppStateNotifier.load(context);
-    //_startOneSignal();
-    //AppStateNotifier.loadIp(context);
 
     speech = stt.SpeechToText();
     initSpeechState();
@@ -93,6 +95,25 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         drawerScrimColor: Colors.transparent,
         drawer: MenuDrawer(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "LENGUA DE SEÑAS",
+                  textScaleFactor: 2,
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  onChanged: (value) async {
+                    await AppStateNotifier.save(context,
+                        isUsingSignLang: value);
+                    setState(() {});
+                  },
+                  activeColor: Colors.white,
+                  value: Provider.of<AppStateNotifier>(context).isUsingSignLang,
+                ),
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -297,6 +318,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   int getCurrentSelectedIndex() {
     return _selectedIndex;
+  }
+
+  void rebuild() {
+    setState(() {});
   }
 }
 

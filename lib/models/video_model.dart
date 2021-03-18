@@ -16,6 +16,7 @@ class Video {
   final String extra;
   final List<int> categories;
   final String type;
+  bool useSignLang;
   final ModelType originModelType;
   Series originSeries;
   Lists originList;
@@ -32,6 +33,7 @@ class Video {
     this.extra,
     this.categories,
     this.type,
+    this.useSignLang,
     this.originModelType,
     this.originSeries,
     this.originList,
@@ -88,6 +90,7 @@ class Video {
       extra: _extra,
       categories: _categories,
       type: _type,
+      useSignLang: false,
       originModelType: originModelType,
       originList: originList,
       originSeries: originSeries,

@@ -37,6 +37,8 @@ class AppStateNotifier extends ChangeNotifier {
   bool isDarkMode = false;
   bool notificationOn = true;
   double musicVolume = 0.5;
+  bool isUsingSignLang = false;
+
   String ip = "";
   int userId;
 
@@ -50,6 +52,11 @@ class AppStateNotifier extends ChangeNotifier {
 
   void setMusicVolume(double volume) {
     this.musicVolume = volume;
+    notifyListeners();
+  }
+
+  void setUsingSignLang(bool usingSignLang) {
+    this.isUsingSignLang = usingSignLang;
     notifyListeners();
   }
 
@@ -88,7 +95,7 @@ class AppStateNotifier extends ChangeNotifier {
 
   /// Save visual mode to user preferences.
   static Future<Null> save(BuildContext context,
-      {VisualMode filter, double musicVolume}) async {
+      {VisualMode filter, double musicVolume, bool isUsingSignLang}) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (filter != null) {
@@ -97,11 +104,19 @@ class AppStateNotifier extends ChangeNotifier {
       Provider.of<AppStateNotifier>(context, listen: false)
           .setVisualMode(filter);
     }
+
     if (musicVolume != null) {
       await prefs.setDouble(MUSIC_VOLUME_KEY, musicVolume);
 
       Provider.of<AppStateNotifier>(context, listen: false)
           .setMusicVolume(musicVolume);
+    }
+
+    if (isUsingSignLang != null) {
+      await prefs.setBool(SIGN_LANG_KEY, isUsingSignLang);
+
+      Provider.of<AppStateNotifier>(context, listen: false)
+          .setUsingSignLang(isUsingSignLang);
     }
   }
 
@@ -116,24 +131,14 @@ class AppStateNotifier extends ChangeNotifier {
             : VisualMode.dark.toString();
 
     /// Get visual filter enum from preferences or current platform's brightness
-    final filterValue =
-        stringToVisualMode(prefs.getString(VISUAL_MODE_KEY) ?? brightness);
+    Provider.of<AppStateNotifier>(context, listen: false).setVisualMode(
+        stringToVisualMode(prefs.getString(VISUAL_MODE_KEY) ?? brightness));
 
-    final volumeValue = prefs.getDouble(MUSIC_VOLUME_KEY) ?? 0.5;
+    Provider.of<AppStateNotifier>(context, listen: false)
+        .setMusicVolume(prefs.getDouble(MUSIC_VOLUME_KEY) ?? 0.5);
 
-    await save(
-      context,
-      filter: filterValue,
-      musicVolume: volumeValue,
-    );
-  }
-
-  static void loadIp(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getInt(USER_IP_KEY) == null) {
-      String ip = await WifiInfo().getWifiIP();
-      prefs.setString(USER_IP_KEY, ip);
-    }
+    Provider.of<AppStateNotifier>(context, listen: false).isUsingSignLang =
+        prefs.getBool(SIGN_LANG_KEY) ?? false;
   }
 }
 
