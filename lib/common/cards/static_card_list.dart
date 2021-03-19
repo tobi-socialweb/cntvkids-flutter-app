@@ -1,3 +1,4 @@
+import 'package:cntvkids_app/widgets/appConfigManager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
@@ -49,8 +50,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     for (int i = 0; i < cards.length; i++) {
       if (cards[i].signLangVideoUrl != "") {
         cards[i].useSignLang =
-            Provider.of<AppStateNotifier>(context, listen: false)
-                .isUsingSignLang;
+            Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
       }
       videos.add(cardWidget(cards[i], cards[i].id.toString()));
     }

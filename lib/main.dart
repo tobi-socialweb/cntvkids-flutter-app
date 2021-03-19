@@ -2,11 +2,11 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/appConfigManager.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'common/helpers.dart';
 import 'dart:async';
 
 /// Main function called at app start.
@@ -24,8 +24,8 @@ void main() async {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
   /// Theming and stuff probably related to OneSignal.
-  runApp(ChangeNotifierProvider<AppStateNotifier>(
-    create: (context) => AppStateNotifier(),
+  runApp(ChangeNotifierProvider<AppStateConfig>(
+    create: (context) => AppStateConfig(),
     child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
   ));
 }
@@ -60,10 +60,10 @@ class _MyAppState extends State<MyApp> {
           BetterPlayerEventType.finished) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return Consumer<AppStateNotifier>(
-              builder: (context, appState, child) {
+          return Consumer<AppStateConfig>(builder: (context, appState, child) {
             print(
-                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}");
+                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}, appState.isUsingSignLang: ${appState.isUsingSignLang} ");
+
             return ColorFiltered(
                 colorFilter: appState.filter,
                 child: BackgroundMusic(

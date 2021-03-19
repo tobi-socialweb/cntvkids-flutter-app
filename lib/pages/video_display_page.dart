@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/appConfigManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,8 +150,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
                     int userId = await getUserId(context);
                     print("DEBUG: $userId");
                     String userIp =
-                        Provider.of<AppStateNotifier>(context, listen: false)
-                            .ip;
+                        Provider.of<AppStateConfig>(context, listen: false).ip;
                     print("DEBUG: " + userIp);
 
                     try {

@@ -22,7 +22,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
   ScrollController controller;
 
   /// How many cards will be loaded each time.
-  int cardsPerPage = 10;
+  int cardsPerPage = 25;
 
   /// The last page that was loaded.
   int currentPage = 1;
@@ -57,17 +57,15 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
   double get leftMargin;
 
-  bool initLoad;
-
   @override
   void initState() {
     super.initState();
+    print("debug: key = ${widget.key}");
     startedScrolling = false;
-    initLoad = true;
-    futureCards = fetchCards(currentPage);
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
+    futureCards = fetchCards(currentPage);
   }
 
   /// Listener for scroll changes.

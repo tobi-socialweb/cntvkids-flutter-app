@@ -1,7 +1,7 @@
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/cards/variable_card_list.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/widgets/appConfigManager.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -12,7 +12,10 @@ import 'package:provider/provider.dart';
 class FeaturedCardList extends StatefulWidget {
   final bool isMinimized;
   final double leftMargin;
-  FeaturedCardList({this.isMinimized = false, this.leftMargin = 0.0});
+  final double contador;
+  const FeaturedCardList(
+      {Key key, this.isMinimized = false, this.leftMargin = 0.0, this.contador})
+      : super(key: key);
 
   @override
   _FeaturedCardListState createState() => _FeaturedCardListState();
@@ -46,17 +49,13 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
 
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
-    print(
-        "DEBUG: ${Provider.of<AppStateNotifier>(context, listen: false).isUsingSignLang}");
-
     /// Check if accessibility option for sign language is on.
-    if (Provider.of<AppStateNotifier>(context, listen: false).isUsingSignLang) {
+    if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
       print("Debug: largo inicial ${newCards.length}");
 
       /// Filter sign lang videos
       for (int i = 0; i < newCards.length; i++) {
         print("DEBUG: iteration =$i cards length = ${newCards.length}");
-
         if (newCards[i].signLangVideoUrl != "") {
           print("Debug: true use sign lang");
           print("Debug: ${newCards[i].title}");
@@ -70,7 +69,6 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
       }
       print("Debug: largo final ${newCards.length}");
     }
-    //HomePage.of(context).rebuild();
     return Future.value(newCards);
   }
 }
