@@ -40,18 +40,21 @@ class _GamesCardListState extends VariableCardListState<GamesCardList> {
 
   /// Remove GameCards that cannot be played by Android or iOS accordingly.
   @override
-  Future<void> optionalCardManagement() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return;
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
+    if (!Platform.isAndroid && !Platform.isIOS) return [];
 
     int id = Platform.isAndroid ? ANDROID_GAMES_ID : IOS_GAMES_ID;
 
-    for (int i = 0; i < cards.length; i++) {
-      if (cards[i].categories.contains(id)) {
-        cards[i].thumbnailUrl = await Game.fetchThumbnail(cards[i].mediaUrl);
+    for (int i = 0; i < newCards.length; i++) {
+      if (newCards[i].categories.contains(id)) {
+        newCards[i].thumbnailUrl =
+            await Game.fetchThumbnail(newCards[i].mediaUrl);
       } else {
-        cards.removeAt(i);
+        newCards.removeAt(i);
+        i--;
       }
     }
+    return newCards;
   }
 
   @override

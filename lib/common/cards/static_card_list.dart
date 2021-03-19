@@ -47,8 +47,14 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     super.initState();
 
     for (int i = 0; i < cards.length; i++) {
+      if (cards[i].signLangVideoUrl != "") {
+        cards[i].useSignLang =
+            Provider.of<AppStateNotifier>(context, listen: false)
+                .isUsingSignLang;
+      }
       videos.add(cardWidget(cards[i], cards[i].id.toString()));
     }
+
     controller = ScrollController(
       initialScrollOffset: 0.0,
       keepScrollOffset: true,

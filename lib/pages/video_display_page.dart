@@ -73,10 +73,17 @@ class _VideoDisplayState extends State<VideoDisplay> {
       _betterPlayerController = widget.betterPlayerController;
       return;
     }
+    print("Debug: useSignLang= ${widget.video.useSignLang}");
 
     /// Set video source.
-    _betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.video.videoUrl);
+    if (widget.video.useSignLang) {
+      print("Debug: useSignLang= ${widget.video.signLangVideoUrl}");
+      _betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network, widget.video.signLangVideoUrl);
+    } else {
+      _betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network, widget.video.videoUrl);
+    }
 
     /// Define values for the player controller.
     _betterPlayerController = BetterPlayerController(

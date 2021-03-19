@@ -56,11 +56,14 @@ class Series {
           thumbnailUrl: has<String>(object[i]["image"],
               value: MISSING_IMAGE_URL, comp: [""]),
           videoUrl: has<String>(object[i]["dl"], comp: [""]),
+          signLangVideoUrl:
+              has<String>(object[i]["dlsenas"], value: "", comp: [""]),
           series: _title,
           season: _season,
           chapter: _chapter,
           extra: _extra,
           originModelType: originModelType,
+          useSignLang: false,
         ));
       }
     });
