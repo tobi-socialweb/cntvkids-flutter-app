@@ -14,9 +14,19 @@ Search for "TODO" comments inside files, for specific non-urgent ones.
 - [x] Finish video controls (play, pause, etc.) similar to YoutubeKids's.
 - [x] Add opening animation and sound for the app.
 
-## Before pushing to `master` branch
-- `Flr` plugin is used only to generate code in the `r.g.dart` file, therefore, there is no need to keep it when pushing to `master` branch.
-- This also applies to the file `svg.py` that is used to automatically read all svg constants and redo them into the `helpers.dart` file.
+## Build naming convention
+
+```
+    build: [mayor].[minor].[patch]
+```
+
+If the build is not a release, then add either `a` (for alpha), `b` (beta) or `rc` (release canditate), after the patch number. Then add 6 digits representing the year, month and date (e.g. for the date October 4th of 2015, use `151004`).
+
+Example of beta release number:
+
+```
+    build: 3.12.2b211903
+```
 
 ## Commits
 - `master` is protected and needs pull request.
