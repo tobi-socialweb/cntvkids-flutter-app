@@ -22,7 +22,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
   ScrollController controller;
 
   /// How many cards will be loaded each time.
-  int cardsPerPage = 25;
+  int cardsPerPage = 10;
 
   /// The last page that was loaded.
   int currentPage = 1;
@@ -112,6 +112,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         List<dynamic> newCards =
             await optionalCardManagement(dataToCardList(response.data));
+        print("DEBUG: fetched new cards (${newCards.length} in total)");
         setState(() {
           cards.addAll(newCards);
           flag = true;
@@ -167,6 +168,18 @@ abstract class VariableCardListState<T extends StatefulWidget>
                   controller: controller,
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
+                    /// If scroll controller cant get dimensions, it means
+                    /// that the loading element is visible and should load
+                    /// more pages.
+                    print(
+                        "DEBUG: 1 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
+
+                    if (!controller.position.haveDimensions) {
+                      futureCards = fetchCards(++currentPage);
+                      print(
+                          "DEBUG: 2 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
+                    }
+
                     if (index == 0) {
                       return Padding(
                           padding: EdgeInsets.only(left: leftMargin),
