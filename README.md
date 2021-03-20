@@ -25,7 +25,7 @@ If the build is not a release, then add either `a` (for alpha), `b` (beta) or `r
 Example of beta release number:
 
 ```
-    build: 3.12.2b211903
+    build: 3.12.2b210319
 ```
 
 ## Commits
