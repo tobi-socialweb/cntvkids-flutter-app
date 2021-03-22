@@ -6,7 +6,7 @@ import 'package:cntvkids_app/pages/menu/series_page.dart';
 import 'package:cntvkids_app/pages/menu/games_page.dart';
 import 'package:cntvkids_app/pages/menu/featured_page.dart';
 import 'package:cntvkids_app/pages/menu/search_page.dart';
-import 'package:cntvkids_app/widgets/appConfigManager.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
 

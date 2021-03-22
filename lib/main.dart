@@ -2,7 +2,7 @@ import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/pages/splash_screen_page.dart';
 import 'package:better_player/better_player.dart';
-import 'package:cntvkids_app/widgets/appConfigManager.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

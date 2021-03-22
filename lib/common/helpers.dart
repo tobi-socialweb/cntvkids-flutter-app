@@ -1,4 +1,4 @@
-import 'package:cntvkids_app/widgets/appConfigManager.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 

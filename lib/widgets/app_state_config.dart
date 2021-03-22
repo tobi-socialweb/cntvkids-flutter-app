@@ -22,7 +22,13 @@ class AppStateConfig extends ChangeNotifier {
   double musicVolume = 0.5;
   bool isUsingSignLang = false;
   String ip = "";
-  int userId;
+  int userId = 0;
+
+  void setValue(
+      {int userId, double volume, bool isUsingSignLang, ColorFilter filter}) {
+    this.userId = userId ?? this.userId;
+    this.musicVolume = volume ?? this.musicVolume;
+  }
 
   Future<void> setIp() async {
     this.ip = await WifiInfo().getWifiIP();

@@ -1,4 +1,4 @@
-import 'package:cntvkids_app/widgets/appConfigManager.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
