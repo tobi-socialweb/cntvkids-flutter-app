@@ -4,7 +4,7 @@ import 'package:cntvkids_app/models/video_model.dart';
 
 /// Contains a list of videos.
 class Series extends BaseModel {
-  final int id;
+  final String id;
   final String title;
   final String shortDescription;
   final String longDescription;
@@ -12,18 +12,18 @@ class Series extends BaseModel {
   final List<Video> videos;
 
   Series({
-    this.id,
-    this.title,
-    this.shortDescription,
-    this.longDescription,
-    this.thumbnailUrl,
+    this.id = "",
+    this.title = "",
+    this.shortDescription = "",
+    this.longDescription = "",
+    this.thumbnailUrl = "",
     this.videos,
   });
 
   /// Get `Series` from JSON object.
   factory Series.fromJson(Map<String, dynamic> json) {
     /// Get values from the json object.
-    int _id = has<int>(json["id"], -1);
+    String _id = has<String>(json["id"].toString(), "-1");
 
     String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
 
@@ -39,17 +39,13 @@ class Series extends BaseModel {
     has<List<dynamic>>(json["serie_childs"], null, then: (object) {
       String _season;
       String _chapter;
-      String _extra;
 
       for (int i = 0; i < object.length; i++) {
         _season = has<String>(object[i]["season"], "", comp: [""]);
         _chapter = has<String>(object[i]["chapter"], "", comp: [""]);
 
-        _extra = (_season != "" ? "T$_season" : "") +
-            (_chapter != "" ? "E$_chapter" : "");
-
         _videos.add(Video(
-          id: has<int>(object[i]["id"], -1),
+          id: has<String>(object[i]["id"].toString(), "-1"),
           title: has<String>(object[i]["title"], "", comp: [""]),
           thumbnailUrl:
               has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
@@ -58,8 +54,9 @@ class Series extends BaseModel {
           series: _title,
           season: _season,
           chapter: _chapter,
-          extra: _extra,
           useSignLang: false,
+          prev: i > 0 ? object[i - 1] : null,
+          next: i < object.length - 1 ? object[i + 1] : null,
         ));
       }
     });

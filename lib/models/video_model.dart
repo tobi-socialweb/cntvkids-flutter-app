@@ -4,7 +4,7 @@ import 'package:cntvkids_app/common/model_object.dart';
 enum ModelType { video, series, list }
 
 class Video extends BaseModel {
-  final int id;
+  final String id;
   final String title;
   final String thumbnailUrl;
   final String videoUrl;
@@ -12,14 +12,15 @@ class Video extends BaseModel {
   final String series;
   final String season;
   final String chapter;
-  final String extra;
   final List<int> categories;
   final String type;
   VideoOriginInfo originInfo;
   bool useSignLang;
+  Video next;
+  Video prev;
 
   Video({
-    this.id = -1,
+    this.id = "-1",
     this.title = "",
     this.thumbnailUrl = "",
     this.videoUrl = "",
@@ -27,20 +28,21 @@ class Video extends BaseModel {
     this.series = "",
     this.season = "",
     this.chapter = "",
-    this.extra = "",
     this.categories = const [],
     this.type = "",
     this.originInfo,
     this.useSignLang,
+    this.next,
+    this.prev,
   }) {
     this.originInfo = originInfo ?? VideoOriginInfo();
   }
 
   /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json,
-      {VideoOriginInfo originInfo}) {
+      {VideoOriginInfo originInfo, Video prev}) {
     /// Default values
-    int _id = has<int>(json["id"], -1);
+    String _id = has<String>(json["id"].toString(), "-1");
 
     String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
 
@@ -60,9 +62,6 @@ class Video extends BaseModel {
     String _chapter =
         has<String>(json["wpcf-chapter"].toString(), "", comp: [""]);
 
-    String _extra = (_season != "" ? "T$_season" : "") +
-        (_chapter != "" ? "E$_chapter" : "");
-
     String _type = has<String>(json["type"], "", comp: [""]);
 
     List<int> _categories = [];
@@ -74,19 +73,27 @@ class Video extends BaseModel {
 
     VideoOriginInfo _originInfo = originInfo ?? VideoOriginInfo();
 
-    return Video(
+    Video obj = Video(
       id: _id,
       title: _title,
       thumbnailUrl: _thumbnailUrl,
       videoUrl: _videoUrl,
       signLangVideoUrl: _signLang,
       series: _series,
-      extra: _extra,
+      season: _season,
+      chapter: _chapter,
       categories: _categories,
       type: _type,
       useSignLang: false,
       originInfo: _originInfo,
     );
+
+    if (prev != null) {
+      obj.prev = prev;
+      prev.next = obj;
+    }
+
+    return obj;
   }
 
   static T has<T>(T object, T value,

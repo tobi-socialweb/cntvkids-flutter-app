@@ -4,24 +4,24 @@ import 'package:cntvkids_app/models/video_model.dart';
 
 /// Contains a list of videos.
 class Lists extends BaseModel {
-  final int id;
+  final String id;
   final String title;
   final String description;
   final String thumbnailUrl;
   final List<Video> videos;
 
   Lists({
-    this.id,
-    this.title,
-    this.description,
-    this.thumbnailUrl,
+    this.id = "-1",
+    this.title = "",
+    this.description = "",
+    this.thumbnailUrl = "",
     this.videos,
   });
 
   /// Get `Lists` from JSON object.
   factory Lists.fromJson(Map<String, dynamic> json) {
     /// Default values.
-    int _id = has<int>(json["id"], -1);
+    String _id = has<String>(json["id"].toString(), "-1");
 
     String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
 
@@ -35,17 +35,13 @@ class Lists extends BaseModel {
     has<List<dynamic>>(json["lista_childs"], null, then: (object) {
       String _season;
       String _chapter;
-      String _extra;
 
       for (int i = 0; i < object.length; i++) {
         _season = has<String>(object[i]["season"], "", comp: [""]);
         _chapter = has<String>(object[i]["chapter"], "", comp: [""]);
 
-        _extra = (_season != "" ? "T$_season" : "") +
-            (_chapter != "" ? "E$_chapter" : "");
-
         _videos.add(Video(
-          id: has<int>(object[i]["id"], -1),
+          id: has<String>(object[i]["id"], "-1"),
           title: has<String>(object[i]["title"], "", comp: [""]),
           thumbnailUrl:
               has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
@@ -53,7 +49,8 @@ class Lists extends BaseModel {
           series: "",
           season: _season,
           chapter: _chapter,
-          extra: _extra,
+          prev: i > 0 ? object[i - 1] : null,
+          next: i < object.length - 1 ? object[i + 1] : null,
         ));
       }
     });
