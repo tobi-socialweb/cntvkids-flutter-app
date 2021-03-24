@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:cntvkids_app/common/helpers.dart';
+import 'dart:async';
 
 /// Main function called at app start.
 void main() async {
@@ -25,8 +26,8 @@ void main() async {
   /// a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
-  runApp(ChangeNotifierProvider<AppStateNotifier>(
-    create: (context) => AppStateNotifier(),
+  runApp(ChangeNotifierProvider<AppStateConfig>(
+    create: (context) => AppStateConfig(),
     child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
   ));
 }
@@ -63,10 +64,10 @@ class _MyAppState extends State<MyApp> {
           BetterPlayerEventType.finished) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return Consumer<AppStateNotifier>(
-              builder: (context, appState, child) {
+          return Consumer<AppStateConfig>(builder: (context, appState, child) {
             print(
-                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}");
+                "DEBUG: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}, appState.isUsingSignLang: ${appState.isUsingSignLang} ");
+
             return ColorFiltered(
                 colorFilter: appState.filter,
                 child: BackgroundMusic(

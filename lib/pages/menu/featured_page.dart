@@ -1,8 +1,7 @@
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/cards/variable_card_list.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/menu/home_page.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -13,7 +12,10 @@ import 'package:provider/provider.dart';
 class FeaturedCardList extends StatefulWidget {
   final bool isMinimized;
   final double leftMargin;
-  FeaturedCardList({this.isMinimized = false, this.leftMargin = 0.0});
+  final double contador;
+  const FeaturedCardList(
+      {Key key, this.isMinimized = false, this.leftMargin = 0.0, this.contador})
+      : super(key: key);
 
   @override
   _FeaturedCardListState createState() => _FeaturedCardListState();
@@ -44,27 +46,27 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   double get leftMargin => widget.leftMargin;
 
   @override
-  Future<void> optionalCardManagement() {
-    print(
-        "DEBUG: ${Provider.of<AppStateNotifier>(context, listen: false).isUsingSignLang}");
-
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
     /// Check if accessibility option for sign language is on.
-    if (Provider.of<AppStateNotifier>(context, listen: false).isUsingSignLang) {
-      /// Filter sign lang videos.
-      for (int i = 0; i < cards.length; i++) {
-        print("DEBUG: cards length=${cards.length}");
+    if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
+      print("Debug: largo inicial ${newCards.length}");
 
-        if (cards[i].signLangVideoUrl != "") {
-          cards[i].useSignLang = true;
+      /// Filter sign lang videos
+      for (int i = 0; i < newCards.length; i++) {
+        print("DEBUG: iteration =$i cards length = ${newCards.length}");
+        if (newCards[i].signLangVideoUrl != "") {
+          print("Debug: true use sign lang");
+          print("Debug: ${newCards[i].title}");
+          newCards[i].useSignLang = true;
         } else {
-          cards.removeAt(i);
           print("DEBUG: removing element $i");
+          print("Debug: ${newCards[i].title}");
+          newCards.removeAt(i);
+          i--;
         }
       }
-
-      HomePage.of(context).rebuild();
+      print("Debug: largo final ${newCards.length}");
     }
-
-    return Future<void>.value();
+    return Future.value(newCards);
   }
 }

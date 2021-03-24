@@ -31,12 +31,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// If user began scrolling.
   bool startedScrolling;
 
-  /// If user began scrolling.
-  bool isScrolling = false;
-
-  /// Total Lenght of cards.
-  int totalCards = 0;
-
   /// The model URL that should be one of the constants defined.
   String get modelUrl;
 
@@ -66,15 +60,18 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
   /// Gets called after successfully fetching cards, and allows for further
   /// optional management of which cards to keep or any other use.
-  Future<void> optionalCardManagement() => Future<void>.value();
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) =>
+      Future.value(newCards);
 
   @override
   void initState() {
-    futureCards = fetchCards(currentPage);
-
-    controller.addListener(_scrollControllerListener);
-
     super.initState();
+    print("debug: key = ${widget.key}");
+    startedScrolling = false;
+    controller =
+        ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+    controller.addListener(_scrollControllerListener);
+    futureCards = fetchCards(currentPage);
   }
 
   /// Listener for scroll changes.
@@ -120,14 +117,12 @@ abstract class VariableCardListState<T extends StatefulWidget>
       /// If request has succeeded.
       if (response.statusCode == 200) {
         /// Add new videos to [cards] by updating this widget's state.
+        List<dynamic> newCards =
+            await optionalCardManagement(dataToCardList(response.data));
+        print("DEBUG: fetched new cards (${newCards.length} in total)");
         setState(() {
-          cards.addAll(dataToCardList(response.data));
-          continueLoadingPages = true;
+          cards.addAll(newCards);
         });
-
-        /// Do the optional card management if needed.
-        await optionalCardManagement();
-
         return cards;
       }
     } on DioError catch (e) {
@@ -176,7 +171,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
                 onNotification: (notification) {
                   if (notification is ScrollEndNotification) {
                     setState(() {
-                      isScrolling = false;
+                      startedScrolling = false;
                     });
                   }
 
@@ -188,6 +183,18 @@ abstract class VariableCardListState<T extends StatefulWidget>
                   controller: controller,
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
+                    /// If scroll controller cant get dimensions, it means
+                    /// that the loading element is visible and should load
+                    /// more pages.
+                    print(
+                        "DEBUG: 1 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
+
+                    if (!controller.position.haveDimensions) {
+                      futureCards = fetchCards(++currentPage);
+                      print(
+                          "DEBUG: 2 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
+                    }
+
                     if (index == 0) {
                       return Padding(
                           padding: EdgeInsets.only(left: leftMargin),

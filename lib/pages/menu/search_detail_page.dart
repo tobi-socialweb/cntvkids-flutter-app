@@ -61,16 +61,18 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
   }
 
   @override
-  Future<void> optionalCardManagement() async {
-    for (int i = 0; i < cards.length; i++) {
-      if (cards[i].type == "series") {
-        cards.removeAt(i);
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
+    for (int i = 0; i < newCards.length; i++) {
+      if (newCards[i].type == "series") {
+        newCards.removeAt(i);
+        i--;
       }
-      if (widget.isMinimized && cards[i].id == widget.video.id) {
-        cards.removeAt(i);
+      if (widget.isMinimized && newCards[i].id == widget.video.id) {
+        newCards.removeAt(i);
+        i--;
       }
     }
-    return cards;
+    return newCards;
   }
 
   @override

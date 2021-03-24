@@ -54,10 +54,12 @@ class Series extends BaseModel {
           thumbnailUrl:
               has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
           videoUrl: has<String>(object[i]["dl"], "", comp: [""]),
+          signLangVideoUrl: has<String>(object[i]["dlsenas"], "", comp: [""]),
           series: _title,
           season: _season,
           chapter: _chapter,
           extra: _extra,
+          useSignLang: false,
         ));
       }
     });

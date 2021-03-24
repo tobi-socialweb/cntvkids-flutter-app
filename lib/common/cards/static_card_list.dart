@@ -1,9 +1,11 @@
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/pages/menu/home_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:provider/provider.dart';
 
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     with WidgetsBindingObserver {
@@ -52,6 +54,10 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     super.initState();
 
     for (int i = 0; i < cards.length; i++) {
+      if (cards[i].signLangVideoUrl != "") {
+        cards[i].useSignLang =
+            Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+      }
       videos.add(cardWidget(cards[i], cards[i].id.toString()));
     }
 

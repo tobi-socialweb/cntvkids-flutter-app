@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:better_player/better_player.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,10 +74,17 @@ class _VideoDisplayState extends State<VideoDisplay> {
       _betterPlayerController = widget.betterPlayerController;
       return;
     }
+    print("Debug: useSignLang= ${widget.video.useSignLang}");
 
     /// Set video source.
-    _betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.video.videoUrl);
+    if (widget.video.useSignLang) {
+      print("Debug: useSignLang= ${widget.video.signLangVideoUrl}");
+      _betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network, widget.video.signLangVideoUrl);
+    } else {
+      _betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network, widget.video.videoUrl);
+    }
 
     /// Define values for the player controller.
     _betterPlayerController = BetterPlayerController(
@@ -142,8 +150,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
                     int userId = await getUserId(context);
                     print("DEBUG: $userId");
                     String userIp =
-                        Provider.of<AppStateNotifier>(context, listen: false)
-                            .ip;
+                        Provider.of<AppStateConfig>(context, listen: false).ip;
                     print("DEBUG: " + userIp);
 
                     try {
