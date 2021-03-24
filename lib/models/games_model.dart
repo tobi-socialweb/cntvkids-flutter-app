@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/model_object.dart';
 
-class Game {
-  final int id;
+class Game extends BaseModel {
+  final String id;
   final String title;
   final String content;
   final String gameUrl;
@@ -13,31 +14,28 @@ class Game {
   final List<int> categories;
 
   Game({
-    this.id,
-    this.title,
-    this.content,
-    this.gameUrl,
+    this.id = "-1",
+    this.title = "",
+    this.content = "",
+    this.gameUrl = "",
+    this.mediaUrl = "",
+    this.thumbnailUrl = "",
     this.categories,
-    this.mediaUrl,
-    this.thumbnailUrl,
   });
 
   /// Get [Game] from JSON object.
   factory Game.fromJson(Map<String, dynamic> json) {
     /// Default values.
-    int _id = has<int>(json["id"], value: -1);
+    String _id = has<String>(json["id"].toString(), "-1");
 
-    String _title =
-        has<String>(json["title"]["rendered"], value: "", comp: [""]);
+    String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
 
-    String _content =
-        has<String>(json["content"]["rendered"], value: "", comp: [""]);
+    String _content = has<String>(json["content"]["rendered"], "", comp: [""]);
 
-    String _gameUrl =
-        has<String>(json["wpcf-url-juego"], value: "", comp: [""]);
+    String _gameUrl = has<String>(json["wpcf-url-juego"], "", comp: [""]);
 
     List<int> _categories = [];
-    has<List<dynamic>>(json["categories"], then: (object) {
+    has<List<dynamic>>(json["categories"], null, then: (object) {
       for (int i = 0; i < object.length; i++) {
         _categories.add(object[i]);
       }
@@ -45,7 +43,7 @@ class Game {
 
     String _thumbnail = MISSING_IMAGE_URL;
     String _mediaUrl =
-        has<String>(json["_links"]["wp:featuredmedia"][0]["href"], value: "");
+        has<String>(json["_links"]["wp:featuredmedia"][0]["href"], "");
 
     return Game(
       id: _id,
@@ -119,29 +117,7 @@ class Game {
     return Future<String>.value("");
   }
 
-  /// Compare object to null and to the elements in `comp`, if any. Returns
-  /// `object` if it's not equal to any of those things; otherwise, return
-  /// `value` which by default is null. `then` gets called if `object` is
-  /// returned.
-  static T has<T>(T object,
-      {T value, List<T> comp = const [], void Function(T object) then}) {
-    if (comp.length == 0) {
-      if (object != null) {
-        if (then != null) then(object);
-        return object;
-      } else {
-        return value;
-      }
-    } else {
-      bool res = object != null;
-
-      for (int i = 0; i < comp.length; i++) {
-        res &= object != comp[i];
-      }
-
-      if (res && then != null) then(object);
-
-      return res ? object : value;
-    }
-  }
+  static T has<T>(T object, T value,
+          {List<T> comp = const [], void Function(T object) then}) =>
+      BaseModel.has(object, value, comp: comp, then: then);
 }
