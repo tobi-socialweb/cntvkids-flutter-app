@@ -54,15 +54,27 @@ class SvgButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    return FlatButton(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
+    final ButtonStyle svgButtonStyle = ElevatedButton.styleFrom(
+        primary: Colors.transparent,
+        shadowColor: Colors.transparent,
+        minimumSize: Size(size, size),
+        elevation: 0.0,
+        padding: EdgeInsets.zero,
+        shape: CircleBorder(side: BorderSide(color: Colors.white)),
+        visualDensity: VisualDensity(
+            horizontal: VisualDensity.minimumDensity,
+            vertical: VisualDensity.minimumDensity));
+
+    return ElevatedButton(
       onPressed: onPressed,
-      child: SvgIcon(
-        asset: asset,
-        size: size,
+      style: svgButtonStyle,
+      child: Padding(
         padding: padding,
+        child: SvgPicture.asset(
+          asset.name,
+          width: size,
+          height: size,
+        ),
       ),
     );
   }
