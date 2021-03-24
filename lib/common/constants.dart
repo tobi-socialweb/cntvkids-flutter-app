@@ -278,6 +278,11 @@ class SvgAsset {
   static final player_next_icon =
       const AssetResource("assets/images/player_next/player_next_icon.svg");
 
+  /// Asset from file: `assets/images/player_next/player_next_unavailable_icon.svg`
+  // ignore: non_constant_identifier_names, unused_field
+  static final player_next_unavailable_icon = const AssetResource(
+      "assets/images/player_next/player_next_unavailable_icon.svg");
+
   /// Asset from file: `assets/images/player_pause/player_pause_icon.svg`
   // ignore: non_constant_identifier_names, unused_field
   static final player_pause_icon =
@@ -292,6 +297,11 @@ class SvgAsset {
   // ignore: non_constant_identifier_names, unused_field
   static final player_previous_icon = const AssetResource(
       "assets/images/player_previous/player_previous_icon.svg");
+
+  /// Asset from file: `assets/images/player_previous/player_previous_unavailable_icon.svg`
+  // ignore: non_constant_identifier_names, unused_field
+  static final player_previous_unavailable_icon = const AssetResource(
+      "assets/images/player_previous/player_previous_unavailable_icon.svg");
 
   /// Asset from file: `assets/images/record/record_icon.svg`
   // ignore: non_constant_identifier_names, unused_field
