@@ -1,4 +1,5 @@
 # ignore these folders and files in root.
+
 /.*
 /android/*
 /apk_builds/*
@@ -10,12 +11,19 @@
 /LICENSE
 /pubspec.*
 
-# ignore these folders only when adding them in the output files
-# (this means they will be included in the pubspec.yaml file).
+
+
+# ignore these folders only when adding them in the output file 
+# (constans.dart), however they'll still be included in the 
+# pubspec.yaml file.
+
 %/assets/app/android/*
 %/assets/app/ios/*
 
+
+
 # ignore any files of this type.
+
 *.py
 *.md
 *.apk
