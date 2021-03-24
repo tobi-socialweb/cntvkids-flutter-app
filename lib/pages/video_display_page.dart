@@ -68,17 +68,13 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void initState() {
     super.initState();
-    print("serie:" + widget.video.series);
-    print("titulo: " + widget.video.title);
     if (widget.betterPlayerController != null) {
       _betterPlayerController = widget.betterPlayerController;
       return;
     }
-    print("Debug: useSignLang= ${widget.video.useSignLang}");
 
     /// Set video source.
     if (widget.video.useSignLang) {
-      print("Debug: useSignLang= ${widget.video.signLangVideoUrl}");
       _betterPlayerDataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network, widget.video.signLangVideoUrl);
     } else {
@@ -112,7 +108,6 @@ class _VideoDisplayState extends State<VideoDisplay> {
           autoDetectFullscreenDeviceOrientation: true,
           autoDispose: false,
           errorBuilder: (context, errorMessage) {
-            print("DEBUG: Error: $errorMessage");
             return Center(child: Text(errorMessage));
           },
         ),
@@ -145,13 +140,9 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       child: Text("Si")),
                   onPressed: () async {
                     String itemId = widget.video.id.toString();
-                    print("DEBUG: detalles de video a guardar ....");
-                    print("DEBUG: " + itemId);
                     int userId = await getUserId(context);
-                    print("DEBUG: $userId");
                     String userIp =
                         Provider.of<AppStateConfig>(context, listen: false).ip;
-                    print("DEBUG: " + userIp);
 
                     try {
                       String requestUrl =
@@ -293,10 +284,9 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     final double miniVideoSize = 0.6 * size.height;
 
     return FocusDetector(
+      /// TODO: Fix focus lost when sending app to background and video getting disposed.
       onFocusLost: () {
-        print("Debug: vista minimizada Perdio foco");
         if (shouldDispose) {
-          print("Debug: dipose al entrar a otro video");
           widget.betterPlayerController.dispose(forceDispose: true);
         }
       },

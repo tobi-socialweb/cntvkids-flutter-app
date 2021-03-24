@@ -66,7 +66,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   @override
   void initState() {
     super.initState();
-    print("debug: key = ${widget.key}");
     startedScrolling = false;
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
@@ -119,7 +118,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         List<dynamic> newCards =
             await optionalCardManagement(dataToCardList(response.data));
-        print("DEBUG: fetched new cards (${newCards.length} in total)");
         setState(() {
           cards.addAll(newCards);
         });
@@ -186,13 +184,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
                     /// If scroll controller cant get dimensions, it means
                     /// that the loading element is visible and should load
                     /// more pages.
-                    print(
-                        "DEBUG: 1 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
 
                     if (!controller.position.haveDimensions) {
                       futureCards = fetchCards(++currentPage);
-                      print(
-                          "DEBUG: 2 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
                     }
 
                     if (index == 0) {

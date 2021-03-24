@@ -73,7 +73,6 @@ class _SearchPageState extends State<SearchPage> {
   void resultListener(SpeechRecognitionResult result) {
     setState(() {
       BackgroundMusicManager.instance.music.resumeMusic();
-      print("DEBUG: calling resultListener");
       _textToSpeech = result.recognizedWords;
       controller.text = _textToSpeech;
 

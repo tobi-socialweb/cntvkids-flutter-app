@@ -104,9 +104,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
                 Switch(
                   onChanged: (value) async {
-                    print(
-                        "DEBUG: Value= ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang}");
-
                     await AppStateConfig.save(context, isUsingSignLang: value);
                   },
                   activeColor: Colors.white,
@@ -312,7 +309,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
     MusicEffect.play(MediaAsset.mp3.click);
-    print("DEBUG: $index");
     setState(() {
       _selectedIndex = index;
       cardList = _widgetOptions.elementAt(_selectedIndex);
