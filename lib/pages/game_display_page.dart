@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +21,12 @@ class _WebViewPageState extends State<WebViewPage> {
 
   final Completer<WebViewController> _controllerCompleter =
       Completer<WebViewController>();
+  SoundEffect _soundEffect;
+  @override
+  void initState() {
+    _soundEffect = SoundEffect();
+    super.initState();
+  }
 
   // web view controls
 
@@ -35,7 +41,7 @@ class _WebViewPageState extends State<WebViewPage> {
           return FloatingActionButton(
             backgroundColor: Colors.transparent,
             onPressed: () async {
-              MusicEffect.play(MediaAsset.mp3.go_back);
+              _soundEffect.play(MediaAsset.mp3.go_back);
               Navigator.of(context).pop();
             },
             child: SvgIcon(

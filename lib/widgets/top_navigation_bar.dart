@@ -27,17 +27,19 @@ class TopNavigationBar extends StatefulWidget {
   final double defaultTextScaleFactor;
   final void Function(int index) defaultOnPressed;
   final EdgeInsets defaultPadding;
+  final double width;
 
   TopNavigationBar(
       {this.children = const [],
-      this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
+      this.mainAxisAlignment = MainAxisAlignment.start,
       this.crossAxisAlignment = CrossAxisAlignment.center,
       this.getSelectedIndex,
-      this.defaultIconSizes = 10.0,
+      this.defaultIconSizes = 5.0,
       this.defaultOnPressed = _defaultOnPressed,
       this.defaultTextScaleFactor = 1.0,
       this.defaultPadding = EdgeInsets.zero,
-      this.padding = EdgeInsets.zero});
+      this.padding = EdgeInsets.zero,
+      this.width});
 
   @override
   _TopNavigationBarState createState() => _TopNavigationBarState();
@@ -66,6 +68,7 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
 
       /// Add newly created [NavigationBarButton] child.
       _children.add(NavigationBarButton(
+        columnSize: widget.width / widget.children.length,
         icon: child.icon,
         activeIcon: child.activeIcon,
         isPressed: child.hasIndex() ? child.index == index : j == index,
@@ -115,6 +118,7 @@ class NavigationBarButton extends StatefulWidget {
   final double textScaleFactor;
   final EdgeInsets padding;
   final bool resetCount;
+  final double columnSize;
 
   NavigationBarButton(
       {this.icon,
@@ -127,7 +131,8 @@ class NavigationBarButton extends StatefulWidget {
       this.text,
       this.textScaleFactor,
       this.padding,
-      this.resetCount = false});
+      this.resetCount = false,
+      this.columnSize});
 
   @override
   _NavigationBarButtonState createState() => _NavigationBarButtonState();
@@ -168,33 +173,34 @@ class _NavigationBarButtonState extends State<NavigationBarButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SvgButton(
-          padding: widget.padding,
-          size: widget.size,
-          asset: (isPressed && widget.activeIcon != null)
-              ? widget.activeIcon
-              : widget.icon,
-          onPressed: _onPressed,
-        ),
-        (widget.text != null && widget.text != "")
-            ? Padding(
-                padding: widget.padding,
-                child: Text(
-                  widget.text,
-                  textScaleFactor: widget.textScaleFactor,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: FontAsset.fredoka_one,
-                  ),
-                ),
-              )
-            : Container()
-      ],
-    );
+    return Container(
+        width: widget.columnSize,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgButton(
+              size: widget.size,
+              asset: (isPressed && widget.activeIcon != null)
+                  ? widget.activeIcon
+                  : widget.icon,
+              onPressed: _onPressed,
+            ),
+            (widget.text != null && widget.text != "")
+                ? Padding(
+                    padding: widget.padding,
+                    child: Text(
+                      widget.text,
+                      textScaleFactor: widget.textScaleFactor,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: FontAsset.fredoka_one,
+                      ),
+                    ),
+                  )
+                : Container()
+          ],
+        ));
   }
 
   void _onPressed() {

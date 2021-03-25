@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +36,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
   int get categoryId;
 
   ///
-  bool flag = true;
+  bool flag;
 
   /// Recieves the snapshot data and converts each value into the model object,
   /// returning a list of these objects.
@@ -57,22 +56,25 @@ abstract class VariableCardListState<T extends StatefulWidget>
 
   double get leftMargin;
 
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
     super.initState();
-    print("debug: key = ${widget.key}");
     startedScrolling = false;
+    flag = true;
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
     futureCards = fetchCards(currentPage);
+    _soundEffect = SoundEffect();
   }
 
   /// Listener for scroll changes.
   _scrollControllerListener() {
     if (!this.mounted) return;
 
-    /// reach bottom
+    /// reach middle of scroll bar
     if (controller.offset >= controller.position.maxScrollExtent / 2 && flag) {
       setState(() {
         currentPage += 1;
@@ -86,7 +88,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        MusicEffect.play(MediaAsset.mp3.beam);
+        _soundEffect.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });
@@ -112,7 +114,8 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         List<dynamic> newCards =
             await optionalCardManagement(dataToCardList(response.data));
-        print("DEBUG: fetched new cards (${newCards.length} in total)");
+        print(
+            "DEBUG from variable card list: fetched new cards (${newCards.length} in total)");
         setState(() {
           cards.addAll(newCards);
           flag = true;
@@ -156,9 +159,14 @@ abstract class VariableCardListState<T extends StatefulWidget>
           future: futureCards,
           builder: (context, snapshot) {
             /// If snapshot has values.
+            print(
+                "DEBUG from variable card list: snapshot has data = ${snapshot.hasData}, currentPage=$currentPage");
             if (snapshot.hasData) {
-              if (snapshot.data.length == 0) {
-                return Container();
+              print(
+                  "DEBUG from variabel card list: 1 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
+              if (snapshot.data.length < 3) {
+                currentPage += 1;
+                futureCards = fetchCards(currentPage);
               }
 
               return NotificationListener(
@@ -171,15 +179,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
                     /// If scroll controller cant get dimensions, it means
                     /// that the loading element is visible and should load
                     /// more pages.
-                    print(
-                        "DEBUG: 1 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
-
-                    if (!controller.position.haveDimensions) {
-                      futureCards = fetchCards(++currentPage);
-                      print(
-                          "DEBUG: 2 snapshot data length = ${snapshot.data.length}, currentPage=$currentPage");
-                    }
-
                     if (index == 0) {
                       return Padding(
                           padding: EdgeInsets.only(left: leftMargin),

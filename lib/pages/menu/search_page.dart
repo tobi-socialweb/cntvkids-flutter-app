@@ -1,5 +1,6 @@
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -31,15 +32,16 @@ class _SearchPageState extends State<SearchPage> {
 
   bool hasSpeech;
 
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
-    super.initState();
-
     lista = SearchCardList();
     controller = TextEditingController();
     hide = true;
-
+    _soundEffect = SoundEffect();
     hasSpeech = widget.speech.isAvailable;
+    super.initState();
   }
 
   void submit(String string) {
@@ -54,16 +56,14 @@ class _SearchPageState extends State<SearchPage> {
   void startListening() {
     widget.speech.listen(
       onResult: resultListener,
-      cancelOnError: true,
       listenMode: stt.ListenMode.dictation,
+      cancelOnError: true,
 
       ///TODO: fix listen time duration
       listenFor: Duration(seconds: 5),
-      pauseFor: Duration(seconds: 5),
     );
 
     if (!this.mounted) return;
-
     setState(() {
       BackgroundMusicManager.instance.music.pauseMusic();
       hide = true;
@@ -72,12 +72,15 @@ class _SearchPageState extends State<SearchPage> {
 
   void resultListener(SpeechRecognitionResult result) {
     setState(() {
-      BackgroundMusicManager.instance.music.resumeMusic();
       print("DEBUG: calling resultListener");
       _textToSpeech = result.recognizedWords;
       controller.text = _textToSpeech;
 
-      if (widget.speech.isNotListening) submit(_textToSpeech);
+      if (widget.speech.isNotListening) {
+        _soundEffect.play(MediaAsset.mp3.resultados);
+        BackgroundMusicManager.instance.music.resumeMusic();
+        submit(_textToSpeech);
+      }
     });
   }
 
@@ -91,6 +94,7 @@ class _SearchPageState extends State<SearchPage> {
         0.00625 * navHeight, 0.0, 0.00625 * navHeight, 0.25 * navHeight);
 
     return BackgroundMusic(
+        volume: BackgroundMusicManager.getVolume(),
         child: Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: Theme.of(context).primaryColor,
@@ -127,7 +131,7 @@ class _SearchPageState extends State<SearchPage> {
                                 size: iconSize,
                                 padding: padding,
                                 onPressed: () {
-                                  MusicEffect.play(MediaAsset.mp3.click);
+                                  _soundEffect.play(MediaAsset.mp3.click);
                                   Navigator.of(context).pop();
                                 }),
 
@@ -185,7 +189,7 @@ class _SearchPageState extends State<SearchPage> {
                               onPressed: () {
                                 SystemChannels.textInput
                                     .invokeMethod('TextInput.hide');
-                                MusicEffect.play(MediaAsset.mp3.click);
+                                _soundEffect.play(MediaAsset.mp3.click);
                                 submit(_textToSpeech);
                               },
                             ),

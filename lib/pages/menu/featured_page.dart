@@ -51,23 +51,15 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
     /// Check if accessibility option for sign language is on.
     if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
-      print("Debug: largo inicial ${newCards.length}");
-
       /// Filter sign lang videos
       for (int i = 0; i < newCards.length; i++) {
-        print("DEBUG: iteration =$i cards length = ${newCards.length}");
         if (newCards[i].signLangVideoUrl != "") {
-          print("Debug: true use sign lang");
-          print("Debug: ${newCards[i].title}");
           newCards[i].useSignLang = true;
         } else {
-          print("DEBUG: removing element $i");
-          print("Debug: ${newCards[i].title}");
           newCards.removeAt(i);
           i--;
         }
       }
-      print("Debug: largo final ${newCards.length}");
     }
     return Future.value(newCards);
   }

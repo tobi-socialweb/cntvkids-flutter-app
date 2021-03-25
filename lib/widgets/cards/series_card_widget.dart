@@ -1,5 +1,5 @@
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -26,9 +26,17 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
   @override
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);
 
+  SoundEffect _soundEffect;
+
+  void initState() {
+    _soundEffect = SoundEffect();
+
+    super.initState();
+  }
+
   @override
   void onTap() {
-    MusicEffect.play(MediaAsset.mp3.click);
+    _soundEffect.play(MediaAsset.mp3.click);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return SeriesCardDetail(
           series: widget.series,

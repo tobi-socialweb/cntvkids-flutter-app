@@ -45,7 +45,4 @@ class _SeriesCardDetailState extends StaticCardListState<SeriesCardDetail> {
 
   @override
   String get title => widget.series.title;
-
-  @override
-  void setPlayerEffects() {}
 }

@@ -48,44 +48,67 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
+  - assets/sounds/background/background_1.mp3
+  - assets/sounds/background/background_2.mp3
+  - assets/sounds/beam/beam.mp3
+  - assets/sounds/click/click.mp3
+  - assets/sounds/go_back/go_back.mp3
+  - assets/sounds/intro/intro.mp3
+  - assets/sounds/notification/notification.mp3
+  - assets/sounds/results/resultados.mp3
+  - assets/sounds/wave/wave.mp3
+  - assets/sounds/background/background_1.mp4
+  - assets/sounds/background/background_2.mp4
+  - assets/sounds/beam/beam.mp4
+  - assets/sounds/click/click.mp4
+  - assets/sounds/go_back/go_back.mp4
+  - assets/sounds/intro/intro.mp4
+  - assets/sounds/notification/notification.mp4
+  - assets/sounds/unavailable_action/unavailable_action.mp4
+  - assets/sounds/wave/wave.mp4
+  - assets/sounds/click/click.aif
+  - assets/sounds/go_back/go_back.aif
+  - assets/sounds/notification/notification.aif
+  - assets/sounds/results/resultados.aif
+  - assets/sounds/unavailable_action/unavailable_action.aif
+  - assets/sounds/wave/wave.aif
   - assets/images/back/back_icon.svg
-  - assets/images/backgrounds/18x9/background-red.svg
-  - assets/images/backgrounds/background-red.png
   - assets/images/backgrounds/background-red.svg
   - assets/images/chromecast/chromecast_active_icon.svg
   - assets/images/chromecast/chromecast_icon.svg
-  - assets/images/chromecast/old/chromecast_active_icon.png
-  - assets/images/chromecast/old/chromecast_active_icon.svg
-  - assets/images/chromecast/old/chromecast_icon.png
-  - assets/images/chromecast/old/chromecast_icon.svg
   - assets/images/games/games_active_icon.svg
   - assets/images/games/games_badge.svg
   - assets/images/games/games_icon.svg
   - assets/images/lists/lists_active_icon.svg
   - assets/images/lists/lists_badge.svg
   - assets/images/lists/lists_icon.svg
-  - assets/images/logo/logo_icon.png
   - assets/images/logo/logo_icon.svg
   - assets/images/player_next/player_next_icon.svg
   - assets/images/player_pause/player_pause_icon.svg
   - assets/images/player_play/player_play_icon.svg
   - assets/images/player_previous/player_previous_icon.svg
-  - assets/images/record/record_icon.png
   - assets/images/record/record_icon.svg
-  - assets/images/search/search_icon.png
   - assets/images/search/search_icon.svg
   - assets/images/series/series_active_icon.svg
   - assets/images/series/series_badge.svg
   - assets/images/series/series_icon.svg
   - assets/images/videos/videos_active_icon.svg
-  - assets/images/videos/videos_badge.png
   - assets/images/videos/videos_badge.svg
   - assets/images/videos/videos_icon.svg
+  - assets/images/backgrounds/18x9/background-red.svg
+  - assets/images/chromecast/old/chromecast_active_icon.svg
+  - assets/images/chromecast/old/chromecast_icon.svg
+  - assets/app/icon-android-google-play.png
+  - assets/app/icon.png
+  - assets/app/splash.png
+  - assets/images/backgrounds/background-red.png
+  - assets/images/logo/logo_icon.png
+  - assets/images/record/record_icon.png
+  - assets/images/search/search_icon.png
+  - assets/images/videos/videos_badge.png
   - assets/app/android/icon/drawable-ldpi-icon.png
   - assets/app/android/icon/drawable-xhdpi-icon.png
   - assets/app/android/icon/drawable-xxxhdpi-icon.png
-  - assets/app/icon-android-google-play.png
-  - assets/app/icon.png
   - assets/app/ios/icon/icon-1024.png
   - assets/app/ios/icon/icon-20.png
   - assets/app/ios/icon/icon-20@3x.png
@@ -102,33 +125,11 @@ flutter:
   - assets/app/ios/icon/icon-small.png
   - assets/app/ios/icon/icon-small@3x.png
   - assets/app/ios/icon/icon@2x.png
-  - assets/app/preload.gif
-  - assets/app/splash.png
+  - assets/images/chromecast/old/chromecast_active_icon.png
+  - assets/images/chromecast/old/chromecast_icon.png
   - assets/images/record/2.0x/record_icon.png
   - assets/images/search/2.0x/search_icon.png
-  - assets/sounds/background/background_1.mp3
-  - assets/sounds/background/background_1.mp4
-  - assets/sounds/background/background_2.mp3
-  - assets/sounds/background/background_2.mp4
-  - assets/sounds/beam/beam.mp3
-  - assets/sounds/beam/beam.mp4
-  - assets/sounds/click/click.aif
-  - assets/sounds/click/click.mp3
-  - assets/sounds/click/click.mp4
-  - assets/sounds/go_back/go_back.aif
-  - assets/sounds/go_back/go_back.mp3
-  - assets/sounds/go_back/go_back.mp4
-  - assets/sounds/intro/intro.mp3
-  - assets/sounds/intro/intro.mp4
-  - assets/sounds/notification/notification.aif
-  - assets/sounds/notification/notification.mp3
-  - assets/sounds/notification/notification.mp4
-  - assets/sounds/results/resultados.aif
-  - assets/sounds/unavailable_action/unavailable_action.aif
-  - assets/sounds/unavailable_action/unavailable_action.mp4
-  - assets/sounds/wave/wave.aif
-  - assets/sounds/wave/wave.mp3
-  - assets/sounds/wave/wave.mp4
+  - assets/app/preload.gif
   fonts:
   - family: FredokaOne
     fonts:

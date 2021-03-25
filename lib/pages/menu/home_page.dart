@@ -9,6 +9,7 @@ import 'package:cntvkids_app/pages/menu/search_page.dart';
 import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 
 /// Widget
 import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
@@ -20,11 +21,14 @@ import 'package:cntvkids_app/common/helpers.dart';
 
 /// Signals
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
 
 /// Audio plugins
 
 ///
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+
+import 'favorites_page.dart';
 
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {
@@ -36,35 +40,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  /// Currently selected index for navigation bar.
-  int _selectedIndex = 0;
-  stt.SpeechToText speech;
-  String word;
-
+  /// toll bar settings
   final double length = 15.0;
   final double innerRadius = 5.0;
   final double outerRadius = 30.0;
 
+  /// Currently selected index for navigation bar.
+  int _selectedIndex = 0;
+  stt.SpeechToText _speech;
+
   /// All options from the navigation bar
   List<Widget> _widgetOptions;
-  Widget cardList;
+  Widget _cardList;
+  bool _rebuild;
 
   /// volumen controls variables
   double _val;
   Timer timer;
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
-    super.initState();
-
     /// Load app visual mode preferences.
     AppStateConfig.load(context);
-    speech = stt.SpeechToText();
+    _speech = stt.SpeechToText();
     initSpeechState();
+    _soundEffect = SoundEffect();
     _val = BackgroundMusicManager.getVolume();
+    _rebuild = false;
+
+    super.initState();
   }
 
   Future<void> initSpeechState() async {
-    await speech.initialize();
+    await _speech.initialize(onError: errorListener);
+  }
+
+  void errorListener(SpeechRecognitionError error) {
+    print("Received error status: $error, listening: ${_speech.isListening}");
+    setState(() {
+      BackgroundMusicManager.instance.music.resumeMusic();
+    });
   }
 
   @override
@@ -73,21 +89,43 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final Size size = MediaQuery.of(context).size;
     final double navHeight = NAVBAR_HEIGHT_PROP * size.height;
     _widgetOptions = [
-      FeaturedCardList(
-        leftMargin: innerRadius + outerRadius,
-        key: UniqueKey(),
-      ),
-      SeriesCardList(
-        leftMargin: innerRadius + outerRadius,
-      ),
-      ListsCardList(
-        leftMargin: innerRadius + outerRadius,
-      ),
+      _rebuild == true
+          ? FeaturedCardList(
+              leftMargin: innerRadius + outerRadius,
+              key: UniqueKey(),
+            )
+          : FeaturedCardList(
+              leftMargin: innerRadius + outerRadius,
+            ),
+      _rebuild == true
+          ? SeriesCardList(
+              leftMargin: innerRadius + outerRadius,
+              key: UniqueKey(),
+            )
+          : SeriesCardList(
+              leftMargin: innerRadius + outerRadius,
+            ),
+      _rebuild == true
+          ? ListsCardList(
+              leftMargin: innerRadius + outerRadius,
+              key: UniqueKey(),
+            )
+          : ListsCardList(
+              leftMargin: innerRadius + outerRadius,
+            ),
       GamesCardList(
         leftMargin: innerRadius + outerRadius,
       ),
+      _rebuild == true
+          ? FavoriteCardList(
+              leftMargin: innerRadius + outerRadius,
+              key: UniqueKey(),
+            )
+          : FavoriteCardList(
+              leftMargin: innerRadius + outerRadius,
+            ),
     ];
-    cardList = _widgetOptions.elementAt(_selectedIndex);
+    _cardList = _widgetOptions.elementAt(_selectedIndex);
     return Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
         drawerScrimColor: Colors.transparent,
@@ -104,9 +142,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 Switch(
                   onChanged: (value) async {
                     print(
-                        "DEBUG: Value= ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang}");
+                        "DEBUG from home: Value= ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang}");
 
                     await AppStateConfig.save(context, isUsingSignLang: value);
+                    setState(() {
+                      _rebuild = true;
+                    });
                   },
                   activeColor: Colors.white,
                   value: Provider.of<AppStateConfig>(context, listen: false)
@@ -126,6 +167,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   onChanged: (value) async {
                     await AppStateConfig.save(context,
                         filter: value ? VisualMode.dark : VisualMode.normal);
+                    if (_rebuild) {
+                      setState(() {
+                        _rebuild = false;
+                      });
+                    }
                   },
                   activeColor: Colors.white,
                   value: Provider.of<AppStateConfig>(context).isDarkMode,
@@ -145,6 +191,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     await AppStateConfig.save(context,
                         filter:
                             value ? VisualMode.grayscale : VisualMode.normal);
+                    if (_rebuild) {
+                      setState(() {
+                        _rebuild = false;
+                      });
+                    }
                   },
                   activeColor: Colors.white,
                   value: Provider.of<AppStateConfig>(context).filter ==
@@ -165,6 +216,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     await AppStateConfig.save(context,
                         filter:
                             value ? VisualMode.inverted : VisualMode.normal);
+                    if (_rebuild) {
+                      setState(() {
+                        _rebuild = false;
+                      });
+                    }
                   },
                   activeColor: Colors.white,
                   value: Provider.of<AppStateConfig>(context).filter ==
@@ -196,12 +252,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     divisions: 100,
                     onChanged: (val) {
                       _val = val;
-                      setState(() {});
+                      if (_rebuild) {
+                        setState(() {
+                          _rebuild = false;
+                        });
+                      }
                       if (timer != null) {
                         timer.cancel();
                       }
                       //use timer for the smoother sliding
-                      timer = Timer(Duration(milliseconds: 200), () {
+                      timer = Timer(Duration(milliseconds: 10), () {
                         BackgroundMusicManager.setVolume(val);
                         AppStateConfig.save(context, musicVolume: val);
                       });
@@ -227,20 +287,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       Colors.cyan,
                       Colors.yellow,
                       Theme.of(context).accentColor,
-                      Colors.white
+                      Colors.white,
+                      Colors.green,
+                      Colors.blueGrey
                     ],
                     getCurrentSelectedIndex: getCurrentSelectedIndex,
                   ),
 
                   /// Top Navigation Bar.
                   Container(
-                    width: size.width,
+                    width: size.width - length,
                     height: navHeight,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: TopNavigationBar(
+                      width: size.width - length,
                       getSelectedIndex: getCurrentSelectedIndex,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      defaultIconSizes: 0.425 * navHeight,
+                      defaultIconSizes: 0.4 * navHeight,
                       defaultOnPressed: _onNavButtonTapped,
                       defaultTextScaleFactor: 0.00275 * size.height,
                       children: [
@@ -248,7 +309,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           icon: SvgAsset.logo_icon,
                           resetCount: true,
                           text: " ",
-                          size: 0.435 * navHeight,
+                          size: 0.415 * navHeight,
                         ),
                         NavigationBarButton(
                           icon: SvgAsset.videos_icon,
@@ -271,14 +332,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           text: "Juegos",
                         ),
                         NavigationBarButton(
+                          icon: SvgAsset.videos_icon,
+                          activeIcon: SvgAsset.videos_active_icon,
+                          text: "Favoritos",
+                        ),
+                        NavigationBarButton(
                           icon: SvgAsset.search_icon,
                           text: "Buscar",
                           onPressed: (index) {
-                            MusicEffect.play(MediaAsset.mp3.click);
+                            _soundEffect.play(MediaAsset.mp3.click);
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return SearchPage(
-                                speech: speech,
+                                speech: _speech,
                               );
                             }));
                           },
@@ -290,7 +356,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   /// Video & Game Cards' List.
                   Expanded(
                     child: Center(
-                      child: cardList,
+                      child: _cardList,
                     ),
                   ),
                 ],
@@ -310,20 +376,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    MusicEffect.play(MediaAsset.mp3.click);
-    print("DEBUG: $index");
+    print("DEBUG from home: index $index");
+    _soundEffect.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;
-      cardList = _widgetOptions.elementAt(_selectedIndex);
     });
   }
 
   int getCurrentSelectedIndex() {
     return _selectedIndex;
-  }
-
-  void rebuild() {
-    setState(() {});
   }
 }
 

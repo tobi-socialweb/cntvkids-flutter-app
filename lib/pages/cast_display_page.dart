@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -28,12 +28,15 @@ class _ChromeCastViewState extends State<ChromeCastView> {
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
 
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(widget.video.thumbnailUrl);
     imgProvider.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener((info, _) => completer.complete(info.image)));
+    _soundEffect = SoundEffect();
 
     super.initState();
   }
@@ -78,7 +81,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                               asset: SvgAsset.back_icon,
                               size: iconSize,
                               onPressed: () {
-                                MusicEffect.play(MediaAsset.mp3.go_back);
+                                _soundEffect.play(MediaAsset.mp3.go_back);
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
@@ -161,13 +164,13 @@ class _ChromeCastViewState extends State<ChromeCastView> {
               ),
             ),
             onPressed: () {
-              MusicEffect.play(MediaAsset.mp3.click);
+              _soundEffect.play(MediaAsset.mp3.click);
               Navigator.of(context).pop();
             },
           ),
         ),
         onWillPop: () {
-          MusicEffect.play(MediaAsset.mp3.go_back);
+          _soundEffect.play(MediaAsset.mp3.go_back);
           Navigator.of(context).pop();
           return Future<bool>.value(true);
         });

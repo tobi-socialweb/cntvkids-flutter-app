@@ -1,6 +1,5 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:cntvkids_app/common/constants.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -12,22 +11,6 @@ import 'package:focus_detector/focus_detector.dart';
 class Music {
   static AudioPlayer player = new AudioPlayer();
   static AudioCache cache = new AudioCache();
-}
-
-class MusicEffect {
-  static AudioPlayer player = new AudioPlayer();
-  static AudioCache cache = new AudioCache();
-
-  /// Play effect sound.
-  static Future<void> play(AssetResource asset) async {
-    /// This assumes the asset's path falls under the `assets/` directory.
-    /// Therefore, because `cache.play()` adds it manually, it should be
-    /// removed first.
-    String fileName = asset.name.replaceFirst(RegExp(r'assets/'), "");
-
-    player =
-        await cache.play(fileName, volume: BackgroundMusicManager.getVolume());
-  }
 }
 
 /// Singleton.
@@ -62,27 +45,27 @@ class BackgroundMusic extends StatefulWidget {
   Future<void> loopMusic() async {
     Music.player = await Music.cache.loop('sounds/background/background_1.mp3',
         volume: BackgroundMusicManager.getVolume());
-    print("DEBUG: loop music from home_page");
+    print("DEBUG from back ground music: loop music from home_page");
   }
 
   Future<void> stopMusic() async {
     Music.player?.stop();
-    print("DEBUG: stop music from home_page");
+    print("DEBUG from back ground music: stop music from home_page");
   }
 
   Future<void> resumeMusic() async {
     Music.player?.resume();
-    print("DEBUG: resume music from home_page");
+    print("DEBUG from back ground music: resume music from home_page");
   }
 
   Future<void> pauseMusic() async {
     Music.player?.pause();
-    print("DEBUG: pause music from home_page");
+    print("DEBUG from back ground music: pause music from home_page");
   }
 
   Future<void> changeVolume(double value) async {
     Music.player?.setVolume(value);
-    print("DEBUG: set volumen to $value");
+    print("DEBUG from back ground music: set volumen to $value");
   }
 }
 
@@ -120,7 +103,11 @@ class BackgroundMusicState extends State<BackgroundMusic>
   Widget build(BuildContext context) {
     return FocusDetector(
       onVisibilityGained: () {
-        if (Music.player.state != AudioPlayerState.PLAYING) {
+        print("Debug from background: visibility gain");
+        print(
+            "Debug from background: music player state ${Music.player.state}");
+        if (Music.player.state == AudioPlayerState.STOPPED ||
+            Music.player.state == null) {
           Music.cache.clearCache();
           BackgroundMusicManager.instance.music.loopMusic();
         }

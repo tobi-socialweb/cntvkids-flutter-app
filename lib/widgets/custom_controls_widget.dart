@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/material.dart';
 
 import 'package:better_player/better_player.dart' hide VideoPlayerValue;
@@ -23,6 +23,14 @@ class CustomPlayerControls extends StatefulWidget {
 }
 
 class _CustomPlayerControlsState extends State<CustomPlayerControls> {
+  SoundEffect _soundEffect;
+
+  @override
+  void initState() {
+    _soundEffect = SoundEffect();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -45,7 +53,7 @@ class _CustomPlayerControlsState extends State<CustomPlayerControls> {
             ),
             onWillPop: () {
               if (InheritedVideoDisplay.of(context).isMinimized) {
-                MusicEffect.play(MediaAsset.mp3.go_back);
+                _soundEffect.play(MediaAsset.mp3.go_back);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               } else {

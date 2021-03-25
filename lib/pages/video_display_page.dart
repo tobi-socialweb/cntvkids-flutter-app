@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:better_player/better_player.dart';
 import 'package:cntvkids_app/widgets/app_state_config.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +13,6 @@ import 'package:cntvkids_app/common/helpers.dart';
 
 import 'package:cntvkids_app/models/video_model.dart';
 import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
-
-import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:cntvkids_app/widgets/custom_controls_widget.dart';
 
 import 'package:cntvkids_app/widgets/video_cast_widget.dart';
@@ -21,6 +20,7 @@ import 'package:provider/provider.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Used to keep a reference of this context, for a later navigator pop.
 class InheritedVideoDisplay extends InheritedWidget {
@@ -65,9 +65,13 @@ class _VideoDisplayState extends State<VideoDisplay> {
   BetterPlayerDataSource _betterPlayerDataSource;
 
   bool showOneAlert = true;
+
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
     super.initState();
+    _soundEffect = SoundEffect();
     print("serie:" + widget.video.series);
     print("titulo: " + widget.video.title);
     if (widget.betterPlayerController != null) {
@@ -119,6 +123,35 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerDataSource: _betterPlayerDataSource);
   }
 
+  void saveFavorites(String itemId, String title, String thumbnailurl,
+      String url, String signurl) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> listId = prefs.getStringList(FAVORITE_ID_KEY);
+    List<String> listTitles = prefs.getStringList(FAVORITE_TITLES_KEY);
+    List<String> listThumbnails = prefs.getStringList(FAVORITE_THUMBNAILS_KEY);
+    List<String> listUrls = prefs.getStringList(FAVORITE_URLS_KEY);
+    List<String> listSignUrls = prefs.getStringList(FAVORITE_SIGNURLS_KEY);
+    (listId != null) ? listId.insert(0, itemId) : listId = [itemId];
+    print(listId);
+    (listTitles != null) ? listTitles.insert(0, title) : listTitles = [title];
+    print(listTitles);
+    (listThumbnails != null)
+        ? listThumbnails.insert(0, thumbnailurl)
+        : listThumbnails = [thumbnailurl];
+    print(listThumbnails);
+    (listUrls != null) ? listUrls.insert(0, url) : listUrls = [url];
+    print(listUrls);
+    (listSignUrls != null)
+        ? listSignUrls.insert(0, signurl)
+        : listSignUrls = [signurl];
+    print(listSignUrls);
+    await prefs.setStringList(FAVORITE_ID_KEY, listId);
+    await prefs.setStringList(FAVORITE_TITLES_KEY, listTitles);
+    await prefs.setStringList(FAVORITE_THUMBNAILS_KEY, listThumbnails);
+    await prefs.setStringList(FAVORITE_URLS_KEY, listUrls);
+    await prefs.setStringList(FAVORITE_SIGNURLS_KEY, listSignUrls);
+  }
+
   likeAlert(BuildContext context) async {
     double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
     return showDialog(
@@ -145,13 +178,20 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       child: Text("Si")),
                   onPressed: () async {
                     String itemId = widget.video.id.toString();
+                    saveFavorites(
+                        itemId,
+                        widget.video.title,
+                        widget.video.thumbnailUrl,
+                        widget.video.videoUrl,
+                        widget.video.signLangVideoUrl);
                     print("DEBUG: detalles de video a guardar ....");
+                    print("DEBUG: " + widget.video.title);
                     print("DEBUG: " + itemId);
                     int userId = await getUserId(context);
-                    print("DEBUG: $userId");
+                    print("DEBUG: user id$userId");
                     String userIp =
                         Provider.of<AppStateConfig>(context, listen: false).ip;
-                    print("DEBUG: " + userIp);
+                    print("DEBUG: user " + userIp);
 
                     try {
                       String requestUrl =
@@ -248,7 +288,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 
   void toggleDisplay() {
-    MusicEffect.play(MediaAsset.mp3.go_back);
+    _soundEffect.play(MediaAsset.mp3.go_back);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MinimizedVideoDisplay(
         video: widget.video,
@@ -273,15 +313,18 @@ class MinimizedVideoDisplay extends StatefulWidget {
 class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   SearchCardList suggested;
   bool shouldDispose = true;
+  SoundEffect _soundEffect;
+
   @override
   void initState() {
-    super.initState();
+    _soundEffect = SoundEffect();
     bool hasSeries = widget.video.series != null || widget.video.series != "";
     suggested = SearchCardList(
       search: hasSeries ? widget.video.series : widget.video.title,
       video: widget.video,
       isMinimized: true,
     );
+    super.initState();
   }
 
   @override
@@ -293,8 +336,8 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     final double miniVideoSize = 0.6 * size.height;
 
     return FocusDetector(
-      onFocusLost: () {
-        print("Debug: vista minimizada Perdio foco");
+      onVisibilityLost: () {
+        print("Debug: vista minimizada Perdio visibilidad");
         if (shouldDispose) {
           print("Debug: dipose al entrar a otro video");
           widget.betterPlayerController.dispose(forceDispose: true);
@@ -328,7 +371,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                             asset: SvgAsset.back_icon,
                             size: iconSize,
                             onPressed: () {
-                              MusicEffect.play(MediaAsset.mp3.go_back);
+                              _soundEffect.play(MediaAsset.mp3.go_back);
                               widget.betterPlayerController.dispose();
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
@@ -425,7 +468,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
     setState(() {
       shouldDispose = false;
     });
-    MusicEffect.play(MediaAsset.mp3.click);
+    _soundEffect.play(MediaAsset.mp3.click);
     Navigator.of(context).pop();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,9 +31,17 @@ class _GameCardState extends ClickableCardState<GameCard> {
   @override
   String get heroId => widget.heroId;
 
+  SoundEffect _soundEffect;
+
+  void initState() {
+    _soundEffect = SoundEffect();
+
+    super.initState();
+  }
+
   @override
   void onTap() {
-    MusicEffect.play(MediaAsset.mp3.click);
+    _soundEffect.play(MediaAsset.mp3.click);
     BackgroundMusicManager.instance.music.stopMusic();
     Navigator.push(
         context,
