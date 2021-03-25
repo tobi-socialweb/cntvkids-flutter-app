@@ -27,7 +27,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   List<Widget> videos = [];
 
   /// Returns the specific card widget corresponding to each model (with object).
-  Widget cardWidget(dynamic object, String heroId);
+  Widget cardWidget(dynamic object);
 
   /// The color in which to paint the background blob.
   Color get blobColor;
@@ -58,7 +58,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
         cards[i].useSignLang =
             Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
       }
-      videos.add(cardWidget(cards[i], cards[i].id.toString()));
+      videos.add(cardWidget(cards[i]));
     }
 
     controller.addListener(_scrollControllerListener);
@@ -174,7 +174,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                                         : 0.2 * topBarHeight,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
-                                    fontFamily: "FredokaOne",
+                                    fontFamily: FontAsset.fredoka_one,
                                     height: 1.0,
                                   ),
                                 ),

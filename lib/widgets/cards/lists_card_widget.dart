@@ -9,10 +9,9 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 
 class ListsCard extends StatefulWidget {
   final Lists list;
-  final String heroId;
   final double heightFactor;
 
-  const ListsCard({Key key, this.list, this.heroId, this.heightFactor = 0.75})
+  const ListsCard({Key key, this.list, this.heightFactor = 0.75})
       : super(key: key);
 
   @override
@@ -24,14 +23,13 @@ class _ListsCardState extends ClickableCardState<ListsCard> {
   AssetResource get badge => SvgAsset.lists_badge;
 
   @override
-  String get heroId => widget.heroId;
+  String get heroId => widget.list.id;
 
   @override
   void onTap() {
     MusicEffect.play(MediaAsset.mp3.click);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ListsCardDetail(
-          list: widget.list, heroId: widget.heroId, imgProvider: imgProvider);
+      return ListsCardDetail(list: widget.list, imgProvider: imgProvider);
     }));
   }
 

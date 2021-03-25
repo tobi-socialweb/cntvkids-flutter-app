@@ -6,14 +6,12 @@ import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 
 class SeriesCardDetail extends StatefulWidget {
   final Series series;
-  final String heroId;
   final ImageProvider imgProvider;
 
   const SeriesCardDetail({
     Key key,
     this.imgProvider,
     this.series,
-    this.heroId,
   }) : super(key: key);
 
   _SeriesCardDetailState createState() => _SeriesCardDetailState();
@@ -21,7 +19,7 @@ class SeriesCardDetail extends StatefulWidget {
 
 class _SeriesCardDetailState extends StaticCardListState<SeriesCardDetail> {
   @override
-  String get avatarHeroId => widget.heroId;
+  String get avatarHeroId => widget.series.id;
 
   @override
   ImageProvider<Object> get avatarImgProvider => widget.imgProvider;
@@ -30,12 +28,7 @@ class _SeriesCardDetailState extends StaticCardListState<SeriesCardDetail> {
   Color get blobColor => Colors.cyan;
 
   @override
-  Widget cardWidget(object, String heroId) {
-    return VideoCard(
-      video: object,
-      heroId: heroId,
-    );
-  }
+  Widget cardWidget(object) => VideoCard(video: object);
 
   @override
   List get cards => widget.series.videos;

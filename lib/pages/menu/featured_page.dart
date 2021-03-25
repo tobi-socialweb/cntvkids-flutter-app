@@ -23,12 +23,7 @@ class FeaturedCardList extends StatefulWidget {
 
 class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
-  Widget cardWidget(object, heroId, index) {
-    return VideoCard(
-      video: object,
-      heroId: heroId,
-    );
-  }
+  Widget cardWidget(object, index) => VideoCard(video: object);
 
   @override
   String get modelUrl => VIDEOS_URL;
@@ -48,17 +43,32 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
     /// Check if accessibility option for sign language is on.
-    if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
-      /// Filter sign lang videos
-      for (int i = 0; i < newCards.length; i++) {
-        if (newCards[i].signLangVideoUrl != "") {
-          newCards[i].useSignLang = true;
-        } else {
-          newCards.removeAt(i);
-          i--;
-        }
+    final bool isUsingSignLang =
+        Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+
+    /// Itererate through all new cards.
+    for (int i = 0; i < newCards.length; i++) {
+      if (isUsingSignLang) {
+        /// Set value as true by default.
+        newCards[i].useSignLang = true;
+
+        /// Remove if video does not have sign language available.
+        if (newCards[i].signLangVideoUrl == "") newCards.removeAt(i--);
+      }
+
+      /// If the current card is the first in the list.
+      if (i == 0 && cards.length > 0) {
+        /// Assign first card in [newCards] as the `next` for the last one
+        /// in [cards].
+        cards[cards.length - 1].next = newCards[i];
+
+        /// Otherwise any other card.
+      } else if (i > 0) {
+        newCards[i].prev = newCards[i - 1];
+        newCards[i - 1].next = newCards[i];
       }
     }
+
     return Future.value(newCards);
   }
 }

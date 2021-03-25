@@ -20,12 +20,7 @@ class GamesCardList extends StatefulWidget {
 
 class _GamesCardListState extends VariableCardListState<GamesCardList> {
   @override
-  Widget cardWidget(object, heroId, index) {
-    return GameCard(
-      game: object,
-      heroId: heroId,
-    );
-  }
+  Widget cardWidget(object, index) => GameCard(game: object);
 
   @override
   String get modelUrl => GAMES_URL;

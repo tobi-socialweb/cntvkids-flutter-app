@@ -54,9 +54,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// Returns the specific card widget corresponding to each model (with object).
   ///
   /// ```dart
-  ///   return Video(video: object, heroId: heroId);
+  ///   return Video(video: object);
   /// ```
-  Widget cardWidget(dynamic object, String heroId, int index);
+  Widget cardWidget(dynamic object, int index);
 
   /// Gets called after successfully fetching cards, and allows for further
   /// optional management of which cards to keep or any other use.
@@ -192,11 +192,9 @@ abstract class VariableCardListState<T extends StatefulWidget>
                     if (index == 0) {
                       return Padding(
                           padding: EdgeInsets.only(left: leftMargin),
-                          child: cardWidget(snapshot.data[index],
-                              snapshot.data[index].id.toString(), index));
+                          child: cardWidget(snapshot.data[index], index));
                     } else {
-                      return cardWidget(snapshot.data[index],
-                          snapshot.data[index].id.toString(), index);
+                      return cardWidget(snapshot.data[index], index);
                     }
                   },
                 ),
@@ -208,9 +206,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
                   child: Text("${snapshot.error}"));
             } else {
               return Center(
-                child: Image.asset(
-                  "assets/app/preload.gif",
-                ),
+                child: Image(image: ImageAsset.gif.preload),
               );
             }
           },

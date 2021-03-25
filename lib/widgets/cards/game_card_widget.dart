@@ -10,10 +10,9 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 /// Card widget used to display a clickable game.
 class GameCard extends StatefulWidget {
   final Game game;
-  final String heroId;
   final double heightFactor;
 
-  const GameCard({Key key, this.game, this.heroId, this.heightFactor = 0.75})
+  const GameCard({Key key, this.game, this.heightFactor = 0.75})
       : super(key: key);
 
   @override
@@ -28,7 +27,7 @@ class _GameCardState extends ClickableCardState<GameCard> {
   String get cardText => widget.game.title;
 
   @override
-  String get heroId => widget.heroId;
+  String get heroId => widget.game.id;
 
   @override
   void onTap() {

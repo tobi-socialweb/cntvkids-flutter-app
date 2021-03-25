@@ -18,12 +18,7 @@ class ListsCardList extends StatefulWidget {
 
 class _ListsCardListState extends VariableCardListState<ListsCardList> {
   @override
-  Widget cardWidget(object, heroId, index) {
-    return ListsCard(
-      list: object,
-      heroId: heroId,
-    );
-  }
+  Widget cardWidget(object, index) => ListsCard(list: object);
 
   @override
   String get modelUrl => LISTS_URL;

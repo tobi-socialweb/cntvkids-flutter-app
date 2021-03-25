@@ -10,8 +10,6 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
-import 'dart:async';
-
 /// Main function called at app start.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
