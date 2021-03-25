@@ -9,11 +9,9 @@ import 'package:cntvkids_app/pages/menu/series_detail_page.dart';
 
 class SeriesCard extends StatefulWidget {
   final Series series;
-  final String heroId;
   final double heightFactor;
 
-  const SeriesCard(
-      {Key key, this.series, this.heroId, this.heightFactor = 0.75})
+  const SeriesCard({Key key, this.series, this.heightFactor = 0.75})
       : super(key: key);
 
   _SeriesCardState createState() => _SeriesCardState();
@@ -38,10 +36,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
   void onTap() {
     _soundEffect.play(MediaAsset.mp3.click);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return SeriesCardDetail(
-          series: widget.series,
-          heroId: widget.heroId,
-          imgProvider: imgProvider);
+      return SeriesCardDetail(series: widget.series, imgProvider: imgProvider);
     }));
   }
 
@@ -52,7 +47,7 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
   String get thumbnailUrl => widget.series.thumbnailUrl;
 
   @override
-  String get heroId => widget.heroId;
+  String get heroId => widget.series.id;
 
   @override
   bool get hasTextDecoration => true;

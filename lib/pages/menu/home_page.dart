@@ -35,6 +35,7 @@ class HomePage extends StatefulWidget {
   const HomePage({
     Key key,
   }) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -141,9 +142,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
                 Switch(
                   onChanged: (value) async {
-                    print(
-                        "DEBUG from home: Value= ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang}");
-
                     await AppStateConfig.save(context, isUsingSignLang: value);
                     setState(() {
                       _rebuild = true;
@@ -376,7 +374,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    print("DEBUG from home: index $index");
     _soundEffect.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;

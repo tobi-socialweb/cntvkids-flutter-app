@@ -1,4 +1,3 @@
-
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,33 +10,21 @@ import 'package:cntvkids_app/widgets/background_music.dart';
 /// Card widget used to display a clickable video.
 class SuggestedVideoCard extends StatefulWidget {
   final Video video;
-  final String heroId;
-  final double heightFactor;
 
-  const SuggestedVideoCard(
-      {Key key, this.video, this.heroId, this.heightFactor = 0.25})
-      : super(key: key);
+  const SuggestedVideoCard({Key key, this.video}) : super(key: key);
 
   @override
   _SuggestedVideoCardState createState() => _SuggestedVideoCardState();
 }
 
 class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
-  String formatVideoText() {
-    String result = "";
-
-    if (widget.video.series != "") result += "${widget.video.series}\n";
-    if (widget.video.extra != "") result += "${widget.video.extra} - ";
-
-    result += widget.video.title;
-    return result;
-  }
+  String formatVideoText() => "";
 
   @override
   AssetResource get badge => SvgAsset.videos_badge;
 
   @override
-  String get heroId => widget.heroId;
+  String get heroId => widget.video.id;
 
   SoundEffect _soundEffect;
 
@@ -57,7 +44,6 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return VideoDisplay(
         video: widget.video,
-        heroId: widget.heroId,
       );
     }));
   }
@@ -66,7 +52,7 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
   String get thumbnailUrl => widget.video.thumbnailUrl;
 
   @override
-  double get heightFactor => widget.heightFactor;
+  double get heightFactor => 1.0; // widget.heightFactor;
 
   @override
   Size get size => MediaQuery.of(context).size;

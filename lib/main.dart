@@ -5,6 +5,7 @@ import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:provider/provider.dart';
 
 /// Main function called at app start.
@@ -21,7 +22,6 @@ void main() async {
   /// a text box, for example). Needs the use of restoreSystemUIOverlays.
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
-  /// Theming and stuff probably related to OneSignal.
   runApp(ChangeNotifierProvider<AppStateConfig>(
     create: (context) => AppStateConfig(),
     child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
@@ -37,8 +37,21 @@ class _MyAppState extends State<MyApp> {
   BetterPlayer videoSplashScreen;
   bool end = false;
 
-  /// TODO: implement timer to test if video could not load and show
-  /// error message. (and some retry attempts).
+  /// The splash screen video loaded using BetterPlayer.
+  BetterPlayer splashScreenVideo = BetterPlayer.network(
+      "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
+      betterPlayerConfiguration: BetterPlayerConfiguration(
+        aspectRatio: 16 / 9,
+        autoPlay: true,
+        autoDispose: false,
+        controlsConfiguration:
+            BetterPlayerControlsConfiguration(showControls: false),
+      ));
+
+  /// If the splash screen video has ended or not.
+  bool videoEnded = false;
+
+  /// TODO: implement timer to test if video could not load and show error message. (and some retry attempts).
   void initState() {
     videoSplashScreen = BetterPlayer.network(
         "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
@@ -90,5 +103,18 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void pushHomePage() {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return HomePage();
+    }));
+  }
+
+  @override
+  void dispose() {
+    splashScreenVideo.controller.dispose(forceDispose: true);
+
+    super.dispose();
   }
 }

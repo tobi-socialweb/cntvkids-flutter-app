@@ -55,7 +55,7 @@ class _FavoriteCardListState extends State<FavoriteCardList>
     if (listTitles != null) {
       for (int i = 0; i < listTitles.length; i++) {
         Video temp = Video(
-          id: int.parse(listIds[i]),
+          id: listIds[i],
           title: listTitles[i],
           thumbnailUrl: listThumbnails[i],
           videoUrl: listUrls[i],
@@ -74,8 +74,7 @@ class _FavoriteCardListState extends State<FavoriteCardList>
                   .isUsingSignLang;
         }
         setState(() {
-          cards.add(
-              VideoCard(video: videos[i], heroId: videos[i].id.toString()));
+          cards.add(VideoCard(video: videos[i]));
         });
       }
     }

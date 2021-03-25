@@ -11,10 +11,13 @@ import 'package:provider/provider.dart';
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     with WidgetsBindingObserver {
   /// Controller for the `ListView` scrolling.
-  ScrollController controller;
+  ScrollController controller = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
 
   /// If user began scrolling.
-  bool startedScrolling;
+  bool startedScrolling = false;
 
   /// All cards to show.
   List<dynamic> get cards;
@@ -22,7 +25,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   List<Widget> videos = [];
 
   /// Returns the specific card widget corresponding to each model (with object).
-  Widget cardWidget(dynamic object, String heroId);
+  Widget cardWidget(dynamic object);
 
   /// The color in which to paint the background blob.
   Color get blobColor;
@@ -40,7 +43,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   String get description;
 
   /// Determined on initState of card list has description.
-  bool hasDescription;
+  bool hasDescription = true;
 
   SoundEffect _soundEffect;
 
@@ -52,19 +55,14 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
         cards[i].useSignLang =
             Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
       }
-      videos.add(cardWidget(cards[i], cards[i].id.toString()));
+      videos.add(cardWidget(cards[i]));
     }
 
-    controller = ScrollController(
-      initialScrollOffset: 0.0,
-      keepScrollOffset: true,
-    );
     controller.addListener(_scrollControllerListener);
 
     hasDescription = description != null && description != "";
 
     WidgetsBinding.instance.addObserver(this);
-    startedScrolling = false;
     _soundEffect = SoundEffect();
   }
 
@@ -173,7 +171,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                                           : 0.2 * topBarHeight,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
-                                      fontFamily: "FredokaOne",
+                                      fontFamily: FontAsset.fredoka_one,
                                       height: 1.0,
                                     ),
                                   ),

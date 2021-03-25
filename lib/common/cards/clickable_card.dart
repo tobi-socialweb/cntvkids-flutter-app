@@ -60,8 +60,12 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
+    /// The height of the card, considering the height factor.
     final double height = size.height * heightFactor;
+
+    /// The width as poproportion of the height.
     final double width = height * 16 / 9;
+
     final double iconSize = 0.45 * height;
 
     return Column(
@@ -71,86 +75,158 @@ abstract class ClickableCardState<T extends StatefulWidget> extends State<T> {
         Container(
             height: height,
             width: width,
-            margin: EdgeInsets.symmetric(horizontal: 0.025 * width),
+            margin: margin,
             child: FittedBox(
               fit: BoxFit.contain,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(0.15 * height),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: width,
-                        height: height,
-                        color: Colors.white54,
-                      ),
-                      Hero(
-                        tag: heroId,
-                        child: Image(
-                          image: imgProvider,
-                          width: width,
-                          height: height,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.medium,
-                        ),
-                      ),
-                      Positioned(
-                        right: height * diagonalIconDstFactor - iconSize / 2,
-                        bottom: height * diagonalIconDstFactor - iconSize / 2,
-                        child: SvgIcon(
-                          asset: badge,
-                          size: iconSize,
-                        ),
-                      ),
-                      Positioned.fill(
-                          child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: onTap,
-                        ),
-                      ))
-                    ],
-                  )),
+                  child: _CardElements(
+                      width: width,
+                      height: height,
+                      heroId: heroId,
+                      imgProvider: imgProvider,
+                      diagonalPos:
+                          height * diagonalIconDstFactor - iconSize / 2,
+                      asset: badge,
+                      iconSize: iconSize,
+                      onTap: onTap)),
             )),
+
+        /// If the card has text added, determine whether to show it with
+        /// decoration or not
         if (cardText != null && cardText != '')
           if (hasTextDecoration)
-            Container(
-              width: 0.95 * width,
-              decoration: BoxDecoration(
-                color: Colors.purple[900],
-                borderRadius: BorderRadius.circular(0.1 * height),
-              ),
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 0.05 * width, vertical: 0.025 * height),
-                child: Text(
-                  cardText,
-                  textAlign: TextAlign.left,
-                  softWrap: true,
-                  textScaleFactor: 0.006 * height,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            )
+            _CardTextWithDecoration(
+                width: width, height: height, text: cardText)
           else
-            Container(
-              width: width,
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 0.025 * width, vertical: 0.025 * height),
-                child: Text(
-                  cardText,
-                  textAlign: TextAlign.left,
-                  softWrap: true,
-                  textScaleFactor: 0.006 * height,
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            )
+            _CardText(width: width, height: height, text: cardText)
       ],
+    );
+  }
+}
+
+/// The thumbnail, the badge, and other parts of the card.
+class _CardElements extends StatelessWidget {
+  final double width;
+  final double height;
+  final String heroId;
+  final ImageProvider imgProvider;
+  final double diagonalPos;
+  final AssetResource asset;
+  final double iconSize;
+  final void Function() onTap;
+
+  const _CardElements(
+      {Key key,
+      this.width,
+      this.height,
+      this.heroId,
+      this.imgProvider,
+      this.diagonalPos,
+      this.asset,
+      this.iconSize,
+      this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          width: width,
+          height: height,
+          color: Colors.white54,
+        ),
+        Hero(
+          tag: heroId,
+          child: Image(
+            image: imgProvider,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
+        Positioned(
+          right: diagonalPos,
+          bottom: diagonalPos,
+          child: SvgIcon(
+            asset: asset,
+            size: iconSize,
+          ),
+        ),
+        Positioned.fill(
+            child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+          ),
+        ))
+      ],
+    );
+  }
+}
+
+/// Card text with decoration adds a rounded background behind the text.
+class _CardTextWithDecoration extends StatelessWidget {
+  final double width;
+  final double height;
+  final String text;
+
+  const _CardTextWithDecoration({Key key, this.width, this.height, this.text})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 0.95 * width,
+      decoration: BoxDecoration(
+        color: Colors.purple[900],
+        borderRadius: BorderRadius.circular(0.1 * height),
+      ),
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: 0.05 * width, vertical: 0.025 * height),
+        child: Text(
+          text,
+          textAlign: TextAlign.left,
+          softWrap: true,
+          textScaleFactor: 0.006 * height,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Card text without decoration just shows text.
+class _CardText extends StatelessWidget {
+  final double width;
+  final double height;
+  final String text;
+
+  const _CardText({Key key, this.width, this.height, this.text})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: 0.025 * width, vertical: 0.025 * height),
+        child: Text(
+          text,
+          textAlign: TextAlign.left,
+          softWrap: true,
+          textScaleFactor: 0.006 * height,
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
     );
   }
 }

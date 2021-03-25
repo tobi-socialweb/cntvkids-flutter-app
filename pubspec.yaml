@@ -84,9 +84,11 @@ flutter:
   - assets/images/lists/lists_icon.svg
   - assets/images/logo/logo_icon.svg
   - assets/images/player_next/player_next_icon.svg
+  - assets/images/player_next/player_next_unavailable_icon.svg
   - assets/images/player_pause/player_pause_icon.svg
   - assets/images/player_play/player_play_icon.svg
   - assets/images/player_previous/player_previous_icon.svg
+  - assets/images/player_previous/player_previous_unavailable_icon.svg
   - assets/images/record/record_icon.svg
   - assets/images/search/search_icon.svg
   - assets/images/series/series_active_icon.svg

@@ -15,10 +15,11 @@ abstract class VariableCardListState<T extends StatefulWidget>
   List<dynamic> cards = [];
 
   /// Future cards.
-  Future<List<dynamic>> futureCards;
+  Future<List<dynamic>> futureCards = Future.value([]);
 
   /// Controller for the `ListView` scrolling.
-  ScrollController controller;
+  ScrollController controller =
+      ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
   /// How many cards will be loaded each time.
   int cardsPerPage = 10;
@@ -35,8 +36,11 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// The specific category ID to use when fetching the data.
   int get categoryId;
 
-  ///
-  bool flag;
+  /// Whether pages should continue to load momentarily.
+  bool continueLoadingPages = true;
+
+  /// Left space for the whole card list.
+  double get leftMargin;
 
   /// Recieves the snapshot data and converts each value into the model object,
   /// returning a list of these objects.
@@ -47,14 +51,16 @@ abstract class VariableCardListState<T extends StatefulWidget>
   List<dynamic> dataToCardList(dynamic data);
 
   /// Returns the specific card widget corresponding to each model (with object).
-  Widget cardWidget(dynamic object, String heroId, int index);
+  ///
+  /// ```dart
+  ///   return Video(video: object);
+  /// ```
+  Widget cardWidget(dynamic object, int index);
 
   /// Gets called after successfully fetching cards, and allows for further
   /// optional management of which cards to keep or any other use.
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) =>
       Future.value(newCards);
-
-  double get leftMargin;
 
   SoundEffect _soundEffect;
 
@@ -62,7 +68,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   void initState() {
     super.initState();
     startedScrolling = false;
-    flag = true;
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
@@ -74,12 +79,13 @@ abstract class VariableCardListState<T extends StatefulWidget>
   _scrollControllerListener() {
     if (!this.mounted) return;
 
-    /// reach middle of scroll bar
-    if (controller.offset >= controller.position.maxScrollExtent / 2 && flag) {
+    /// If controller passed over half the screen and can load more pages.
+    if (controller.offset >= controller.position.maxScrollExtent / 2 &&
+        continueLoadingPages) {
       setState(() {
         currentPage += 1;
         futureCards = fetchCards(currentPage);
-        flag = false;
+        continueLoadingPages = false;
       });
     }
 
@@ -114,12 +120,10 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         List<dynamic> newCards =
             await optionalCardManagement(dataToCardList(response.data));
-        print(
-            "DEBUG from variable card list: fetched new cards (${newCards.length} in total)");
         setState(() {
           cards.addAll(newCards);
-          flag = true;
         });
+
         return cards;
       }
     } on DioError catch (e) {
@@ -170,34 +174,30 @@ abstract class VariableCardListState<T extends StatefulWidget>
               }
 
               return NotificationListener(
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  controller: controller,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    /// If scroll controller cant get dimensions, it means
-                    /// that the loading element is visible and should load
-                    /// more pages.
-                    if (index == 0) {
-                      return Padding(
-                          padding: EdgeInsets.only(left: leftMargin),
-                          child: cardWidget(snapshot.data[index],
-                              snapshot.data[index].id.toString(), index));
-                    } else {
-                      return cardWidget(snapshot.data[index],
-                          snapshot.data[index].id.toString(), index);
-                    }
-                  },
-                ),
-                // ignore: missing_return
                 onNotification: (notification) {
                   if (notification is ScrollEndNotification) {
                     setState(() {
                       startedScrolling = false;
                     });
                   }
+
+                  return true;
                 },
+                child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  controller: controller,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Padding(
+                          padding: EdgeInsets.only(left: leftMargin),
+                          child: cardWidget(snapshot.data[index], index));
+                    } else {
+                      return cardWidget(snapshot.data[index], index);
+                    }
+                  },
+                ),
               );
             } else if (snapshot.hasError && snapshot.data != null) {
               return Container(
@@ -206,9 +206,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
                   child: Text("${snapshot.error}"));
             } else {
               return Center(
-                child: Image.asset(
-                  "assets/app/preload.gif",
-                ),
+                child: Image(image: ImageAsset.gif.preload),
               );
             }
           },

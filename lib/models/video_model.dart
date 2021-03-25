@@ -1,11 +1,10 @@
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/models/lists_model.dart';
-import 'package:cntvkids_app/models/series_model.dart';
+import 'package:cntvkids_app/common/model_object.dart';
 
-enum ModelType { video, serie, lista }
+enum ModelType { video, series, list }
 
-class Video {
-  final int id;
+class Video extends BaseModel {
+  final String id;
   final String title;
   final String thumbnailUrl;
   final String videoUrl;
@@ -13,113 +12,98 @@ class Video {
   final String series;
   final String season;
   final String chapter;
-  final String extra;
   final List<int> categories;
   final String type;
+  VideoOriginInfo originInfo;
   bool useSignLang;
-  final ModelType originModelType;
-  Series originSeries;
-  Lists originList;
+  Video next;
+  Video prev;
 
   Video({
-    this.id,
-    this.title,
-    this.thumbnailUrl,
-    this.videoUrl,
-    this.signLangVideoUrl,
-    this.series,
-    this.season,
-    this.chapter,
-    this.extra,
-    this.categories,
-    this.type,
+    this.id = "-1",
+    this.title = "",
+    this.thumbnailUrl = "",
+    this.videoUrl = "",
+    this.signLangVideoUrl = "",
+    this.series = "",
+    this.season = "",
+    this.chapter = "",
+    this.categories = const [],
+    this.type = "",
+    this.originInfo,
     this.useSignLang,
-    this.originModelType,
-    this.originSeries,
-    this.originList,
-  });
+    this.next,
+    this.prev,
+  }) {
+    this.originInfo = originInfo ?? VideoOriginInfo();
+  }
 
   /// Get `Video` from JSON object.
   factory Video.fromJson(Map<String, dynamic> json,
-      {ModelType originModelType = ModelType.video,
-      Series originSeries,
-      Lists originList}) {
+      {VideoOriginInfo originInfo, Video prev}) {
     /// Default values
-    int _id = has<int>(json["id"], value: -1);
+    String _id = has<String>(json["id"].toString(), "-1");
 
-    String _title =
-        has<String>(json["title"]["rendered"], value: "", comp: [""]);
+    String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
 
     String _thumbnailUrl =
-        has<String>(json["fimg_url"], value: MISSING_IMAGE_URL, comp: [""]);
+        has<String>(json["fimg_url"], MISSING_IMAGE_URL, comp: [""]);
 
     String _videoUrl =
-        has<String>(json["wpcf-vimeo-player-dl"], value: "", comp: [""]);
+        has<String>(json["wpcf-vimeo-player-dl"], "", comp: [""]);
 
-    String _signLang =
-        has<String>(json["wpcf-vimeo-senas-dl"], value: "", comp: [""]);
+    String _signLang = has<String>(json["wpcf-vimeo-senas-dl"], "", comp: [""]);
 
-    String _series =
-        has<String>(json["serie_info"]["title"], value: "", comp: [""]);
+    String _series = has<String>(json["serie_info"]["title"], "", comp: [""]);
 
     String _season =
-        has<String>(json["wpcf-season"].toString(), value: "", comp: [""]);
+        has<String>(json["wpcf-season"].toString(), "", comp: [""]);
 
     String _chapter =
-        has<String>(json["wpcf-chapter"].toString(), value: "", comp: [""]);
+        has<String>(json["wpcf-chapter"].toString(), "", comp: [""]);
 
-    String _extra = (_season != "" ? "T$_season" : "") +
-        (_chapter != "" ? "E$_chapter" : "");
-
-    String _type = has<String>(json["type"], value: "", comp: [""]);
+    String _type = has<String>(json["type"], "", comp: [""]);
 
     List<int> _categories = [];
-    has<List<dynamic>>(json["categories"], then: (object) {
+    has<List<dynamic>>(json["categories"], [], then: (object) {
       for (int i = 0; i < object.length; i++) {
         _categories.add(object[i]);
       }
     });
 
-    return Video(
+    VideoOriginInfo _originInfo = originInfo ?? VideoOriginInfo();
+
+    Video obj = Video(
       id: _id,
       title: _title,
       thumbnailUrl: _thumbnailUrl,
       videoUrl: _videoUrl,
       signLangVideoUrl: _signLang,
       series: _series,
-      extra: _extra,
+      season: _season,
+      chapter: _chapter,
       categories: _categories,
       type: _type,
       useSignLang: false,
-      originModelType: originModelType,
-      originList: originList,
-      originSeries: originSeries,
+      originInfo: _originInfo,
     );
-  }
 
-  /// Compare object to null and to the elements in `comp`, if any. Returns
-  /// `object` if it's not equal to any of those things; otherwise, return
-  /// `value` which by default is null. `then` gets called if `object` is
-  /// returned.
-  static T has<T>(T object,
-      {T value, List<T> comp = const [], void Function(T object) then}) {
-    if (comp.length == 0) {
-      if (object != null) {
-        if (then != null) then(object);
-        return object;
-      } else {
-        return value;
-      }
-    } else {
-      bool res = object != null;
-
-      for (int i = 0; i < comp.length; i++) {
-        res &= object != comp[i];
-      }
-
-      if (res && then != null) then(object);
-
-      return res ? object : value;
+    if (prev != null) {
+      obj.prev = prev;
+      prev.next = obj;
     }
+
+    return obj;
   }
+
+  static T has<T>(T object, T value,
+          {List<T> comp = const [], void Function(T object) then}) =>
+      BaseModel.has(object, value, comp: comp, then: then);
+}
+
+class VideoOriginInfo {
+  final ModelType type;
+  final dynamic origin;
+
+  VideoOriginInfo({this.type = ModelType.video, this.origin});
 }

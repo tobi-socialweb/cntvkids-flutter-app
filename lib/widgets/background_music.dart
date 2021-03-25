@@ -45,27 +45,22 @@ class BackgroundMusic extends StatefulWidget {
   Future<void> loopMusic() async {
     Music.player = await Music.cache.loop('sounds/background/background_1.mp3',
         volume: BackgroundMusicManager.getVolume());
-    print("DEBUG from back ground music: loop music from home_page");
   }
 
   Future<void> stopMusic() async {
     Music.player?.stop();
-    print("DEBUG from back ground music: stop music from home_page");
   }
 
   Future<void> resumeMusic() async {
     Music.player?.resume();
-    print("DEBUG from back ground music: resume music from home_page");
   }
 
   Future<void> pauseMusic() async {
     Music.player?.pause();
-    print("DEBUG from back ground music: pause music from home_page");
   }
 
   Future<void> changeVolume(double value) async {
     Music.player?.setVolume(value);
-    print("DEBUG from back ground music: set volumen to $value");
   }
 }
 

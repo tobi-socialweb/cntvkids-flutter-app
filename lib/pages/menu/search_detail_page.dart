@@ -3,13 +3,13 @@ import 'package:cntvkids_app/common/cards/variable_card_list.dart';
 import 'package:cntvkids_app/common/constants.dart';
 
 import 'package:cntvkids_app/models/video_model.dart';
+import 'package:cntvkids_app/widgets/app_state_config.dart';
 import 'package:cntvkids_app/widgets/cards/suggested_video_card_widget.dart';
 import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-enum modelType { video, serie, lista }
+import 'package:provider/provider.dart';
 
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
@@ -17,12 +17,15 @@ class SearchCardList extends StatefulWidget {
   final bool isMinimized;
   final Video video;
   final double leftMargin;
+  final double heightFactor;
 
-  SearchCardList(
-      {this.search,
-      this.isMinimized = false,
-      this.video,
-      this.leftMargin = 0.0});
+  SearchCardList({
+    this.search,
+    this.isMinimized = false,
+    this.video,
+    this.leftMargin = 0.0,
+    this.heightFactor = 0.75,
+  });
 
   @override
   _SearchCardListState createState() => _SearchCardListState();
@@ -30,17 +33,12 @@ class SearchCardList extends StatefulWidget {
 
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
   bool sent = false;
+
   @override
-  Widget cardWidget(object, String heroId, index) {
+  Widget cardWidget(object, index) {
     return widget.isMinimized == false
-        ? VideoCard(
-            video: object,
-            heroId: heroId,
-          )
-        : SuggestedVideoCard(
-            video: object,
-            heroId: heroId,
-          );
+        ? VideoCard(video: object, heightFactor: widget.heightFactor)
+        : SuggestedVideoCard(video: object);
   }
 
   @override
@@ -51,33 +49,52 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
 
   @override
   List<dynamic> dataToCardList(data) {
-    if (widget.video == null ||
-        widget.video.originModelType == ModelType.video) {
-      return data
-          .map((value) =>
-              Video.fromJson(value, originModelType: ModelType.video))
-          .toList();
+    if (widget.video == null || widget.video.originInfo.origin == null) {
+      return data.map((value) => Video.fromJson(value)).toList();
     } else {
       if (sent) return [];
+      
       sent = true;
-      return (widget.video.originSeries != null)
-          ? widget.video.originSeries.videos
-          : widget.video.originList.videos;
+      return widget.video.originInfo.origin;
     }
   }
 
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
+    /// Check if accessibility option for sign language is on.
+    final bool isUsingSignLang =
+        Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+
+    /// Itererate through all new cards.
     for (int i = 0; i < newCards.length; i++) {
-      if (newCards[i].type == "series") {
-        newCards.removeAt(i);
-        i--;
+      /// Remove if the result is not a video.
+      if (newCards[i].type == "series") newCards.removeAt(i--);
+
+      /// Remove if the result is the same video being displayed.
+      if (widget.isMinimized && newCards[i].id == widget.video.id)
+        newCards.removeAt(i--);
+
+      if (isUsingSignLang) {
+        /// Set value as true by default.
+        newCards[i].useSignLang = true;
+
+        /// Remove if video does not have sign language available.
+        if (newCards[i].signLangVideoUrl == "") newCards.removeAt(i--);
       }
-      if (widget.isMinimized && newCards[i].id == widget.video.id) {
-        newCards.removeAt(i);
-        i--;
+
+      /// If the current card is the first in the list.
+      if (i == 0 && cards.length > 0) {
+        /// Assign first card in [newCards] as the `next` for the last one
+        /// in [cards].
+        cards[cards.length - 1].next = newCards[i];
+
+        /// Otherwise any other card.
+      } else if (i > 0) {
+        newCards[i].prev = newCards[i - 1];
+        newCards[i - 1].next = newCards[i];
       }
     }
+
     return newCards;
   }
 
