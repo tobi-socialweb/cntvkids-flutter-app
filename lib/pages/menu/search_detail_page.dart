@@ -11,8 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum modelType { video, serie, lista }
-
 /// Shows videos 'searched'
 class SearchCardList extends StatefulWidget {
   final String search;
