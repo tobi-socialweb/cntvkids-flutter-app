@@ -41,7 +41,7 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   double get leftMargin => widget.leftMargin;
 
   @override
-  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
     /// Check if accessibility option for sign language is on.
     final bool isUsingSignLang =
         Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
@@ -69,6 +69,6 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
       }
     }
 
-    return Future.value(newCards);
+    return newCards;
   }
 }

@@ -16,10 +16,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
   );
 
   /// If user began scrolling.
-  bool startedScrolling;
-
-  /// If user began scrolling.
-  bool isScrolling = false;
+  bool startedScrolling = false;
 
   /// All cards to show.
   List<dynamic> get cards;
@@ -219,7 +216,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                     onNotification: (notification) {
                       if (notification is ScrollEndNotification) {
                         setState(() {
-                          isScrolling = false;
+                          startedScrolling = false;
                         });
                       }
                       return true;

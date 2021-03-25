@@ -33,6 +33,7 @@ class SearchCardList extends StatefulWidget {
 
 class _SearchCardListState extends VariableCardListState<SearchCardList> {
   bool sent = false;
+
   @override
   Widget cardWidget(object, index) {
     return widget.isMinimized == false
@@ -52,6 +53,7 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
       return data.map((value) => Video.fromJson(value)).toList();
     } else {
       if (sent) return [];
+      
       sent = true;
       return widget.video.originInfo.origin;
     }

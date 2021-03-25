@@ -1,5 +1,8 @@
 /// A base model object class to avoid repeating the `has` method.
 abstract class BaseModel {
+  String id;
+  String title;
+
   /// Compare object to null and to the elements in `comp`, if any. Returns
   /// `object` if it's not equal to any of those things; otherwise, return
   /// `value` which by default is null. `then` gets called if `object` is
@@ -19,5 +22,10 @@ abstract class BaseModel {
     if (res) then(object);
 
     return res ? object : value;
+  }
+
+  @override
+  String toString() {
+    return "(${this.runtimeType} Model, id:$id, title:\"$title\" )";
   }
 }

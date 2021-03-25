@@ -41,17 +41,20 @@ class Lists extends BaseModel {
         _chapter = has<String>(object[i]["chapter"], "", comp: [""]);
 
         _videos.add(Video(
-          id: has<String>(object[i]["id"], "-1"),
-          title: has<String>(object[i]["title"], "", comp: [""]),
-          thumbnailUrl:
-              has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
-          videoUrl: has<String>(object[i]["dl"], "", comp: [""]),
-          series: "",
-          season: _season,
-          chapter: _chapter,
-          prev: i > 0 ? object[i - 1] : null,
-          next: i < object.length - 1 ? object[i + 1] : null,
-        ));
+            id: has<String>(object[i]["id"].toString(), "-1"),
+            title: has<String>(object[i]["title"], "", comp: [""]),
+            thumbnailUrl:
+                has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
+            videoUrl: has<String>(object[i]["dl"], "", comp: [""]),
+            signLangVideoUrl: has<String>(object[i]["dlsenas"], "", comp: [""]),
+            series: "",
+            season: _season,
+            chapter: _chapter,
+            useSignLang: false,
+            prev: i > 0 ? _videos[i - 1] : null,
+            next: null));
+
+        if (i > 0) _videos[i - 1].next = _videos[i];
       }
     });
 

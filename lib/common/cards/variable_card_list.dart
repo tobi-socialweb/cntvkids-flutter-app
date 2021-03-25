@@ -118,9 +118,11 @@ abstract class VariableCardListState<T extends StatefulWidget>
         /// Add new videos to [cards] by updating this widget's state.
         List<dynamic> newCards =
             await optionalCardManagement(dataToCardList(response.data));
+
         setState(() {
           cards.addAll(newCards);
         });
+
         return cards;
       }
     } on DioError catch (e) {

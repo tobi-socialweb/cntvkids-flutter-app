@@ -34,4 +34,14 @@ class _ListsCardListState extends VariableCardListState<ListsCardList> {
 
   @override
   double get leftMargin => widget.leftMargin;
+
+  @override
+  Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
+    print("DEBUG: iterating through lists page cards: ");
+    for (int i = 0; i < newCards.length; i++) {
+      print("DEBUG: \t\t > newCards[$i].title = ${newCards[i].title}");
+    }
+
+    return newCards;
+  }
 }
