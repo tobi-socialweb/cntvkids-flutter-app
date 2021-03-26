@@ -44,34 +44,48 @@ class _FavoriteCardListState extends State<FavoriteCardList>
 
   initFavoriteVideos() async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> listIds = prefs.getStringList(FAVORITE_ID_KEY);
-    List<String> listTitles = prefs.getStringList(FAVORITE_TITLES_KEY);
-    List<String> listThumbnails = prefs.getStringList(FAVORITE_THUMBNAILS_KEY);
-    List<String> listUrls = prefs.getStringList(FAVORITE_URLS_KEY);
-    List<String> listSignUrls = prefs.getStringList(FAVORITE_SIGNURLS_KEY);
+    List<String> videoList = prefs.getStringList(FAVORITE_VIDEOS_KEY);
 
-    print("Debug: titulos guardados");
-    print(listTitles);
-    if (listTitles != null) {
-      for (int i = 0; i < listTitles.length; i++) {
-        Video temp = Video(
-          id: listIds[i],
-          title: listTitles[i],
-          thumbnailUrl: listThumbnails[i],
-          videoUrl: listUrls[i],
-          signLangVideoUrl: listSignUrls[i],
-        );
-        videos.add(temp);
+    if (videoList != null) {
+      for (int i = 0; i < videoList.length; i++) {
+        videos.add(Video.fromJson(videoList[i]));
       }
     }
+
     if (videos != null) {
+      /*/// If the current card is the first in the list.
+      if (i == 0 && cards.length > 0) {
+        /// Assign first card in [newCards] as the `next` for the last one
+        /// in [cards].
+        cards[cards.length - 1].next = newCards[i];
+
+        /// Otherwise any other card.
+      } else if (i > 0) {
+        newCards[i].prev = newCards[i - 1];
+        newCards[i - 1].next = newCards[i];
+      }
+    }*/
+
       print("Debug: videos guardados");
       print(videos.length);
+
+      /// Check if accessibility option for sign language is on.
+      final bool isUsingSignLang =
+          Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+
+      /// Itererate through all new cards.
       for (int i = 0; i < videos.length; i++) {
-        if (videos[i].signLangVideoUrl != "") {
-          videos[i].useSignLang =
-              Provider.of<AppStateConfig>(context, listen: false)
-                  .isUsingSignLang;
+        if (isUsingSignLang) {
+          /// Set value as true by default.
+          videos[i].useSignLang = true;
+
+          /// Remove if video does not have sign language available.
+          if (videos[i].signLangVideoUrl == "") videos.removeAt(i--);
+
+          if (i > 0) {
+            videos[i].prev = videos[i - 1];
+            videos[i - 1].next = videos[i];
+          }
         }
         setState(() {
           cards.add(VideoCard(video: videos[i]));

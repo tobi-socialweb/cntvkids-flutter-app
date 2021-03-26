@@ -50,10 +50,10 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
   @override
   List<dynamic> dataToCardList(data) {
     if (widget.video == null || widget.video.originInfo.origin == null) {
-      return data.map((value) => Video.fromJson(value)).toList();
+      return data.map((value) => Video.fromDatabaseJson(value)).toList();
     } else {
       if (sent) return [];
-      
+
       sent = true;
       return widget.video.originInfo.origin;
     }

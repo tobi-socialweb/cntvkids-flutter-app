@@ -21,7 +21,7 @@ class Series extends BaseModel {
   });
 
   /// Get `Series` from JSON object.
-  factory Series.fromJson(Map<String, dynamic> json) {
+  factory Series.fromDatabaseJson(Map<String, dynamic> json) {
     /// Get values from the json object.
     String _id = has<String>(json["id"].toString(), "-1");
 

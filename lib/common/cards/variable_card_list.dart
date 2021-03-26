@@ -46,7 +46,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
   /// returning a list of these objects.
   ///
   /// ```dart
-  ///   return data.map((value) => MODEL.fromJson(value)).toList();
+  ///   return data.map((value) => MODEL.fromDatabaseJson(value)).toList();
   /// ```
   List<dynamic> dataToCardList(dynamic data);
 

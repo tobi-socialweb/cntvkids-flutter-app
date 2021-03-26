@@ -31,7 +31,7 @@ class _ListsCardListState extends VariableCardListState<ListsCardList> {
 
   @override
   List dataToCardList(data) {
-    return data.map((value) => Lists.fromJson(value)).toList();
+    return data.map((value) => Lists.fromDatabaseJson(value)).toList();
   }
 
   @override

@@ -19,7 +19,7 @@ class Lists extends BaseModel {
   });
 
   /// Get `Lists` from JSON object.
-  factory Lists.fromJson(Map<String, dynamic> json) {
+  factory Lists.fromDatabaseJson(Map<String, dynamic> json) {
     /// Default values.
     String _id = has<String>(json["id"].toString(), "-1");
 

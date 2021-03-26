@@ -117,33 +117,18 @@ class _VideoDisplayState extends State<VideoDisplay> {
         betterPlayerDataSource: _betterPlayerDataSource);
   }
 
-  void saveFavorites(String itemId, String title, String thumbnailurl,
-      String url, String signurl) async {
+  void saveFavorites(String videoJson) async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> listId = prefs.getStringList(FAVORITE_ID_KEY);
-    List<String> listTitles = prefs.getStringList(FAVORITE_TITLES_KEY);
-    List<String> listThumbnails = prefs.getStringList(FAVORITE_THUMBNAILS_KEY);
-    List<String> listUrls = prefs.getStringList(FAVORITE_URLS_KEY);
-    List<String> listSignUrls = prefs.getStringList(FAVORITE_SIGNURLS_KEY);
-    (listId != null) ? listId.insert(0, itemId) : listId = [itemId];
-    print(listId);
-    (listTitles != null) ? listTitles.insert(0, title) : listTitles = [title];
-    print(listTitles);
-    (listThumbnails != null)
-        ? listThumbnails.insert(0, thumbnailurl)
-        : listThumbnails = [thumbnailurl];
-    print(listThumbnails);
-    (listUrls != null) ? listUrls.insert(0, url) : listUrls = [url];
-    print(listUrls);
-    (listSignUrls != null)
-        ? listSignUrls.insert(0, signurl)
-        : listSignUrls = [signurl];
-    print(listSignUrls);
-    await prefs.setStringList(FAVORITE_ID_KEY, listId);
-    await prefs.setStringList(FAVORITE_TITLES_KEY, listTitles);
-    await prefs.setStringList(FAVORITE_THUMBNAILS_KEY, listThumbnails);
-    await prefs.setStringList(FAVORITE_URLS_KEY, listUrls);
-    await prefs.setStringList(FAVORITE_SIGNURLS_KEY, listSignUrls);
+
+    List<String> videoList = prefs.getStringList(FAVORITE_VIDEOS_KEY);
+
+    (videoList != null)
+        ? videoList.insert(0, videoJson)
+        : videoList = [videoJson];
+
+    print(videoList);
+
+    await prefs.setStringList(FAVORITE_VIDEOS_KEY, videoList);
   }
 
   /// Display alert for liking the video.
@@ -173,12 +158,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       child: Text("Si")),
                   onPressed: () async {
                     String itemId = widget.video.id;
-                    saveFavorites(
-                        itemId,
-                        widget.video.title,
-                        widget.video.thumbnailUrl,
-                        widget.video.videoUrl,
-                        widget.video.signLangVideoUrl);
+                    widget.video.originInfo = null;
+                    saveFavorites(widget.video.toString());
                     print("DEBUG: detalles de video a guardar ....");
                     print("DEBUG: " + widget.video.title);
                     print("DEBUG: " + itemId);

@@ -24,7 +24,7 @@ class Game extends BaseModel {
   });
 
   /// Get [Game] from JSON object.
-  factory Game.fromJson(Map<String, dynamic> json) {
+  factory Game.fromDatabaseJson(Map<String, dynamic> json) {
     /// Default values.
     String _id = has<String>(json["id"].toString(), "-1");
 
@@ -55,23 +55,6 @@ class Game extends BaseModel {
       thumbnailUrl: _thumbnail,
     );
   }
-
-  factory Game.fromDatabaseJson(Map<String, dynamic> data) => Game(
-      id: data["id"],
-      title: data["title"],
-      content: data["content"],
-      gameUrl: data["gameUrl"],
-      categories: data["categories"],
-      mediaUrl: data["mediaUrl"]);
-
-  Map<String, dynamic> toDatabaseJson() => {
-        "id": this.id,
-        "title": this.title,
-        "content": this.content,
-        "gameUrl": this.gameUrl,
-        "categories": this.categories,
-        "mediaUrl": this.mediaUrl,
-      };
 
   static Future<String> fetchThumbnail(String mediaUrl) async {
     /// Try get the requested data and wait.

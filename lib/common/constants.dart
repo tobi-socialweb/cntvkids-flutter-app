@@ -59,11 +59,7 @@ const bool ENABLE_DYNAMIC_LINK = false;
 const String VISUAL_MODE_KEY = "visualmode";
 const String MUSIC_VOLUME_KEY = "musicvolume";
 const String SIGN_LANG_KEY = "signlang";
-const String FAVORITE_ID_KEY = "favoritesids";
-const String FAVORITE_TITLES_KEY = "favoritestitles";
-const String FAVORITE_URLS_KEY = "favoritesurls";
-const String FAVORITE_SIGNURLS_KEY = "favoritessingurls";
-const String FAVORITE_THUMBNAILS_KEY = "favoritesthumbnails";
+const String FAVORITE_VIDEOS_KEY = "favoritevideos";
 
 // ignore: non_constant_identifier_names
 final ColorFilter NORMAL_FILTER =

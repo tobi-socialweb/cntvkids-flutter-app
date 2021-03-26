@@ -1,3 +1,4 @@
+import 'dart:convert' as convert;
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/model_object.dart';
 
@@ -39,7 +40,7 @@ class Video extends BaseModel {
   }
 
   /// Get `Video` from JSON object.
-  factory Video.fromJson(Map<String, dynamic> json,
+  factory Video.fromDatabaseJson(Map<String, dynamic> json,
       {VideoOriginInfo originInfo, Video prev}) {
     /// Default values
     String _id = has<String>(json["id"].toString(), "-1");
@@ -96,6 +97,43 @@ class Video extends BaseModel {
     return obj;
   }
 
+  factory Video.fromJson(String json) {
+    Map<String, dynamic> data = convert.json.decode(json);
+
+    return Video(
+      id: data["id"],
+      title: data["title"],
+      thumbnailUrl: data["thumbnailUrl"],
+      videoUrl: data["videoUrl"],
+      signLangVideoUrl: data["signLangVideoUrl"],
+      series: data["series"],
+      season: data["season"],
+      chapter: data["chapter"],
+      categories: data["categories"].cast<int>(),
+      type: data["type"],
+      useSignLang: data["useSignLang"],
+      originInfo: data["originInfo"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": this.id,
+        "title": this.title,
+        "thumbnailUrl": this.thumbnailUrl,
+        "videoUrl": this.videoUrl,
+        "signLangVideoUrl": this.signLangVideoUrl,
+        "series": this.series,
+        "season": this.season,
+        "chapter": this.chapter,
+        "categories": this.categories,
+        "type": this.type,
+        "originInfo": this.originInfo,
+        "useSignLang": this.useSignLang,
+      };
+
+  @override
+  String toString() => convert.json.encode(toJson());
+
   static T has<T>(T object, T value,
           {List<T> comp = const [], void Function(T object) then}) =>
       BaseModel.has(object, value, comp: comp, then: then);
@@ -106,4 +144,9 @@ class VideoOriginInfo {
   final dynamic origin;
 
   VideoOriginInfo({this.type = ModelType.video, this.origin});
+
+  @override
+  String toString() {
+    return "";
+  }
 }

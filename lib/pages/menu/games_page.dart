@@ -30,7 +30,7 @@ class _GamesCardListState extends VariableCardListState<GamesCardList> {
 
   @override
   List dataToCardList(data) {
-    return data.map((value) => Game.fromJson(value)).toList();
+    return data.map((value) => Game.fromDatabaseJson(value)).toList();
   }
 
   /// Remove GameCards that cannot be played by Android or iOS accordingly.
