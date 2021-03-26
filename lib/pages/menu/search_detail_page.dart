@@ -49,13 +49,12 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
 
   @override
   List<dynamic> dataToCardList(data) {
-    if (widget.video == null || widget.video.originInfo.origin == null) {
+    if (widget.video == null && widget.video.originInfo.origin == null) {
       return data.map((value) => Video.fromDatabaseJson(value)).toList();
     } else {
       if (sent) return [];
-
       sent = true;
-      return widget.video.originInfo.origin;
+      return List.from(widget.video.originInfo.origin.videos);
     }
   }
 
@@ -68,7 +67,10 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
     /// Itererate through all new cards.
     for (int i = 0; i < newCards.length; i++) {
       /// Remove if the result is not a video.
-      if (newCards[i].type == "series") newCards.removeAt(i--);
+      if (newCards[i].type == "series") {
+        print("DEBUG: has type series");
+        newCards.removeAt(i--);
+      }
 
       /// Remove if the result is the same video being displayed.
       if (widget.isMinimized && newCards[i].id == widget.video.id)

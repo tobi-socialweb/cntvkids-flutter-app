@@ -43,6 +43,7 @@ class InheritedVideoDisplay extends InheritedWidget {
 /// Shows video fullscreen
 class VideoDisplay extends StatefulWidget {
   final Video video;
+
   final BetterPlayerController betterPlayerController;
 
   const VideoDisplay(
@@ -294,13 +295,14 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   @override
   void initState() {
     _soundEffect = SoundEffect();
-    bool hasSeries = widget.video.series != null || widget.video.series != "";
 
+    bool hasSeries = widget.video.series != null && widget.video.series != "";
     suggested = SearchCardList(
       search: hasSeries ? widget.video.series : widget.video.title,
       video: widget.video,
       isMinimized: true,
     );
+    print("DEBUG: SUGGESTED ${suggested.search}");
     super.initState();
   }
 
