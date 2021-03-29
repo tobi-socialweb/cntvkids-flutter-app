@@ -1,68 +1,14 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/widgets/video_display_controller_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:better_player/better_player.dart' hide VideoPlayerValue;
 
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-
-/// The controls for managing the videos state.
-class CustomPlayerControls extends StatefulWidget {
-  final BetterPlayerController controller;
-  final Video video;
-
-  const CustomPlayerControls({Key key, this.controller, this.video})
-      : super(key: key);
-
-  @override
-  _CustomPlayerControlsState createState() => _CustomPlayerControlsState();
-}
-
-class _CustomPlayerControlsState extends State<CustomPlayerControls> {
-  SoundEffect _soundEffect;
-
-  @override
-  void initState() {
-    _soundEffect = SoundEffect();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-        child: WillPopScope(
-            child: GestureDetector(
-              child: InheritedVideoDisplay.of(context) == null ||
-                      !InheritedVideoDisplay.of(context).isMinimized
-
-                  /// If video display is full screen.
-                  ? Container(color: Colors.transparent)
-
-                  /// If video display is minimized.
-                  : VideoControlsBar(
-                      video: widget.video,
-                      controller: widget.controller,
-                    ),
-              onTap: () {
-                InheritedVideoDisplay.of(context).toggleDisplay();
-              },
-            ),
-            onWillPop: () {
-              if (InheritedVideoDisplay.of(context).isMinimized) {
-                _soundEffect.play(MediaAsset.mp3.go_back);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              } else {
-                InheritedVideoDisplay.of(context).toggleDisplay();
-              }
-              return Future<bool>.value(false);
-            }));
-  }
-}
+import 'package:provider/provider.dart';
 
 /// The bottom controls bar.
 class VideoControlsBar extends StatefulWidget {
@@ -81,8 +27,15 @@ class _VideoControlsBarState extends State<VideoControlsBar> {
   /// video on
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    if (!context.watch<DisplayNotifier>().isMinimized) return Container();
 
     return Padding(
       padding: EdgeInsets.only(bottom: 0.005 * size.height),

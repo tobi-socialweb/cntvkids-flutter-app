@@ -47,12 +47,18 @@ class _MenuDrawerState extends State<MenuDrawer> {
   }
 }
 
-class MenuDrawerItem extends StatefulWidget {
-  @override
-  _MenuDrawerItemState createState() => _MenuDrawerItemState();
+class DrawerItem {
+  static _Switch switchItem() {
+    return _Switch();
+  }
 }
 
-class _MenuDrawerItemState extends State<MenuDrawerItem> {
+class _Switch extends StatefulWidget {
+  @override
+  _SwitchState createState() => _SwitchState();
+}
+
+class _SwitchState extends State<_Switch> {
   @override
   Widget build(BuildContext context) {
     return Container();

@@ -111,8 +111,6 @@ class Video extends BaseModel {
       chapter: data["chapter"],
       categories: data["categories"].cast<int>(),
       type: data["type"],
-      useSignLang: data["useSignLang"],
-      originInfo: data["originInfo"],
     );
   }
 
@@ -127,8 +125,6 @@ class Video extends BaseModel {
         "chapter": this.chapter,
         "categories": this.categories,
         "type": this.type,
-        "originInfo": this.originInfo,
-        "useSignLang": this.useSignLang,
       };
 
   @override
@@ -144,9 +140,4 @@ class VideoOriginInfo {
   final dynamic origin;
 
   VideoOriginInfo({this.type = ModelType.video, this.origin});
-
-  @override
-  String toString() {
-    return "";
-  }
 }

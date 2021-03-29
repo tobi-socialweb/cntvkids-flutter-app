@@ -11,11 +11,9 @@ class SoundEffect {
     _audioCache = AudioCache(prefix: "");
   }
 
-  /// play sound asset adquired.
+  /// Play the sound asset.
   play(AssetResource asset) async {
     _vol = BackgroundMusicManager.getVolume();
-    print("Debug from sound effect: volumen $_vol");
-    print("Debug from sound effect: play sound ${asset.name}");
     var bytes = await (await _audioCache.load(asset.name)).readAsBytes();
     _audioCache.playBytes(bytes, volume: _vol);
   }

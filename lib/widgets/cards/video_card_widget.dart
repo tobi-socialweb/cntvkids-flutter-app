@@ -1,10 +1,10 @@
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/widgets/video_display_controller_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/cards/clickable_card.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/video_display_page.dart';
 import 'package:cntvkids_app/widgets/background_music.dart';
 
 /// Card widget used to display a clickable video.
@@ -53,8 +53,9 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
 
     /// When tapped, open video.
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return VideoDisplay(
+      return VideoDisplayController(
         video: widget.video,
+        startFullScreen: true,
       );
     }));
   }
