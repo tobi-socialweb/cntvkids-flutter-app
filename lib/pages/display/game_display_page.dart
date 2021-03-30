@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

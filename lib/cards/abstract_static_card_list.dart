@@ -1,11 +1,9 @@
-import 'package:cntvkids_app/widgets/app_state_config.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
 import 'package:cntvkids_app/common/helpers.dart';
-import 'package:cntvkids_app/pages/menu/home_page.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/pages/home_page.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:provider/provider.dart';
 
 abstract class StaticCardListState<T extends StatefulWidget> extends State<T>

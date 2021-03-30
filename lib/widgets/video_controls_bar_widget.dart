@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/common/constants.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/widgets/video_display_controller_widget.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/material.dart';
 
 import 'package:better_player/better_player.dart' hide VideoPlayerValue;
 
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 import 'package:provider/provider.dart';
 
 /// The bottom controls bar.
@@ -91,6 +93,9 @@ class _VideoControlsBarState extends State<VideoControlsBar> {
                   child: Center(
                       child: _DisplayTime.format(widget.controller,
                           textScaleFactor: 0.005 * size.height))),
+
+              /// Like button.
+              LikeButton(video: widget.video, size: 0.25 * size.height),
             ],
           ),
         ],
@@ -507,5 +512,75 @@ class _DisplayTimeState extends State<_DisplayTime> {
   @override
   Widget build(BuildContext context) {
     return text;
+  }
+}
+
+class LikeButton extends StatelessWidget {
+  final Video video;
+  final double size;
+
+  const LikeButton({Key key, this.video, this.size}) : super(key: key);
+
+  Future<void> saveFavorites(String videoJson) async {
+    List<String> videoList = await StorageManager.readData(FAVORITE_VIDEOS_KEY);
+    if (videoList == null) videoList = [];
+
+    videoList.add(videoJson);
+
+    StorageManager.saveData(FAVORITE_VIDEOS_KEY, videoList);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: SvgButton(
+        asset: SvgAsset.back_icon,
+        size: size * 0.75,
+      ),
+      onTap: () async {
+        await saveFavorites(video.toString());
+
+        int userId = await getUserId(context);
+        String userIp = Provider.of<AppStateConfig>(context, listen: false).ip;
+
+        try {
+          String requestUrl =
+              "https://cntvinfantil.cl/wp-json/wp-ulike-pro/v1/vote/?item_id=${video.id}&user_id=$userId&type=post&status=like&user_ip=$userIp";
+
+          Response response = await customDio.post(requestUrl,
+              options: buildCacheOptions(Duration(days: 3),
+                  maxStale: Duration(days: 7)));
+
+          /// If request has succeeded.
+          if (response.statusCode == 200) {
+            print("DEBUG: response succeded: ${response.data}");
+          }
+        } on DioError catch (e) {
+          if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
+              DioErrorType.CONNECT_TIMEOUT == e.type) {
+            /// Couldn't reach the server.
+            throw (ERROR_MESSAGE[ErrorTypes.UNREACHABLE]);
+          } else if (DioErrorType.RESPONSE == e.type) {
+            /// If request was badly formed.
+            if (e.response.statusCode == 400) {
+              print("reponse 400");
+
+              /// Otherwise.
+            } else {
+              print(e.message);
+              print(e.request.toString());
+            }
+          } else if (DioErrorType.DEFAULT == e.type) {
+            if (e.message.contains('SocketException')) {
+              /// No connection to internet.
+              throw (ERROR_MESSAGE[ErrorTypes.NO_CONNECTION]);
+            }
+          } else {
+            /// Unknown problem connecting to server.
+            throw (ERROR_MESSAGE[ErrorTypes.UNKNOWN]);
+          }
+        }
+      },
+    );
   }
 }

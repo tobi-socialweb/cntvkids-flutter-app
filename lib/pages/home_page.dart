@@ -1,23 +1,23 @@
 import 'dart:async';
 
+import 'package:cntvkids_app/pages/history/favorites_card_list.dart';
+
 /// Menu pages
-import 'package:cntvkids_app/pages/menu/lists_page.dart';
-import 'package:cntvkids_app/pages/menu/series_page.dart';
-import 'package:cntvkids_app/pages/menu/games_page.dart';
-import 'package:cntvkids_app/pages/menu/featured_page.dart';
-import 'package:cntvkids_app/pages/menu/search_page.dart';
-import 'package:cntvkids_app/widgets/app_state_config.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
+import 'package:cntvkids_app/pages/home/lists_card_list.dart';
+import 'package:cntvkids_app/pages/home/series_card_list.dart';
+import 'package:cntvkids_app/pages/home/featured_card_list.dart';
+import 'package:cntvkids_app/pages/home/games_card_list.dart';
+import 'package:cntvkids_app/pages/search_page.dart';
+import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:cntvkids_app/widgets/menu_drawer_widget.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
 
 /// Widget
-import 'package:cntvkids_app/widgets/top_navigation_bar.dart';
+import 'package:cntvkids_app/widgets/top_navigation_bar_widget.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 
 /// Signals
 import 'package:provider/provider.dart';
@@ -27,8 +27,6 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 
 ///
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-
-import 'favorites_page.dart';
 
 /// The first page to be shown when starting the app.
 class HomePage extends StatefulWidget {

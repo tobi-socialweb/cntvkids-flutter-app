@@ -1,24 +1,19 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:better_player/better_player.dart';
 import 'package:cntvkids_app/pages/display/fullscreen_display_page.dart';
 import 'package:cntvkids_app/pages/display/minimized_display_page.dart';
-import 'package:cntvkids_app/widgets/app_state_config.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:focus_detector/focus_detector.dart';
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/helpers.dart';
 
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
 import 'package:cntvkids_app/widgets/video_controls_bar_widget.dart';
 
-import 'package:cntvkids_app/widgets/video_cast_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'package:dio/dio.dart';
@@ -43,6 +38,7 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
   BetterPlayerController videoController;
   BetterPlayerDataSource videoDataSource;
 
+  /// TODO:
   bool displayedAlert = false;
 
   @override
@@ -61,6 +57,7 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
         BetterPlayerConfiguration(
           controlsConfiguration: BetterPlayerControlsConfiguration(
             customControlsBuilder: (controller) => VideoControlsBar(
+              video: widget.video,
               controller: controller,
             ),
             playerTheme: BetterPlayerTheme.custom,
@@ -98,8 +95,18 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
       if (!displayedAlert &&
           event.betterPlayerEventType == BetterPlayerEventType.finished &&
           context != null) {
-        likeVideoAlert(context);
+        //likeVideoAlert(context);
+        /// Only call the following once after finishing the video.
         displayedAlert = true;
+
+        SoundEffect().play(MediaAsset.mp3.click);
+
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return VideoDisplayController(
+            video: widget.video.next,
+          );
+        }));
       }
     });
 

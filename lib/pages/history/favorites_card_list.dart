@@ -1,7 +1,7 @@
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/app_state_config.dart';
-import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/cards/video_card_widget.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -74,19 +74,20 @@ class _FavoriteCardListState extends State<FavoriteCardList>
           Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
 
       /// Itererate through all new cards.
-      for (int i = 0; i < videos.length; i++) {
+      for (int i = videos.length - 1; i >= 0; i--) {
         if (isUsingSignLang) {
           /// Set value as true by default.
           videos[i].useSignLang = true;
 
           /// Remove if video does not have sign language available.
-          if (videos[i].signLangVideoUrl == "") videos.removeAt(i--);
+          if (videos[i].signLangVideoUrl == "") videos.removeAt(i++);
 
           if (i > 0) {
             videos[i].prev = videos[i - 1];
             videos[i - 1].next = videos[i];
           }
         }
+
         setState(() {
           cards.add(VideoCard(video: videos[i]));
         });

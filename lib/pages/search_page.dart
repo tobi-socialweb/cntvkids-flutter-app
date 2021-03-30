@@ -1,6 +1,5 @@
-import 'package:cntvkids_app/pages/menu/search_detail_page.dart';
-import 'package:cntvkids_app/widgets/background_music.dart';
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/pages/search/search_card_list.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';

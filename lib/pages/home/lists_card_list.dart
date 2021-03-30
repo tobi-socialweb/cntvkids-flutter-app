@@ -1,37 +1,37 @@
-import 'package:cntvkids_app/widgets/app_state_config.dart';
+import 'package:cntvkids_app/common/helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/cards/variable_card_list.dart';
-import 'package:cntvkids_app/models/series_model.dart';
-import 'package:cntvkids_app/widgets/cards/series_card_widget.dart';
+import 'package:cntvkids_app/cards/abstract_variable_card_list.dart';
+import 'package:cntvkids_app/models/lists_model.dart';
+import 'package:cntvkids_app/cards/lists_card_widget.dart';
 import 'package:provider/provider.dart';
 
 /// Shows video widgets that have 'lists' category.
-class SeriesCardList extends StatefulWidget {
+class ListsCardList extends StatefulWidget {
   final double leftMargin;
 
-  const SeriesCardList({Key key, this.leftMargin = 0.0}) : super(key: key);
+  const ListsCardList({Key key, this.leftMargin = 0.0}) : super(key: key);
 
   @override
-  _SeriesCardListState createState() => _SeriesCardListState();
+  _ListsCardListState createState() => _ListsCardListState();
 }
 
-class _SeriesCardListState extends VariableCardListState<SeriesCardList> {
+class _ListsCardListState extends VariableCardListState<ListsCardList> {
   @override
-  Widget cardWidget(object, index) => SeriesCard(series: object);
+  Widget cardWidget(object, index) => ListsCard(list: object);
 
   @override
-  String get modelUrl => SERIES_URL;
+  String get modelUrl => LISTS_URL;
 
-  /// SeriesCardList Series have category 10287.
+  /// ListsCardList lists have category 10564.
   @override
-  int get categoryId => SERIES_ID;
+  int get categoryId => LISTS_ID;
 
   @override
   List dataToCardList(data) {
-    return data.map((value) => Series.fromDatabaseJson(value)).toList();
+    return data.map((value) => Lists.fromDatabaseJson(value)).toList();
   }
 
   @override

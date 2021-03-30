@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:cntvkids_app/models/series_model.dart';
-import 'package:cntvkids_app/common/cards/static_card_list.dart';
-import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
+import 'package:cntvkids_app/cards/abstract_static_card_list.dart';
+import 'package:cntvkids_app/cards/video_card_widget.dart';
 
 class SeriesCardDetail extends StatefulWidget {
   final Series series;

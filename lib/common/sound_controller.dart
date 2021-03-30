@@ -1,5 +1,6 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cntvkids_app/common/constants.dart';
 
 /// General plugins
 import 'package:flutter/material.dart';
@@ -7,6 +8,22 @@ import 'package:flutter/material.dart';
 /// Audio plugins
 
 import 'package:focus_detector/focus_detector.dart';
+
+class SoundEffect {
+  AudioCache _audioCache;
+  double _vol;
+
+  SoundEffect() {
+    _audioCache = AudioCache(prefix: "");
+  }
+
+  /// Play the sound asset.
+  play(AssetResource asset) async {
+    _vol = BackgroundMusicManager.getVolume();
+    var bytes = await (await _audioCache.load(asset.name)).readAsBytes();
+    _audioCache.playBytes(bytes, volume: _vol);
+  }
+}
 
 class Music {
   static AudioPlayer player = new AudioPlayer();

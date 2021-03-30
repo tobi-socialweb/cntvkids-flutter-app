@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:cntvkids_app/common/constants.dart';
 
-import 'package:cntvkids_app/widgets/sound_effects.dart';
+import 'package:cntvkids_app/common/sound_controller.dart';
+import 'package:cntvkids_app/pages/search/search_card_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,8 +11,6 @@ import 'package:flutter_video_cast/flutter_video_cast.dart';
 
 import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-
-import 'menu/search_detail_page.dart';
 
 class ChromeCastView extends StatefulWidget {
   final double iconSize;

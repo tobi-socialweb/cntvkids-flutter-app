@@ -1,8 +1,8 @@
 import 'package:cntvkids_app/common/constants.dart';
-import 'package:cntvkids_app/common/cards/variable_card_list.dart';
+import 'package:cntvkids_app/cards/abstract_variable_card_list.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/widgets/app_state_config.dart';
-import 'package:cntvkids_app/widgets/cards/video_card_widget.dart';
+import 'package:cntvkids_app/common/helpers.dart';
+import 'package:cntvkids_app/cards/video_card_widget.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

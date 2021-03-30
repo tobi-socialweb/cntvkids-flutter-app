@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_video_cast/flutter_video_cast.dart';
 import 'package:cntvkids_app/models/video_model.dart';
-import 'package:cntvkids_app/pages/cast_display_page.dart';
+import 'package:cntvkids_app/pages/display/cast_display_page.dart';
 
 class ChromeCast extends StatefulWidget {
   final double iconSize;
