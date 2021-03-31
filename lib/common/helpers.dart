@@ -83,6 +83,12 @@ class SvgButton extends StatelessWidget {
 }
 
 class StorageManager {
+  static List<String> videoHistory;
+
+  static void initVideoHistory() async {
+    videoHistory = await readData(HISTORY_VIDEOS_KEY);
+  }
+
   static void saveData(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -93,6 +99,7 @@ class StorageManager {
     } else if (value is bool) {
       prefs.setBool(key, value);
     } else if (value is List<String>) {
+      videoHistory = value;
       prefs.setStringList(key, value);
     } else {
       print("Invalid Type");

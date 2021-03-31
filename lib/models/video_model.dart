@@ -17,6 +17,7 @@ class Video extends BaseModel {
   final String type;
   VideoOriginInfo originInfo;
   bool useSignLang;
+  bool isFavorite;
   Video next;
   Video prev;
 
@@ -33,6 +34,7 @@ class Video extends BaseModel {
     this.type = "",
     this.originInfo,
     this.useSignLang,
+    this.isFavorite = false,
     this.next,
     this.prev,
   }) {
@@ -86,6 +88,7 @@ class Video extends BaseModel {
       categories: _categories,
       type: _type,
       useSignLang: false,
+      isFavorite: false,
       originInfo: _originInfo,
     );
 
@@ -111,6 +114,7 @@ class Video extends BaseModel {
       chapter: data["chapter"],
       categories: data["categories"].cast<int>(),
       type: data["type"],
+      isFavorite: data["isFavorite"],
     );
   }
 
@@ -125,6 +129,7 @@ class Video extends BaseModel {
         "chapter": this.chapter,
         "categories": this.categories,
         "type": this.type,
+        "isFavorite": this.isFavorite,
       };
 
   @override

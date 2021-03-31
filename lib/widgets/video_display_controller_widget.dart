@@ -95,7 +95,6 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
       if (!displayedAlert &&
           event.betterPlayerEventType == BetterPlayerEventType.finished &&
           context != null) {
-        //likeVideoAlert(context);
         /// Only call the following once after finishing the video.
         displayedAlert = true;
 
@@ -141,7 +140,7 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
                   onPressed: () async {
                     String itemId = widget.video.id;
                     widget.video.originInfo = null;
-                    saveFavorites(widget.video.toString());
+                    // saveFavorites(widget.video.toString());
                     print("DEBUG: detalles de video a guardar ....");
                     print("DEBUG: " + widget.video.title);
                     print("DEBUG: " + itemId);
@@ -198,18 +197,13 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
         });
   }
 
-  void saveFavorites(String videoJson) async {
-    final prefs = await SharedPreferences.getInstance();
+  void saveHistory(String videoJson) {
+    List<String> videoList = StorageManager.videoHistory;
 
-    List<String> videoList = prefs.getStringList(FAVORITE_VIDEOS_KEY);
+    if (videoList == null) videoList = [];
+    videoList.add(videoJson);
 
-    (videoList != null)
-        ? videoList.insert(0, videoJson)
-        : videoList = [videoJson];
-
-    print(videoList);
-
-    await prefs.setStringList(FAVORITE_VIDEOS_KEY, videoList);
+    StorageManager.saveData(HISTORY_VIDEOS_KEY, videoList);
   }
 
   @override
@@ -232,6 +226,13 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    saveHistory(widget.video.toString());
+
+    super.dispose();
   }
 }
 

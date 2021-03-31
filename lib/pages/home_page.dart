@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cntvkids_app/pages/history/favorites_card_list.dart';
+import 'package:cntvkids_app/pages/history_page.dart';
 
 /// Menu pages
 import 'package:cntvkids_app/pages/home/lists_card_list.dart';
@@ -62,6 +63,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     /// Load app visual mode preferences.
     AppStateConfig.load(context);
+    StorageManager.initVideoHistory();
+
     _speech = stt.SpeechToText();
     initSpeechState();
     _soundEffect = SoundEffect();
@@ -115,14 +118,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       GamesCardList(
         leftMargin: innerRadius + outerRadius,
       ),
-      _rebuild == true
-          ? FavoriteCardList(
-              leftMargin: innerRadius + outerRadius,
-              key: UniqueKey(),
-            )
-          : FavoriteCardList(
-              leftMargin: innerRadius + outerRadius,
-            ),
     ];
     _cardList = _widgetOptions.elementAt(_selectedIndex);
     return Scaffold(
@@ -329,8 +324,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                         NavigationBarButton(
                           icon: SvgAsset.videos_icon,
-                          activeIcon: SvgAsset.videos_active_icon,
-                          text: "Favoritos",
+                          text: "Historial",
+                          onPressed: (index) {
+                            _soundEffect.play(MediaAsset.mp3.click);
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return HistoryPage();
+                            }));
+                          },
                         ),
                         NavigationBarButton(
                           icon: SvgAsset.search_icon,

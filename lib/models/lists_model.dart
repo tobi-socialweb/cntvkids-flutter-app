@@ -51,6 +51,7 @@ class Lists extends BaseModel {
             season: _season,
             chapter: _chapter,
             useSignLang: false,
+            isFavorite: false,
             prev: i > 0 ? _videos[i - 1] : null,
             next: null));
 

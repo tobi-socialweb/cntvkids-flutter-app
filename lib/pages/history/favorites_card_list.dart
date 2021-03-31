@@ -44,7 +44,7 @@ class _FavoriteCardListState extends State<FavoriteCardList>
 
   initFavoriteVideos() async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> videoList = prefs.getStringList(FAVORITE_VIDEOS_KEY);
+    List<String> videoList = prefs.getStringList(HISTORY_VIDEOS_KEY);
 
     if (videoList != null) {
       for (int i = 0; i < videoList.length; i++) {

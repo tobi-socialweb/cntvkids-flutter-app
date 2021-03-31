@@ -11,6 +11,7 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 ///
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
+/// TODO: Check if sign lang filter works.
 /// The first page to be shown when starting the app.
 class SearchPage extends StatefulWidget {
   final stt.SpeechToText speech;
