@@ -5,7 +5,6 @@ import 'package:cntvkids_app/common/helpers.dart';
 import 'package:cntvkids_app/common/sound_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:provider/provider.dart';
 
 /// Main function called at app start.

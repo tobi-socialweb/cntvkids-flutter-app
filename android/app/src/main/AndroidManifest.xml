@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cl.cntvinfantil.cntvkids_app">
+    package="cl.cntvinfantil.cntvkids_app"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -8,6 +9,7 @@
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="29" tools:overrideLibrary="xyz.luan.audioplayers"/>
      <!-- <queries>
     <intent>
         <action android:name="android.speech.RecognitionService" />
