@@ -27,7 +27,7 @@ class _FullScreenVideoDisplayState extends State<FullScreenVideoDisplay> {
       },
       child: WillPopScope(
         onWillPop: () {
-          SoundEffect().play(MediaAsset.mp3.go_back);
+          Audio.play(MediaAsset.mp3.go_back);
           return Future<bool>.value(false);
         },
         child: FutureBuilder(

@@ -24,17 +24,13 @@ class _SuggestedVideoCardState extends ClickableCardState<SuggestedVideoCard> {
 
   @override
   String get heroId => widget.video.id;
-
-  SoundEffect _soundEffect;
-
   void initState() {
-    _soundEffect = SoundEffect();
-    super.initState();
+        super.initState();
   }
 
   @override
   void onTap() {
-    _soundEffect.play(MediaAsset.mp3.click);
+    Audio.play(MediaAsset.mp3.click);
 
     /// When tapped, open video.
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {

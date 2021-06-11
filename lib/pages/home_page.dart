@@ -57,7 +57,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// volumen controls variables
   double _val;
   Timer timer;
-  SoundEffect _soundEffect;
 
   @override
   void initState() {
@@ -67,7 +66,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     _speech = stt.SpeechToText();
     initSpeechState();
-    _soundEffect = SoundEffect();
     _val = BackgroundMusicManager.getVolume();
     _rebuild = false;
 
@@ -81,7 +79,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void errorListener(SpeechRecognitionError error) {
     print("Received error status: $error, listening: ${_speech.isListening}");
     setState(() {
-      BackgroundMusicManager.instance.music.resumeMusic();
+      BackgroundMusicManager.resume();
     });
   }
 
@@ -326,7 +324,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           icon: SvgAsset.videos_icon,
                           text: "Historial",
                           onPressed: (index) {
-                            _soundEffect.play(MediaAsset.mp3.click);
+                            Audio.play(MediaAsset.mp3.click);
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return HistoryPage();
@@ -337,7 +335,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           icon: SvgAsset.search_icon,
                           text: "Buscar",
                           onPressed: (index) {
-                            _soundEffect.play(MediaAsset.mp3.click);
+                            Audio.play(MediaAsset.mp3.click);
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return SearchPage(
@@ -373,7 +371,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    _soundEffect.play(MediaAsset.mp3.click);
+    Audio.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;
     });

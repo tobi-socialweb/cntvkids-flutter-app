@@ -25,12 +25,9 @@ class MinimizedVideoDisplay extends StatefulWidget {
 
 class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
   SearchCardList suggested;
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
-    _soundEffect = SoundEffect();
-
+    
     suggested = SearchCardList(
       search:
           widget.video.series != "" ? widget.video.series : widget.video.title,
@@ -60,7 +57,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
       color: Theme.of(context).accentColor,
       child: WillPopScope(
         onWillPop: () {
-          SoundEffect().play(MediaAsset.mp3.go_back);
+          Audio.play(MediaAsset.mp3.go_back);
           return Future<bool>.value(false);
         },
         child: Container(
@@ -83,7 +80,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         asset: SvgAsset.back_icon,
                         size: _iconSize,
                         onPressed: () {
-                          _soundEffect.play(MediaAsset.mp3.go_back);
+                          Audio.play(MediaAsset.mp3.go_back);
 
                           //widget.player.dispose(forceDispose: true);
                           Navigator.of(context).pop();
@@ -98,7 +95,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         size: _iconSize,
                         onPressed: () {
                           if (widget.video.prev == null) return;
-                          _soundEffect.play(MediaAsset.mp3.click);
+                          Audio.play(MediaAsset.mp3.click);
 
                           /// When tapped, open video.
                           Navigator.pushReplacement(context,
@@ -172,7 +169,7 @@ class _MinimizedVideoDisplayState extends State<MinimizedVideoDisplay> {
                         onPressed: () {
                           if (widget.video.next == null) return;
 
-                          _soundEffect.play(MediaAsset.mp3.click);
+                          Audio.play(MediaAsset.mp3.click);
 
                           /// When tapped, open video.
                           Navigator.pushReplacement(context,

@@ -45,12 +45,10 @@ class _HistoryPageState extends State<HistoryPage> with WidgetsBindingObserver {
 
   /// Volume controls variables
   Timer timer;
-  SoundEffect _soundEffect;
 
   @override
   void initState() {
-    _soundEffect = SoundEffect();
-
+    
     _widgetOptions = [
       HistoryCardList(
         leftMargin: innerRadius + outerRadius,
@@ -110,7 +108,7 @@ class _HistoryPageState extends State<HistoryPage> with WidgetsBindingObserver {
                   text: "",
                   size: 0.415 * navHeight,
                   onPressed: (index) {
-                    _soundEffect.play(MediaAsset.mp3.go_back);
+                    Audio.play(MediaAsset.mp3.go_back);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -141,7 +139,7 @@ class _HistoryPageState extends State<HistoryPage> with WidgetsBindingObserver {
 
   /// Change the selected index when button is tapped.
   void _onNavButtonTapped(int index) {
-    _soundEffect.play(MediaAsset.mp3.click);
+    Audio.play(MediaAsset.mp3.click);
     setState(() {
       _selectedIndex = index;
     });

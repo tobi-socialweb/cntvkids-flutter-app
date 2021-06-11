@@ -62,8 +62,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) =>
       Future.value(newCards);
 
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     super.initState();
@@ -72,7 +70,6 @@ abstract class VariableCardListState<T extends StatefulWidget>
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
     futureCards = fetchCards(currentPage);
-    _soundEffect = SoundEffect();
   }
 
   /// Listener for scroll changes.
@@ -94,7 +91,7 @@ abstract class VariableCardListState<T extends StatefulWidget>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        _soundEffect.play(MediaAsset.mp3.beam);
+        Audio.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });

@@ -61,6 +61,8 @@ const String MUSIC_VOLUME_KEY = "musicvolume";
 const String SIGN_LANG_KEY = "signlang";
 const String HISTORY_VIDEOS_KEY = "historyvideos";
 
+const int MAX_AUDIO_INSTANCES = 5;
+
 // ignore: non_constant_identifier_names
 final ColorFilter NORMAL_FILTER =
     const ColorFilter.mode(Colors.transparent, BlendMode.color);

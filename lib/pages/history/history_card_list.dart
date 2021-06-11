@@ -30,8 +30,6 @@ class _HistoryCardListState extends State<HistoryCardList>
   /// If user began scrolling.
   bool startedScrolling;
 
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     super.initState();
@@ -39,8 +37,7 @@ class _HistoryCardListState extends State<HistoryCardList>
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
-    _soundEffect = SoundEffect();
-  }
+      }
 
   initVideoCards() {
     List<String> videoList = StorageManager.videoHistory;
@@ -103,7 +100,7 @@ class _HistoryCardListState extends State<HistoryCardList>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        _soundEffect.play(MediaAsset.mp3.beam);
+        Audio.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });

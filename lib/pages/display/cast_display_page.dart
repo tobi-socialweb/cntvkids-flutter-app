@@ -16,7 +16,9 @@ class ChromeCastView extends StatefulWidget {
   final double iconSize;
   final Video video;
   final ChromeCastController controlador;
+
   ChromeCastView({@required this.video, this.iconSize, this.controlador});
+
   @override
   _ChromeCastViewState createState() => _ChromeCastViewState();
 }
@@ -27,16 +29,13 @@ class _ChromeCastViewState extends State<ChromeCastView> {
   CachedNetworkImageProvider imgProvider;
   Completer completer = new Completer();
 
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     /// Set the URL and add a listener to complete the future.
     imgProvider = new CachedNetworkImageProvider(widget.video.thumbnailUrl);
     imgProvider.resolve(new ImageConfiguration()).addListener(
         ImageStreamListener((info, _) => completer.complete(info.image)));
-    _soundEffect = SoundEffect();
-
+    
     super.initState();
   }
 
@@ -80,7 +79,7 @@ class _ChromeCastViewState extends State<ChromeCastView> {
                               asset: SvgAsset.back_icon,
                               size: iconSize,
                               onPressed: () {
-                                _soundEffect.play(MediaAsset.mp3.go_back);
+                                Audio.play(MediaAsset.mp3.go_back);
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
@@ -163,13 +162,13 @@ class _ChromeCastViewState extends State<ChromeCastView> {
               ),
             ),
             onPressed: () {
-              _soundEffect.play(MediaAsset.mp3.click);
+              Audio.play(MediaAsset.mp3.click);
               Navigator.of(context).pop();
             },
           ),
         ),
         onWillPop: () {
-          _soundEffect.play(MediaAsset.mp3.go_back);
+          Audio.play(MediaAsset.mp3.go_back);
           Navigator.of(context).pop();
           return Future<bool>.value(true);
         });

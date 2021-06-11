@@ -29,9 +29,6 @@ class _FavoriteCardListState extends State<FavoriteCardList>
 
   /// If user began scrolling.
   bool startedScrolling;
-
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     super.initState();
@@ -39,7 +36,6 @@ class _FavoriteCardListState extends State<FavoriteCardList>
     controller =
         ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
     controller.addListener(_scrollControllerListener);
-    _soundEffect = SoundEffect();
   }
 
   initFavoriteVideos() async {
@@ -53,21 +49,7 @@ class _FavoriteCardListState extends State<FavoriteCardList>
     }
 
     if (videos != null) {
-      /*/// If the current card is the first in the list.
-      if (i == 0 && cards.length > 0) {
-        /// Assign first card in [newCards] as the `next` for the last one
-        /// in [cards].
-        cards[cards.length - 1].next = newCards[i];
-
-        /// Otherwise any other card.
-      } else if (i > 0) {
-        newCards[i].prev = newCards[i - 1];
-        newCards[i - 1].next = newCards[i];
-      }
-    }*/
-
-      print("Debug: videos guardados");
-      print(videos.length);
+      print("DEBUG: videos guardados ${videos.length}");
 
       /// Check if accessibility option for sign language is on.
       final bool isUsingSignLang =
@@ -104,7 +86,7 @@ class _FavoriteCardListState extends State<FavoriteCardList>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        _soundEffect.play(MediaAsset.mp3.beam);
+        Audio.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });

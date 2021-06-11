@@ -32,15 +32,12 @@ class _SearchPageState extends State<SearchPage> {
 
   bool hasSpeech;
 
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     lista = SearchCardList();
     controller = TextEditingController();
     hide = true;
-    _soundEffect = SoundEffect();
-    hasSpeech = widget.speech.isAvailable;
+        hasSpeech = widget.speech.isAvailable;
     super.initState();
   }
 
@@ -65,7 +62,7 @@ class _SearchPageState extends State<SearchPage> {
 
     if (!this.mounted) return;
     setState(() {
-      BackgroundMusicManager.instance.music.pauseMusic();
+      BackgroundMusicManager.pause();
       hide = true;
     });
   }
@@ -77,8 +74,8 @@ class _SearchPageState extends State<SearchPage> {
       controller.text = _textToSpeech;
 
       if (widget.speech.isNotListening) {
-        _soundEffect.play(MediaAsset.mp3.resultados);
-        BackgroundMusicManager.instance.music.resumeMusic();
+        Audio.play(MediaAsset.mp3.resultados);
+        BackgroundMusicManager.resume();
         submit(_textToSpeech);
       }
     });
@@ -93,7 +90,7 @@ class _SearchPageState extends State<SearchPage> {
     final EdgeInsets padding = EdgeInsets.fromLTRB(
         0.00625 * navHeight, 0.0, 0.00625 * navHeight, 0.25 * navHeight);
 
-    return BackgroundMusic(
+    return BackgroundMusicManager(
         volume: BackgroundMusicManager.getVolume(),
         child: Scaffold(
             resizeToAvoidBottomInset: true,
@@ -131,7 +128,7 @@ class _SearchPageState extends State<SearchPage> {
                                 size: iconSize,
                                 padding: padding,
                                 onPressed: () {
-                                  _soundEffect.play(MediaAsset.mp3.click);
+                                  Audio.play(MediaAsset.mp3.click);
                                   Navigator.of(context).pop();
                                 }),
 
@@ -189,7 +186,7 @@ class _SearchPageState extends State<SearchPage> {
                               onPressed: () {
                                 SystemChannels.textInput
                                     .invokeMethod('TextInput.hide');
-                                _soundEffect.play(MediaAsset.mp3.click);
+                                Audio.play(MediaAsset.mp3.click);
                                 submit(_textToSpeech);
                               },
                             ),

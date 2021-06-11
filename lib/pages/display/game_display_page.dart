@@ -20,11 +20,10 @@ class _WebViewPageState extends State<WebViewPage> {
   //WebViewController controller;
 
   final Completer<WebViewController> _controllerCompleter =
-      Completer<WebViewController>();
-  SoundEffect _soundEffect;
+      Completer<WebViewController>();  
+      
   @override
   void initState() {
-    _soundEffect = SoundEffect();
     super.initState();
   }
 
@@ -41,7 +40,7 @@ class _WebViewPageState extends State<WebViewPage> {
           return FloatingActionButton(
             backgroundColor: Colors.transparent,
             onPressed: () async {
-              _soundEffect.play(MediaAsset.mp3.go_back);
+              Audio.play(MediaAsset.mp3.go_back);
               Navigator.of(context).pop();
             },
             child: SvgIcon(

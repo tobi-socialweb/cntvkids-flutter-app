@@ -66,9 +66,6 @@ class _MyAppState extends State<MyApp> {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
           return Consumer<AppStateConfig>(builder: (context, appState, child) {
-            print(
-                "DEBUG from main: appState.filter:${appState.filter}, appState.musicVolume:${appState.musicVolume}, appState.isUsingSignLang: ${appState.isUsingSignLang} ");
-
             return ColorFiltered(
                 colorFilter: appState.filter,
                 child: MaterialApp(
@@ -78,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                   darkTheme: darkTheme,
                   themeMode:
                       appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                  home: BackgroundMusic(
+                  home: BackgroundMusicManager(
                     volume: appState.musicVolume,
                     child: HomePage(),
                   ),

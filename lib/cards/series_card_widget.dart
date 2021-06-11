@@ -24,17 +24,9 @@ class _SeriesCardState extends ClickableCardState<SeriesCard> {
   @override
   EdgeInsets get margin => EdgeInsets.symmetric(horizontal: 0.025 * size.width);
 
-  SoundEffect _soundEffect;
-
-  void initState() {
-    _soundEffect = SoundEffect();
-
-    super.initState();
-  }
-
   @override
   void onTap() {
-    _soundEffect.play(MediaAsset.mp3.click);
+    Audio.play(MediaAsset.mp3.click);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return SeriesCardDetail(series: widget.series, imgProvider: imgProvider);
     }));

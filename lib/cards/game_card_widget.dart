@@ -29,18 +29,11 @@ class _GameCardState extends ClickableCardState<GameCard> {
   @override
   String get heroId => widget.game.id;
 
-  SoundEffect _soundEffect;
-
-  void initState() {
-    _soundEffect = SoundEffect();
-
-    super.initState();
-  }
-
   @override
   void onTap() {
-    _soundEffect.play(MediaAsset.mp3.click);
-    BackgroundMusicManager.instance.music.stopMusic();
+    Audio.play(MediaAsset.mp3.click);
+    BackgroundMusicManager.stop();
+
     Navigator.push(
         context,
         MaterialPageRoute(

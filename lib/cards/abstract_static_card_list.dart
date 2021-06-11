@@ -42,9 +42,6 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
 
   /// Determined on initState of card list has description.
   bool hasDescription = true;
-
-  SoundEffect _soundEffect;
-
   @override
   void initState() {
     super.initState();
@@ -61,8 +58,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     hasDescription = description != null && description != "";
 
     WidgetsBinding.instance.addObserver(this);
-    _soundEffect = SoundEffect();
-  }
+      }
 
   /// Listener for scroll changes.
   ///
@@ -76,7 +72,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
       if (controller.positions.length > 0 &&
           controller.position.isScrollingNotifier.value &&
           !startedScrolling) {
-        _soundEffect.play(MediaAsset.mp3.beam);
+        Audio.play(MediaAsset.mp3.beam);
         startedScrolling = true;
       }
     });
@@ -101,7 +97,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
     final Size size = MediaQuery.of(context).size;
     final double topBarHeight = NAVBAR_HEIGHT_PROP * size.height;
 
-    return BackgroundMusic(
+    return BackgroundMusicManager(
         volume: BackgroundMusicManager.getVolume(),
         child: WillPopScope(
           child: Scaffold(
@@ -131,7 +127,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                             asset: SvgAsset.back_icon,
                             size: 0.5 * topBarHeight,
                             onPressed: () {
-                              _soundEffect.play(MediaAsset.mp3.go_back);
+                              Audio.play(MediaAsset.mp3.go_back);
                               Navigator.of(context).pop();
                             },
                           ),
@@ -229,7 +225,7 @@ abstract class StaticCardListState<T extends StatefulWidget> extends State<T>
                 ],
               )),
           onWillPop: () {
-            _soundEffect.play(MediaAsset.mp3.go_back);
+            Audio.play(MediaAsset.mp3.go_back);
             return Future<bool>.value(true);
           },
         ));

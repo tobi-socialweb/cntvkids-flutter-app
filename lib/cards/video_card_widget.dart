@@ -37,18 +37,10 @@ class _VideoCardState extends ClickableCardState<VideoCard> {
   @override
   String get heroId => widget.video.id;
 
-  SoundEffect _soundEffect;
-
-  void initState() {
-    _soundEffect = SoundEffect();
-
-    super.initState();
-  }
-
   @override
   void onTap() {
-    _soundEffect.play(MediaAsset.mp3.click);
-    BackgroundMusicManager.instance.music.stopMusic();
+    Audio.play(MediaAsset.mp3.click);
+    BackgroundMusicManager.stop();
 
     /// When tapped, open video.
     Navigator.push(context, MaterialPageRoute(builder: (context) {

@@ -3,16 +3,8 @@
 ## TODOs
 Search for "TODO" comments inside files, for specific non-urgent ones.
 
-- [ ] Figure out suggested video's algorithm.
-- [ ] Use the loading gif when getting data for each page.
-- [ ] Add config menu/page with theme selection (e.g. grayscale).
-- [ ] Add a search menu/page.
-- [ ] Test app in old phone versions (find which should be the last stable one).
-- [ ] Test app in chromecast & tablets.
-- [ ] Document code.
-- [x] Use the correct assets (icons, fonts, sounds).
-- [x] Finish video controls (play, pause, etc.) similar to YoutubeKids's.
-- [x] Add opening animation and sound for the app.
+- [ ] Check mobile platform while app is loading (SoundEffect._audioCache.playBytes(bytes, volume) is only available for Android, not iOS)
+- [ ] Implement `audio_service` plugin for background music player
 
 ## Build naming convention
 

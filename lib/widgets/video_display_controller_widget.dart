@@ -98,7 +98,7 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
         /// Only call the following once after finishing the video.
         displayedAlert = true;
 
-        SoundEffect().play(MediaAsset.mp3.click);
+        Audio.play(MediaAsset.mp3.click);
 
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
@@ -242,7 +242,7 @@ class DisplayNotifier extends ChangeNotifier {
   DisplayNotifier(this.isMinimized);
 
   void toggleDisplay() {
-    SoundEffect().play(MediaAsset.mp3.click);
+    Audio.play(MediaAsset.mp3.click);
 
     isMinimized = !isMinimized;
 
