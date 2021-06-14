@@ -1,3 +1,5 @@
+import 'package:html_unescape/html_unescape.dart';
+
 /// A base model object class to avoid repeating the `has` method.
 abstract class BaseModel {
   String id;
@@ -22,6 +24,10 @@ abstract class BaseModel {
     if (res) then(object);
 
     return res ? object : value;
+  }
+
+  static String clean(String input) {
+    return HtmlUnescape().convert(input);
   }
 
   @override

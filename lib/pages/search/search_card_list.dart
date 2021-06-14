@@ -64,34 +64,23 @@ class _SearchCardListState extends VariableCardListState<SearchCardList> {
     final bool isUsingSignLang =
         Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
 
-    /// Itererate through all new cards.
-    for (int i = 0; i < newCards.length; i++) {
-      /// Remove if the result is not a video.
-      if (newCards[i].type == "series") newCards.removeAt(i--);
-
-      /// Remove if the result is the same video being displayed.
-      if (widget.isMinimized && newCards[i].id == widget.video.id)
-        newCards.removeAt(i--);
-
+    newCards = newCards.where((e) {
+      bool delete = false;
+      delete = e.type == "series";
+      delete = widget.isMinimized && e.id == widget.video.id;
       if (isUsingSignLang) {
-        /// Set value as true by default.
-        newCards[i].useSignLang = true;
-
-        /// Remove if video does not have sign language available.
-        if (newCards[i].signLangVideoUrl == "") newCards.removeAt(i--);
+        delete = e.signLangVideoUrl == "";
       }
+      return !delete;
+    }).toList();
 
-      /// If the current card is the first in the list.
-      if (i == 0 && cards.length > 0) {
-        /// Assign first card in [newCards] as the `next` for the last one
-        /// in [cards].
-        cards[cards.length - 1].next = newCards[i];
+    newCards.forEach((e) {
+      e.useSignLang = isUsingSignLang;
+    });
 
-        /// Otherwise any other card.
-      } else if (i > 0) {
-        newCards[i].prev = newCards[i - 1];
-        newCards[i - 1].next = newCards[i];
-      }
+    for (int i = 0; i < newCards.length; i++) {
+      newCards[i].next = newCards[(i + 1) % newCards.length];
+      newCards[i].prev = newCards[(i - 1 + newCards.length) % newCards.length];
     }
 
     return newCards;

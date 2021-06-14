@@ -41,7 +41,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// toll bar settings
-  final double length = 15.0;
+  final double length = 20.0;
   final double innerRadius = 5.0;
   final double outerRadius = 30.0;
 
@@ -123,6 +123,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
         drawerScrimColor: Colors.transparent,
+        drawerEdgeDragWidth: length + innerRadius + outerRadius,
         drawer: MenuDrawer(
           children: [
             Row(
@@ -365,8 +366,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               length: length,
               innerRadius: innerRadius,
               outerRadius: outerRadius,
-              iconSizePercentage: 0.65,
+              iconSizePercentage: 0.75,
             ),
+            Transform.scale(
+                scale: 0.4,
+                child: Transform.translate(
+                  offset: Offset(-0.7 * size.width, 1.1 * size.height),
+                  child: Image(image: ImageAsset.png.oveja1),
+                )),
+            Transform.scale(
+                scale: 0.4,
+                child: Transform.translate(
+                  offset: Offset(-0.1 * size.width, 1 * size.height),
+                  child: Image(image: ImageAsset.png.ranito1),
+                )),
+            Transform.scale(
+                scale: 0.4,
+                child: Transform.translate(
+                  offset: Offset(0.7 * size.width, 1 * size.height),
+                  child: Image(image: ImageAsset.png.zorro1),
+                ))
           ],
         ));
   }
@@ -500,11 +519,14 @@ class PullableDrawerBlob extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: iconPos > 0 ? iconPos : 0.0),
-                child: SvgIcon(
-                  asset: SvgAsset.back_icon,
-                  size: iconSize,
+                child: RotatedBox(
+                  quarterTurns: 2,
+                  child: SvgIcon(
+                    asset: SvgAsset.back_icon,
+                    size: iconSize,
+                  ),
                 ),
-              )
+              ),
             ])
       ],
     );
