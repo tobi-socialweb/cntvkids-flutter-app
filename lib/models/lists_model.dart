@@ -23,10 +23,11 @@ class Lists extends BaseModel {
     /// Default values.
     String _id = has<String>(json["id"].toString(), "-1");
 
-    String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
+    String _title =
+        clean(has<String>(json["title"]["rendered"], "", comp: [""]));
 
     String _description =
-        has<String>(json["content"]["rendered"], "", comp: [""]);
+        clean(has<String>(json["content"]["rendered"], "", comp: [""]));
 
     String _thumbnailUrl =
         has<String>(json["fimg_url"], MISSING_IMAGE_URL, comp: [""]);
@@ -42,7 +43,7 @@ class Lists extends BaseModel {
 
         _videos.add(Video(
             id: has<String>(object[i]["id"].toString(), "-1"),
-            title: has<String>(object[i]["title"], "", comp: [""]),
+            title: clean(has<String>(object[i]["title"], "", comp: [""])),
             thumbnailUrl:
                 has<String>(object[i]["image"], MISSING_IMAGE_URL, comp: [""]),
             videoUrl: has<String>(object[i]["dl"], "", comp: [""]),
@@ -78,4 +79,5 @@ class Lists extends BaseModel {
   static T has<T>(T object, T value,
           {List<T> comp = const [], void Function(T object) then}) =>
       BaseModel.has(object, value, comp: comp, then: then);
+  static String clean(String input) => BaseModel.clean(input);
 }

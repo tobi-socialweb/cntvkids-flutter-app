@@ -28,9 +28,11 @@ class Game extends BaseModel {
     /// Default values.
     String _id = has<String>(json["id"].toString(), "-1");
 
-    String _title = has<String>(json["title"]["rendered"], "", comp: [""]);
+    String _title =
+        clean(has<String>(json["title"]["rendered"], "", comp: [""]));
 
-    String _content = has<String>(json["content"]["rendered"], "", comp: [""]);
+    String _content =
+        clean(has<String>(json["content"]["rendered"], "", comp: [""]));
 
     String _gameUrl = has<String>(json["wpcf-url-juego"], "", comp: [""]);
 
@@ -103,4 +105,5 @@ class Game extends BaseModel {
   static T has<T>(T object, T value,
           {List<T> comp = const [], void Function(T object) then}) =>
       BaseModel.has(object, value, comp: comp, then: then);
+  static String clean(String input) => BaseModel.clean(input);
 }
