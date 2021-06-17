@@ -8,9 +8,6 @@ import 'package:focus_detector/focus_detector.dart';
 
 import 'constants.dart';
 
-/// Plays small sound assets
-class SoundEffect {}
-
 /// Internal class used to wrap over both `AudioCache`
 /// and `AudioPlayer` from `audioplayers` plugin.
 class _Player {
@@ -55,7 +52,7 @@ class Audio {
   static const numPlayers = MAX_AUDIO_INSTANCES + reserved;
 
   /// List of audio cache players initialized as null first
-  final List<_Player> players = List<_Player>.filled(numPlayers, _Player());
+  final List<_Player> players = List<_Player>.filled(numPlayers, null);
 
   /// Singleton instance
   static final Audio _instance = Audio._internal();
@@ -65,8 +62,12 @@ class Audio {
     return _instance;
   }
 
-  /// Empty class initializer
-  Audio._internal();
+  /// Private class constructor, initializes each player
+  Audio._internal() {
+    for (int i = 0; i < numPlayers; i++) {
+      players[i] = _Player();
+    }
+  }
 
   /// Use `play` method from `AudioCache` at `index` (overriding
   /// the current state of said player). If no `index`
@@ -203,7 +204,7 @@ class Audio {
           List<AudioPlayerState>.filled(numPlayers, null);
       Audio instance = Audio();
 
-      for (int i = reserved; i < numPlayers; i++) {
+      for (int i = 0; i < numPlayers; i++) {
         if (instance.players[i] != null)
           allPlayerStates[i] = instance.players[i].state;
       }
