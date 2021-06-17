@@ -37,9 +37,7 @@ class _SeriesCardListState extends VariableCardListState<SeriesCardList> {
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
     /// Check if accessibility option for sign language is on.
-    print(
-        "Debug: bool sign lang = ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang} ");
-    if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
+    if (context != null && Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
       /// Filter sign lang videos
       var contador = 1;
       for (int i = 0; i < newCards.length; i++) {

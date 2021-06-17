@@ -76,7 +76,8 @@ class Audio {
   /// The index assigned is returned, and if the value is `-1`,
   /// it means that there was no available player (all players were
   /// either in the state of `PLAYING` or `PAUSED`).
-  static int play(AssetResource asset, {double volume = 1.0, int index = -1}) {
+  static Future<int> play(AssetResource asset,
+      {double volume = 1.0, int index = -1}) async {
     Audio instance = Audio();
 
     if (index >= 0) {
@@ -88,7 +89,8 @@ class Audio {
       for (int i = reserved; i < numPlayers; i++) {
         if (instance.players[i].state != AudioPlayerState.PLAYING &&
             instance.players[i].state != AudioPlayerState.PAUSED) {
-          instance.players[i].cache.play(asset.name);
+          await instance.players[i].player.stop();
+          await instance.players[i].cache.play(asset.name);
           instance.players[i].volume = volume;
 
           return i;
@@ -122,11 +124,12 @@ class Audio {
   /// The index assigned is returned, and if the value is `-1`,
   /// it means that there was no available player (all players were
   /// either in the state of `PLAYING` or `PAUSED`).
-  static int loop(AssetResource asset, {double volume = 1.0, int index = -1}) {
+  static Future<int> loop(AssetResource asset,
+      {double volume = 1.0, int index = -1}) async {
     Audio instance = Audio();
 
     if (index >= 0) {
-      instance.players[index].cache.loop(asset.name);
+      await instance.players[index].cache.loop(asset.name);
       instance.players[index].volume = volume;
 
       return index;
@@ -134,7 +137,8 @@ class Audio {
       for (int i = reserved; i < numPlayers; i++) {
         if (instance.players[i].state != AudioPlayerState.PLAYING &&
             instance.players[i].state != AudioPlayerState.PAUSED) {
-          instance.players[i].cache.loop(asset.name);
+          await instance.players[i].player.release();
+          await instance.players[i].cache.loop(asset.name);
           instance.players[i].volume = volume;
 
           return i;
@@ -284,7 +288,7 @@ class _BackgroundMusicManagerState extends State<BackgroundMusicManager>
 
         if (state == AudioPlayerState.STOPPED || state == null) {
           Audio.clear(asset: MediaAsset.mp3.background_1);
-          Audio.loop(MediaAsset.mp3.background_1);
+          Audio.loop(MediaAsset.mp3.background_1, index: 0);
         }
       },
       child: widget.child,
