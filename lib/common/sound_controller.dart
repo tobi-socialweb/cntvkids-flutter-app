@@ -81,7 +81,7 @@ class Audio {
     Audio instance = Audio();
 
     if (index >= 0) {
-      instance.players[index].cache.play(asset.name);
+      await instance.players[index].cache.play(asset.name);
       instance.players[index].volume = volume;
 
       return index;
@@ -105,14 +105,14 @@ class Audio {
 
   /// Stop the player at `index` if given, else stop all players
   /// at once.
-  static void stop({int index = -1}) {
+  static Future<void> stop({int index = -1}) async {
     if (index >= 0) {
-      Audio().players[index].player.stop();
+      await Audio().players[index].player.stop();
     } else {
       Audio instance = Audio();
 
       for (int i = reserved; i < numPlayers; i++) {
-        instance.players[i].player.stop();
+        await instance.players[i].player.stop();
       }
     }
   }
@@ -153,28 +153,28 @@ class Audio {
 
   /// Pause the player at `index` if given, else pause all players
   /// at once.
-  static void pause({int index = -1}) {
+  static Future<void> pause({int index = -1}) async {
     if (index >= 0) {
-      Audio().players[index].player.pause();
+      await Audio().players[index].player.pause();
     } else {
       Audio instance = Audio();
 
       for (int i = reserved; i < numPlayers; i++) {
-        instance.players[i].player.pause();
+        await instance.players[i].player.pause();
       }
     }
   }
 
   /// Resume the player at `index` if given, else resume all players
   /// at once.
-  static void resume({int index = -1}) {
+  static Future<void> resume({int index = -1}) async {
     if (index >= 0) {
-      Audio().players[index].player.resume();
+      await Audio().players[index].player.resume();
     } else {
       Audio instance = Audio();
 
       for (int i = reserved; i < numPlayers; i++) {
-        instance.players[i].player.resume();
+        await instance.players[i].player.resume();
       }
     }
   }
