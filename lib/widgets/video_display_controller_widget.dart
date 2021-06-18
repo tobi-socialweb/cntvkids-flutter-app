@@ -38,9 +38,6 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
   BetterPlayerController videoController;
   BetterPlayerDataSource videoDataSource;
 
-  /// TODO:
-  bool displayedAlert = false;
-
   @override
   void initState() {
     super.initState();
@@ -92,12 +89,9 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
       if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
         completer.complete(videoPlayer);
       }
-      if (!displayedAlert &&
-          event.betterPlayerEventType == BetterPlayerEventType.finished &&
+      if (event.betterPlayerEventType == BetterPlayerEventType.finished &&
           context != null) {
         /// Only call the following once after finishing the video.
-        displayedAlert = true;
-
         Audio.play(MediaAsset.mp3.click);
 
         Navigator.pushReplacement(context,
@@ -110,91 +104,6 @@ class _VideoDisplayControllerState extends State<VideoDisplayController> {
     });
 
     return completer.future;
-  }
-
-  /// Display alert for liking the video.
-  likeVideoAlert(BuildContext context) async {
-    double sizeAlertHeight = 0.1 * MediaQuery.of(context).size.height;
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Te gusto el video: \"${widget.video.title}\" ?"),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  child: Container(
-                      height: sizeAlertHeight,
-                      alignment: Alignment.centerLeft,
-                      child: Text("No")),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ElevatedButton(
-                  child: Container(
-                      height: sizeAlertHeight,
-                      alignment: Alignment.centerRight,
-                      child: Text("Si")),
-                  onPressed: () async {
-                    String itemId = widget.video.id;
-                    widget.video.originInfo = null;
-                    // saveFavorites(widget.video.toString());
-                    print("DEBUG: detalles de video a guardar ....");
-                    print("DEBUG: " + widget.video.title);
-                    print("DEBUG: " + itemId);
-                    int userId = await getUserId(context);
-                    print("DEBUG: user id$userId");
-                    String userIp =
-                        Provider.of<AppStateConfig>(context, listen: false).ip;
-                    print("DEBUG: user " + userIp);
-
-                    try {
-                      String requestUrl =
-                          "https://cntvinfantil.cl/wp-json/wp-ulike-pro/v1/vote/?item_id=$itemId&user_id=$userId&type=post&status=like&user_ip=$userIp";
-
-                      Response response = await customDio.post(requestUrl,
-                          options: buildCacheOptions(Duration(days: 3),
-                              maxStale: Duration(days: 7)));
-
-                      /// If request has succeeded.
-                      if (response.statusCode == 200) {
-                        print("DEBUG: response succeded: ${response.data}");
-                      }
-                    } on DioError catch (e) {
-                      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
-                          DioErrorType.CONNECT_TIMEOUT == e.type) {
-                        /// Couldn't reach the server.
-                        throw (ERROR_MESSAGE[ErrorTypes.UNREACHABLE]);
-                      } else if (DioErrorType.RESPONSE == e.type) {
-                        /// If request was badly formed.
-                        if (e.response.statusCode == 400) {
-                          print("reponse 400");
-
-                          /// Otherwise.
-                        } else {
-                          print(e.message);
-                          print(e.request.toString());
-                        }
-                      } else if (DioErrorType.DEFAULT == e.type) {
-                        if (e.message.contains('SocketException')) {
-                          /// No connection to internet.
-                          throw (ERROR_MESSAGE[ErrorTypes.NO_CONNECTION]);
-                        }
-                      } else {
-                        /// Unknown problem connecting to server.
-                        throw (ERROR_MESSAGE[ErrorTypes.UNKNOWN]);
-                      }
-                    }
-
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        });
   }
 
   void saveHistory(String videoJson) {

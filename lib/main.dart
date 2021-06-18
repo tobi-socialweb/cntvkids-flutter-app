@@ -33,34 +33,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  BetterPlayer videoSplashScreen;
-  bool end = false;
-
   /// The splash screen video loaded using BetterPlayer.
-  BetterPlayer splashScreenVideo = BetterPlayer.network(
-      "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
-      betterPlayerConfiguration: BetterPlayerConfiguration(
-        aspectRatio: 16 / 9,
-        autoPlay: true,
-        autoDispose: false,
-        controlsConfiguration:
-            BetterPlayerControlsConfiguration(showControls: false),
-      ));
+  BetterPlayer videoSplashScreen;
 
-  /// If the splash screen video has ended or not.
-  bool videoEnded = false;
-
-  /// TODO: implement timer to test if video could not load and show error message. (and some retry attempts).
   void initState() {
     videoSplashScreen = BetterPlayer.network(
         "https://cntvinfantil.cl/cntv/wp-content/uploads/2020/02/cntv-infantil-logo-mascotas.mp4",
         betterPlayerConfiguration: BetterPlayerConfiguration(
           aspectRatio: 16 / 9,
           autoPlay: true,
+          autoDispose: false,
           controlsConfiguration:
               BetterPlayerControlsConfiguration(showControls: false),
         ));
-
     videoSplashScreen.controller.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
         Navigator.pushReplacement(context,
@@ -109,7 +94,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    splashScreenVideo.controller.dispose(forceDispose: true);
+    videoSplashScreen.controller.dispose(forceDispose: true);
 
     super.dispose();
   }

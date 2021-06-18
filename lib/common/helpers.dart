@@ -83,10 +83,13 @@ class SvgButton extends StatelessWidget {
 }
 
 class StorageManager {
-  static List<String> videoHistory;
+  static List<String> videoHistory = [];
 
   static void initVideoHistory() async {
-    videoHistory = await readData(HISTORY_VIDEOS_KEY);
+    List<dynamic> temp = await readData(HISTORY_VIDEOS_KEY);
+    if (temp != null) {
+      videoHistory = List<String>.from(temp);
+    }
   }
 
   static void saveData(String key, dynamic value) async {
@@ -135,7 +138,7 @@ class AppStateConfig extends ChangeNotifier {
   double musicVolume = 0.5;
   bool isUsingSignLang = false;
   String ip = "";
-  int userId = 0;
+  int userId;
 
   void setValue(
       {int userId, double volume, bool isUsingSignLang, ColorFilter filter}) {
@@ -145,6 +148,13 @@ class AppStateConfig extends ChangeNotifier {
 
   Future<void> setIp() async {
     this.ip = await WifiInfo().getWifiIP();
+  }
+
+  Future<String> getIp(BuildContext context) async {
+    if (this.ip == '') {
+      await setIp();
+    }
+    return this.ip;
   }
 
   void setUserId(int user) {
@@ -242,7 +252,8 @@ class AppStateConfig extends ChangeNotifier {
 }
 
 Future<int> getUserId(BuildContext context) async {
-  String userIp = Provider.of<AppStateConfig>(context, listen: false).ip;
+  String userIp =
+      await Provider.of<AppStateConfig>(context, listen: false).getIp(context);
   int userId = Provider.of<AppStateConfig>(context, listen: false).userId;
   if (userId == null) {
     if (userIp == "") {

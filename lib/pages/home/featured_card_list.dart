@@ -43,30 +43,28 @@ class _FeaturedCardListState extends VariableCardListState<FeaturedCardList> {
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) async {
     /// Check if accessibility option for sign language is on.
-    final bool isUsingSignLang =
-        Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+    bool isUsingSignLang;
 
-    /// Itererate through all new cards.
-    for (int i = 0; i < newCards.length; i++) {
+    if (context != null) {
+      isUsingSignLang =
+          Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang;
+    }
+
+    newCards = newCards.where((video) {
+      bool delete = false;
       if (isUsingSignLang) {
-        /// Set value as true by default.
-        newCards[i].useSignLang = true;
-
-        /// Remove if video does not have sign language available.
-        if (newCards[i].signLangVideoUrl == "") newCards.removeAt(i--);
+        delete = video.signLangVideoUrl == "";
       }
+      return !delete;
+    }).toList();
 
-      /// If the current card is the first in the list.
-      if (i == 0 && cards.length > 0) {
-        /// Assign first card in [newCards] as the `next` for the last one
-        /// in [cards].
-        cards[cards.length - 1].next = newCards[i];
+    newCards.forEach((video) {
+      video.useSignLang = isUsingSignLang;
+    });
 
-        /// Otherwise any other card.
-      } else if (i > 0) {
-        newCards[i].prev = newCards[i - 1];
-        newCards[i - 1].next = newCards[i];
-      }
+    for (int i = 0; i < newCards.length; i++) {
+      newCards[i].next = newCards[(i + 1) % newCards.length];
+      newCards[i].prev = newCards[(i - 1 + newCards.length) % newCards.length];
     }
 
     return newCards;

@@ -37,13 +37,10 @@ class _SeriesCardListState extends VariableCardListState<SeriesCardList> {
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
     /// Check if accessibility option for sign language is on.
-    if (context != null && Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
+    if (context != null &&
+        Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
       /// Filter sign lang videos
-      var contador = 1;
       for (int i = 0; i < newCards.length; i++) {
-        print("Debug: number of series ${newCards.length}");
-        print(
-            "Debug: number of episode in series $contador, ${newCards[i].videos.length}");
         for (int j = 0; j < newCards[i].videos.length; j++) {
           if (newCards[i].videos[j].signLangVideoUrl != "") {
             newCards[i].videos[j].useSignLang = true;
@@ -52,13 +49,11 @@ class _SeriesCardListState extends VariableCardListState<SeriesCardList> {
             j--;
           }
         }
-        print(
-            "Debug: number of episode with sign lang ${newCards[i].videos.length}");
+
         if (newCards[i].videos.length == 0) {
           newCards.removeAt(i);
           i--;
         }
-        contador++;
       }
     }
     return Future.value(newCards);

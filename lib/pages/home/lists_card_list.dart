@@ -36,20 +36,12 @@ class _ListsCardListState extends VariableCardListState<ListsCardList> {
 
   @override
   Future<List<dynamic>> optionalCardManagement(List<dynamic> newCards) {
-    for (int i = 0; i < newCards.length; i++) {
-      print(newCards[i].title);
-    }
-
     /// Check if accessibility option for sign language is on.
-    print(
-        "Debug: bool sign lang = ${Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang} ");
+
     if (Provider.of<AppStateConfig>(context, listen: false).isUsingSignLang) {
       /// Filter sign lang videos
-      var contador = 1;
+
       for (int i = 0; i < newCards.length; i++) {
-        print("Debug: number of list ${newCards.length}");
-        print(
-            "Debug: number of episode in list $contador, ${newCards[i].videos.length}");
         for (int j = 0; j < newCards[i].videos.length; j++) {
           if (newCards[i].videos[j].signLangVideoUrl != "") {
             newCards[i].videos[j].useSignLang = true;
@@ -64,7 +56,6 @@ class _ListsCardListState extends VariableCardListState<ListsCardList> {
           newCards.removeAt(i);
           i--;
         }
-        contador++;
       }
     }
 
